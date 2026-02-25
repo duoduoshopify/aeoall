@@ -48,7 +48,7 @@ if (!customElements.get('product-form')) {
           method: 'POST',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/javascript'
+            'Accept': 'application/json'
           },
           body: formData
         };

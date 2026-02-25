@@ -71,15 +71,23 @@ if (!customElements.get('cart-drawer')) {
       }
   
       renderContents(parsedState) {
-        // 渲染新内容（被 product-form.js 加购后调用）
-        fetch(`${window.routes.cart_url}?section_id=cart-drawer`)
-          .then((res) => res.text())
-          .then((text) => {
-            const html = new DOMParser().parseFromString(text, 'text/html');
-            this.innerHTML = html.querySelector('cart-drawer').innerHTML;
-            this.updateCartCount();
-            this.open();
-          });
+        // 优先使用 product-form 已经获取的 HTML，避免重复请求
+        if (parsedState && parsedState.sections && parsedState.sections['cart-drawer']) {
+          const html = new DOMParser().parseFromString(parsedState.sections['cart-drawer'], 'text/html');
+          this.innerHTML = html.querySelector('cart-drawer').innerHTML;
+          this.updateCartCount();
+          this.open();
+        } else {
+          // 后备：如果没有预获取，发起请求
+          fetch(`${window.routes.cart_url}?section_id=cart-drawer`)
+            .then((res) => res.text())
+            .then((text) => {
+              const html = new DOMParser().parseFromString(text, 'text/html');
+              this.innerHTML = html.querySelector('cart-drawer').innerHTML;
+              this.updateCartCount();
+              this.open();
+            });
+        }
       }
   
       updateCartCount() {

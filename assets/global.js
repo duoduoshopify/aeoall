@@ -281,7 +281,7 @@ function debounce(fn, wait) {
           method: 'POST',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/javascript'
+            'Accept': 'application/json'
           },
           body: formData
         };

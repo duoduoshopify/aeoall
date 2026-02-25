@@ -19,6 +19,7 @@
       <button
         type="submit"
         name="add"
+        id="ProductSubmitButton-{{ section.id }}"
         class="atc-btn atc-slider-effect"
         {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
       >
