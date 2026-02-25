@@ -6,6 +6,7 @@
 3. [Product Page Blocks](#product-page-blocks)
 4. [Marketing Features](#marketing-features)
 5. [Custom Development](#custom-development)
+6. [Technical Documentation](./TECHNICAL.md)
 
 ---
 

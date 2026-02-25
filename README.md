@@ -3,7 +3,7 @@
 A modern, high-conversion Shopify 2.0 theme designed for e-commerce excellence.
 
 ![Shopify Version](https://img.shields.io/badge/Shopify-2.0-blue)
-![Version](https://img.shields.io/badge/Version-1.2.0-green)
+![Version](https://img.shields.io/badge/Version-1.2.1-green)
 
 ## Features
 
