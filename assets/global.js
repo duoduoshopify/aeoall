@@ -301,11 +301,20 @@ function debounce(fn, wait) {
               // 后备方案：如果没有抽屉，跳往购物车页面
               window.location = window.routes.cart_url;
             }
+
+            // 显示成功状态
+            submitButton.classList.remove('loading');
+            submitButton.classList.add('success');
+            setTimeout(() => {
+              submitButton.classList.remove('success');
+              submitButton.removeAttribute('aria-disabled');
+            }, 1500);
           })
           .catch((e) => {
             console.error('Add to cart error:', e);
           })
           .finally(() => {
+            if (submitButton.classList.contains('success')) return;
             submitButton.classList.remove('loading');
             // 如果没有报错，恢复按钮可用性
             if (!this.querySelector('.product-form__error-message-wrapper:not([hidden])')) {

@@ -209,17 +209,17 @@
 .atc-btn.atc-slider-effect {
   position: relative;
   height: 56px;
-  background-color: #ffffff; /* 初始白色 */
-  color: #000000;            /* 初始黑字 */
+  background-color: #ffffff;
+  color: #000000;
   border: 1px solid #000000;
-  border-radius: 50px; /* 圆角胶囊 */
+  border-radius: 50px;
   overflow: hidden;
   z-index: 1;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: color 0.4s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   padding: 0 2rem;
   display: flex;
@@ -229,28 +229,125 @@
 
 .atc-btn.atc-slider-effect .atc-text {
   position: relative;
-  z-index: 3; /* 确保文字在滑块层之上 */
-  pointer-events: none; /* 防止文字层拦截点击事件 */
+  z-index: 3;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .atc-slider {
   position: absolute;
   top: 0;
-  left: -100%; /* 初始位置 */
+  left: -100%;
   width: 100%;
   height: 100%;
-  background-color: #000000; /* 黑色滑块 */
+  background-color: #000000;
   z-index: 2;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none; /* 防止滑块层拦截点击事件 */
+  pointer-events: none;
 }
 
 .atc-btn.atc-slider-effect:hover {
-  color: #ffffff; /* 文字在滑块划过时变白 */
+  color: #ffffff;
 }
 
 .atc-btn.atc-slider-effect:hover .atc-slider {
-  transform: translateX(100%); /* 刷向右侧 */
+  transform: translateX(100%);
+}
+
+/* ===== 过渡状态美化 ===== */
+
+/* 1. 点击加载状态 */
+.atc-btn.atc-slider-effect.loading {
+  pointer-events: none;
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.atc-btn.atc-slider-effect.loading .atc-text {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.atc-btn.atc-slider-effect.loading .atc-slider {
+  transform: translateX(100%);
+}
+
+/* 加载旋转器 */
+.atc-btn.atc-slider-effect.loading::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  z-index: 4;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 2. 成功添加状态 */
+.atc-btn.atc-slider-effect.success {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+}
+
+.atc-btn.atc-slider-effect.success .atc-text {
+  opacity: 0;
+}
+
+.atc-btn.atc-slider-effect.success::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: transparent !important;
+  border-right-color: #fff;
+  z-index: 4;
+  animation: none;
+  transform: rotate(-45deg);
+}
+
+.atc-btn.atc-slider-effect.success::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 18px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg) translate(-2px, -2px);
+  z-index: 4;
+  animation: checkmark 0.3s ease forwards;
+}
+
+@keyframes checkmark {
+  0% { opacity: 0; transform: rotate(45deg) translate(-5px, -5px) scale(0.5); }
+  100% { opacity: 1; transform: rotate(45deg) translate(-2px, -2px) scale(1); }
+}
+
+/* 3. 点击时的波纹效果 */
+.atc-btn.atc-slider-effect::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+  z-index: 1;
+}
+
+.atc-btn.atc-slider-effect:active::before {
+  width: 300px;
+  height: 300px;
 }
 
 /* B. Buy it Now - 纯黑转 ShopPay 紫色 */

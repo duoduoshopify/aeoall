@@ -72,11 +72,22 @@ if (!customElements.get('product-form')) {
               // 如果没有抽屉，则跳转到购物车页面
               window.location = window.routes.cart_url;
             }
+
+            // 显示成功状态
+            if (!this.error) {
+              this.submitButton.classList.remove('loading');
+              this.submitButton.classList.add('success');
+              setTimeout(() => {
+                this.submitButton.classList.remove('success');
+                this.submitButton.removeAttribute('aria-disabled');
+              }, 1500);
+            }
           })
           .catch((e) => {
             console.error('Add to cart error:', e);
           })
           .finally(() => {
+            if (this.submitButton.classList.contains('success')) return;
             this.submitButton.classList.remove('loading');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
           });
