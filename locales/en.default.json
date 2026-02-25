@@ -43,5 +43,9 @@
             "other": "{{ count }} results found for \"{{ terms }}\""
         }
         }
+    },
+    "newsletter": {
+      "button_label": "Subscribe",
+      "success": "Thanks for subscribing!"
     }
   }

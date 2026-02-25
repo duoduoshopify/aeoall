@@ -1,0 +1,230 @@
+ {%- style -%}
+  .hero-{{ section.id }} {
+    min-height: {{ section.settings.height | times: 0.4 }}px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hero-{{ section.id }} {
+      min-height: {{ section.settings.height }}px;
+    }
+  }
+
+  .hero-overlay-{{ section.id }} {
+    position: absolute;
+    inset: 0;
+    background: {{ section.settings.overlay_color }};
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero__box {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: {{ section.settings.box_padding }}rem;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero__subheading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #2563eb;
+    margin: 0 0 1rem;
+  }
+
+  .hero__title {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0 0 1.5rem;
+    color: #1d1d1f;
+  }
+
+  .hero__description {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    color: #6b7280;
+    margin-bottom: 2rem;
+  }
+
+  .hero__description p {
+    margin: 0;
+  }
+
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    text-decoration: none;
+  }
+
+  .page-width--narrow .hero__box { max-width: 600px; }
+  .page-width--medium .hero__box { max-width: 800px; }
+  .page-width--wide .hero__box { max-width: 1000px; }
+
+  @media screen and (max-width: 749px) {
+    .hero__box {
+      padding: 2rem;
+      margin: 0 1rem;
+    }
+    .hero__title {
+      font-size: 2.2rem;
+    }
+  }
+{%- endstyle -%}
+
+<div class="hero hero-{{ section.id }} color-{{ section.settings.color_scheme }} gradient"{% if section.settings.image != blank %} style="background-image: url('{{ section.settings.image | image_url: width: 2000 }}'); background-size: cover; background-position: center;"{% endif %}>
+  <div class="hero-overlay-{{ section.id }} hero-overlay"></div>
+  
+  <div class="hero__content page-width page-width--{{ section.settings.content_width }}">
+    <div class="hero__box gradient" style="padding: {{ section.settings.box_padding }}rem;">
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero__subheading">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h1 class="hero__title">{{ section.settings.heading | escape }}</h1>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="hero__description rte">
+          {{ section.settings.description }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+        <a href="{{ section.settings.button_link }}" class="atc-btn hero__btn">
+          {{ section.settings.button_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "Welcome to our store",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Hero Banner",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Shop Now",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "default": "narrow",
+      "label": "Content Width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "wide", "label": "Wide" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 300,
+      "max": 800,
+      "step": 50,
+      "default": 500,
+      "label": "Height"
+    },
+    {
+      "type": "range",
+      "id": "box_padding",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 2,
+      "label": "Box Padding"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "default": "#000000",
+      "label": "Overlay Color"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 30,
+      "label": "Overlay Opacity"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "default": "background-1",
+      "label": "Color Scheme",
+      "options": [
+        { "value": "background-1", "label": "Background 1" },
+        { "value": "background-2", "label": "Background 2" },
+        { "value": "background-3", "label": "Background 3" },
+        { "value": "background-4", "label": "Background 4" },
+        { "value": "background-5", "label": "Background 5" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

@@ -8,15 +8,22 @@
  * ------------------------------------------------------------
  */
 {
-    "name": "Footer Group",
-    "type": "footer",
-    "sections": {
-      "main-footer": {
-        "type": "footer",
-        "settings": {}
+  "name": "Footer Group",
+  "type": "footer",
+  "sections": {
+    "main-footer": {
+      "type": "footer",
+      "settings": {
+        "newsletter_enable": true,
+        "newsletter_heading": "Stay Connected",
+        "newsletter_text": "<p>Subscribe to receive special offers and updates.</p>",
+        "show_social": true,
+        "enable_language_selector": true,
+        "enable_currency_selector": false
       }
-    },
-    "order": [
-      "main-footer"
-    ]
-  }
+    }
+  },
+  "order": [
+    "main-footer"
+  ]
+}

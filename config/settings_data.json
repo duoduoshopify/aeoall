@@ -9,8 +9,25 @@
  */
 {
   "current": {
-    "settings": {},
     "content_for_index": []
   },
-  "presets": {}
+  "presets": {
+    "Default": {
+      "colors_solid_button_labels": "#ffffff",
+      "colors_accent": "#2563eb",
+      "colors_text": "#1d1d1f",
+      "colors_background": "#ffffff",
+      "colors_border": "#e5e7eb",
+      "colors_button": "#1d1d1f",
+      "colors_button_text": "#ffffff",
+      "colors_accent_soft": "#eff6ff",
+      "colors_urgency": "#db2777",
+      "colors_success": "#059669",
+      "type_header_font": "assistant_n7",
+      "type_body_font": "assistant_n4",
+      "type_header_scale": 100,
+      "show_exit_intent": true,
+      "exit_intent_discount": "SAVE50"
+    }
+  }
 }

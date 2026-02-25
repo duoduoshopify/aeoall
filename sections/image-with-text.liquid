@@ -1,0 +1,271 @@
+{%- style -%}
+  .iwt-{{ section.id }}-padding {
+    padding-top: {{ section.settings.pt | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.pb | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .iwt-{{ section.id }}-padding {
+      padding-top: {{ section.settings.pt }}px;
+      padding-bottom: {{ section.settings.pb }}px;
+    }
+  }
+
+  .image-with-text__grid {
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .image-with-text__media {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  }
+
+  .image-with-text__media img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .image-with-text__media:hover img {
+    transform: scale(1.03);
+  }
+
+  .image-with-text__media--placeholder {
+    background: #f3f4f6;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-with-text__media--placeholder .placeholder-svg {
+    width: 100px;
+    height: 100px;
+    opacity: 0.3;
+  }
+
+  .image-with-text__content {
+    padding: 2rem 0;
+  }
+
+  .image-with-text__subheading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #2563eb;
+    margin: 0 0 1rem;
+  }
+
+  .image-with-text__heading {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 1.5rem;
+    color: #1d1d1f;
+  }
+
+  .image-with-text__description {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #6b7280;
+    margin-bottom: 2rem;
+  }
+
+  .image-with-text__description p {
+    margin: 0;
+  }
+
+  .image-with-text .atc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    width: auto;
+    padding: 0 3rem;
+    text-decoration: none;
+  }
+
+  .image-with-text__grid.grid--2-col-desktop .image-with-text__media-item:first-child {
+    order: 0;
+  }
+  
+  .image-with-text__grid.grid--2-col-desktop .image-with-text__text-item:last-child {
+    order: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .image-with-text__grid {
+      gap: 2rem;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="image-with-text page-width iwt-{{ section.id }}-padding">
+    <div class="image-with-text__grid grid grid--1-col grid--{{ section.settings.layout_desktop }}-col-desktop">
+      <div class="image-with-text__media-item grid__item">
+        {%- if section.settings.image != blank -%}
+          <div class="image-with-text__media">
+            <img
+              src="{{ section.settings.image | image_url: width: 1200 }}"
+              alt="{{ section.settings.image.alt | escape }}"
+              width="{{ section.settings.image.width }}"
+              height="{{ section.settings.image.height }}"
+              loading="lazy"
+            >
+          </div>
+        {%- else -%}
+          <div class="image-with-text__media image-with-text__media--placeholder">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="image-with-text__text-item grid__item">
+        <div class="image-with-text__content" style="text-align: {{ section.settings.text_align }};">
+          {%- if section.settings.subheading != blank -%}
+            <p class="image-with-text__subheading">{{ section.settings.subheading | escape }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.heading != blank -%}
+            <h2 class="image-with-text__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+
+          {%- if section.settings.description != blank -%}
+            <div class="image-with-text__description rte">
+              {{ section.settings.description }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+            <a href="{{ section.settings.button_link }}" class="atc-btn">
+              {{ section.settings.button_label | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image with Text",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Image with Text",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "layout_desktop",
+      "default": "2",
+      "label": "Desktop Layout",
+      "options": [
+        { "value": "2", "label": "2 Columns" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "default": "image_first",
+      "label": "Desktop Image Position",
+      "options": [
+        { "value": "image_first", "label": "Image First" },
+        { "value": "text_first", "label": "Text First" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "default": "left",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "default": "background-1",
+      "label": "Color Scheme",
+      "options": [
+        { "value": "background-1", "label": "Background 1" },
+        { "value": "background-2", "label": "Background 2" },
+        { "value": "background-3", "label": "Background 3" },
+        { "value": "background-4", "label": "Background 4" },
+        { "value": "background-5", "label": "Background 5" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "pt",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "pb",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Text"
+    }
+  ]
+}
+{% endschema %}

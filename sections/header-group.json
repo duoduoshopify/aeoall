@@ -18,9 +18,8 @@
           "type": "mega_menu",
           "settings": {
             "trigger_link": "products",
-            "promo_image": "shopify://shop_images/travelbike-compact.png",
             "promo_heading": "New Arrivals",
-            "promo_url": ""
+            "promo_url": "/collections/new-arrivals"
           }
         }
       },
@@ -29,7 +28,7 @@
       ],
       "settings": {
         "menu": "main-menu",
-        "announcement_text": "Free Worldwide Shipping Today"
+        "announcement_text": "FREE SHIPPING ON ORDERS OVER $50 | USE CODE SAVE50 FOR 50% OFF"
       }
     }
   },

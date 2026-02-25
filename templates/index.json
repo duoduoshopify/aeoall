@@ -9,18 +9,89 @@
  */
 {
   "sections": {
-    "featured": {
+    "hero_banner": {
+      "type": "hero-banner",
+      "settings": {
+        "image": "shopify://shop_images/e-mountain-bike-adventure.png",
+        "subheading": "NEW ARRIVALS",
+        "heading": "Premium Products for Your Lifestyle",
+        "description": "<p>Discover our curated collection of high-quality products designed to elevate your everyday experience.</p>",
+        "button_label": "SHOP NOW",
+        "button_link": "/collections/all",
+        "content_width": "narrow",
+        "height": 600,
+        "box_padding": 3,
+        "overlay_color": "#000000",
+        "overlay_opacity": 35,
+        "color_scheme": "background-1"
+      }
+    },
+    "featured_collection": {
       "type": "featured-collection",
       "settings": {
-        "title": "New Elite Series",
+        "title": "FEATURED PRODUCTS",
         "collection": "mountain-electric-bikes",
-        "limit": 4,
-        "pt": 60,
-        "pb": 60
+        "limit": 8,
+        "show_view_all": true,
+        "pt": 80,
+        "pb": 80
+      }
+    },
+    "image_with_text_1": {
+      "type": "image-with-text",
+      "settings": {
+        "image": "shopify://shop_images/urban-e-bike.png",
+        "subheading": "QUALITY GUARANTEED",
+        "heading": "Why Choose Our Products",
+        "description": "<p>We source only the finest materials and work with trusted manufacturers to bring you products that stand the test of time. Every purchase comes with our satisfaction guarantee.</p>",
+        "button_label": "LEARN MORE",
+        "button_link": "/pages/about-us",
+        "layout_desktop": "2",
+        "layout": "image_first",
+        "text_align": "left",
+        "color_scheme": "background-1",
+        "pt": 80,
+        "pb": 80
+      }
+    },
+    "image_with_text_2": {
+      "type": "image-with-text",
+      "settings": {
+        "image": "shopify://shop_images/9022a705161ff42b7879d88f1fd6d0e8.png",
+        "subheading": "DELIVERY",
+        "heading": "Fast & Free Shipping",
+        "description": "<p>Enjoy free shipping on all orders over $50. Most orders are processed within 24 hours and delivered within 3-5 business days.</p>",
+        "button_label": "VIEW SHIPPING INFO",
+        "button_link": "/pages/shipping-returns",
+        "layout_desktop": "2",
+        "layout": "text_first",
+        "text_align": "left",
+        "color_scheme": "background-1",
+        "pt": 80,
+        "pb": 80
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "subheading": "GET EXCLUSIVE OFFERS",
+        "heading": "Join Our Newsletter",
+        "description": "<p>Subscribe to receive special offers, new product announcements, and exclusive discounts.</p>",
+        "text_align": "center",
+        "enable_discount": true,
+        "discount_text": "Use code SAVE50 for 50% off your first order",
+        "enable_background_image": false,
+        "color_scheme": "background-1",
+        "pt": 80,
+        "pb": 80
       }
     }
   },
   "order": [
-    "featured"
+    "hero_banner",
+    "featured_collection",
+    "image_with_text_1",
+    "image_with_text_2",
+    "newsletter"
   ]
 }

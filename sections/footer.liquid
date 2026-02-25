@@ -5,7 +5,9 @@
       <div class="footer-col-info">
         <div class="footer-logo" style="font-size:2.4rem; font-weight:800; margin-bottom:20px;">{{ shop.name | upcase }}.</div>
         <p style="opacity:0.6; font-size:1.4rem; line-height:1.6; max-width:300px;">{{ section.settings.bio }}</p>
+        {%- if section.settings.show_social -%}
         <div class="footer-socials" style="margin-top:25px;">{% render 'social-icons' %}</div>
+        {%- endif -%}
       </div>
 
       <!-- B. 动态菜单列 -->
@@ -23,9 +25,10 @@
       {%- endfor -%}
 
       <!-- C. 订阅区域 -->
+      {%- if section.settings.newsletter_enable -%}
       <div class="footer-col-newsletter">
-        <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">Insider Access</h4>
-        <p style="color:#a1a1a6; font-size:1.3rem; margin-bottom:20px;">Get exclusive offers and health tips.</p>
+        <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">{{ section.settings.newsletter_heading }}</h4>
+        {{ section.settings.newsletter_text }}
         {%- form 'customer' -%}
           <div style="position:relative;">
             <input type="email" name="contact[email]" placeholder="Email address" required style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:15px; border-radius:8px;">
@@ -33,6 +36,7 @@
           </div>
         {%- endform -%}
       </div>
+      {%- endif -%}
     </div>
 
     <!-- D. 底部版权与支付图标 -->
@@ -53,9 +57,15 @@
 {% schema %}
 {
   "name": "Footer",
-  "max_blocks": 3,
+  "max_blocks": 4,
   "settings": [
-    { "type": "textarea", "id": "bio", "label": "Brand Bio", "default": "Revolutionizing ergonomic science." }
+    { "type": "textarea", "id": "bio", "label": "Brand Bio", "default": "Revolutionizing ergonomic science." },
+    { "type": "checkbox", "id": "newsletter_enable", "label": "Show Newsletter", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter Heading", "default": "Insider Access" },
+    { "type": "richtext", "id": "newsletter_text", "label": "Newsletter Text" },
+    { "type": "checkbox", "id": "show_social", "label": "Show Social Links", "default": true },
+    { "type": "checkbox", "id": "enable_language_selector", "label": "Language Selector", "default": true },
+    { "type": "checkbox", "id": "enable_currency_selector", "label": "Currency Selector", "default": false }
   ],
   "blocks": [
     {

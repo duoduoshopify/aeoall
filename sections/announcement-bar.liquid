@@ -1,0 +1,111 @@
+{%- style -%}
+  .announcement-{{ section.id }} {
+    background: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    position: relative;
+    overflow: hidden;
+  }
+
+  .announcement-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  .announcement-{{ section.id }} .announcement-bar__message {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0;
+    padding: 12px 2rem;
+    text-align: center;
+  }
+
+  .announcement-{{ section.id }} .announcement-bar__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .announcement-{{ section.id }} .announcement-bar__link:hover {
+    opacity: 0.85;
+  }
+{%- endstyle -%}
+
+<div class="announcement-{{ section.id }} announcement-bar color-{{ section.settings.color_scheme }} gradient" role="region" aria-label="{{ 'sections.header.announcement' | t }}">
+  {%- if section.settings.text != blank -%}
+    {%- if section.settings.link != blank -%}
+      <a href="{{ section.settings.link }}" class="announcement-bar__link">
+        <p class="announcement-bar__message h5">
+          {{ section.settings.text | escape }}
+        </p>
+      </a>
+    {%- else -%}
+      <p class="announcement-bar__message h5">
+        {{ section.settings.text | escape }}
+      </p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "default": "Welcome to our store",
+      "label": "Announcement text"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#000000",
+      "label": "Background Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "default": "#ffffff",
+      "label": "Text Color"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "default": "background-1",
+      "label": "Color Scheme",
+      "options": [
+        { "value": "background-1", "label": "Background 1" },
+        { "value": "background-2", "label": "Background 2" },
+        { "value": "background-3", "label": "Background 3" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}

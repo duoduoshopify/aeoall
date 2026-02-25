@@ -4,28 +4,63 @@
     <table class="comp-table">
       <thead>
         <tr>
-          <th>SPEC</th>
+          <th>{{ block.settings.spec_label | default: "SPEC" }}</th>
           <th class="highlight">{{ product.title }}</th>
-          <th>OTHERS</th>
+          <th>{{ block.settings.competitor_label | default: "OTHERS" }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td>Material</td><td class="highlight">Aerospace Carbon</td><td>Hardened Plastic</td></tr>
+        {%- for i in (1..5) -%}
+          {%- assign spec = 'spec_' | append: i -%}
+          {%- assign our_value = 'our_value_' | append: i -%}
+          {%- assign competitor_value = 'competitor_value_' | append: i -%}
+          {%- if block.settings[spec] != blank -%}
+            <tr>
+              <td>{{ block.settings[spec] }}</td>
+              <td class="highlight">{{ block.settings[our_value] }}</td>
+              <td>{{ block.settings[competitor_value] }}</td>
+            </tr>
+          {%- endif -%}
+        {%- endfor -%}
       </tbody>
     </table>
   </div>
 </div>
 
+<style>
+  .comparison-section { margin: 3rem 0; }
+  .comp-title { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; text-align: center; }
+  .table-scroll { overflow-x: auto; }
+  .comp-table { width: 100%; min-width: 400px; border-collapse: collapse; }
+  .comp-table th, .comp-table td { padding: 1.5rem; text-align: center; border-bottom: 1px solid #e5e7eb; }
+  .comp-table th { font-weight: 700; background: #f9fafb; }
+  .comp-table th:first-child, .comp-table td:first-child { text-align: left; font-weight: 600; }
+  .comp-table .highlight { background: #eff6ff; font-weight: 700; color: #2563eb; }
+</style>
+
 {% schema %}
 {
   "name": "Comparison Table",
   "settings": [
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Heading",
-      "default": "Designed for Performance"
-    }
+    { "type": "text", "id": "title", "label": "Heading", "default": "Designed for Performance" },
+    { "type": "text", "id": "spec_label", "label": "Spec Column Label", "default": "SPEC" },
+    { "type": "text", "id": "competitor_label", "label": "Competitor Column Label", "default": "OTHERS" },
+    { "type": "header", "content": "Comparison Rows" },
+    { "type": "text", "id": "spec_1", "label": "Row 1 - Spec Name" },
+    { "type": "text", "id": "our_value_1", "label": "Row 1 - Our Product", "default": "✓ Premium Quality" },
+    { "type": "text", "id": "competitor_value_1", "label": "Row 1 - Competitor", "default": "✗ Lower Quality" },
+    { "type": "text", "id": "spec_2", "label": "Row 2 - Spec Name" },
+    { "type": "text", "id": "our_value_2", "label": "Row 2 - Our Product", "default": "✓ Free Shipping" },
+    { "type": "text", "id": "competitor_value_2", "label": "Row 2 - Competitor", "default": "✗ Shipping Extra" },
+    { "type": "text", "id": "spec_3", "label": "Row 3 - Spec Name" },
+    { "type": "text", "id": "our_value_3", "label": "Row 3 - Our Product", "default": "✓ 30-Day Guarantee" },
+    { "type": "text", "id": "competitor_value_3", "label": "Row 3 - Competitor", "default": "✗ No Guarantee" },
+    { "type": "text", "id": "spec_4", "label": "Row 4 - Spec Name" },
+    { "type": "text", "id": "our_value_4", "label": "Row 4 - Our Product" },
+    { "type": "text", "id": "competitor_value_4", "label": "Row 4 - Competitor" },
+    { "type": "text", "id": "spec_5", "label": "Row 5 - Spec Name" },
+    { "type": "text", "id": "our_value_5", "label": "Row 5 - Our Product" },
+    { "type": "text", "id": "competitor_value_5", "label": "Row 5 - Competitor" }
   ]
 }
 {% endschema %}
