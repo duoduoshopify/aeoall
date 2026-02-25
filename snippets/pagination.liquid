@@ -1,0 +1,49 @@
+{% comment %}
+    Renders a set of pagination links.
+    Accepts:
+    - paginate: {Object} Paginate Liquid object
+{% endcomment %}
+
+{{ 'component-pagination.css' | asset_url | stylesheet_tag }}
+
+{%- if paginate.parts.size > 0 -%}
+  <div class="pagination-wrapper">
+    <nav class="pagination" role="navigation" aria-label="Pagination">
+      <ul class="pagination__list list-unstyled" role="list">
+        
+        {%- if paginate.previous -%}
+          <li>
+            <a href="{{ paginate.previous.url }}" class="pagination__item pagination__item--prev" aria-label="Previous page">
+              <span class="icon-wrap">{% render 'icon-arrow-left' %}</span>
+              PREV
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- for part in paginate.parts -%}
+          <li>
+            {%- if part.is_link -%}
+              <a href="{{ part.url }}" class="pagination__item" aria-label="Go to page {{ part.title }}">{{ part.title }}</a>
+            {%- else -%}
+              {%- if part.title == paginate.current_page -%}
+                <span class="pagination__item pagination__item--current" aria-current="page">{{ part.title }}</span>
+              {%- else -%}
+                <span class="pagination__item">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+
+        {%- if paginate.next -%}
+          <li>
+            <a href="{{ paginate.next.url }}" class="pagination__item pagination__item--next" aria-label="Next page">
+              NEXT
+              <span class="icon-wrap">{% render 'icon-arrow-right' %}</span>
+            </a>
+          </li>
+        {%- endif -%}
+
+      </ul>
+    </nav>
+  </div>
+{%- endif -%}

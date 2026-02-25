@@ -1,0 +1,28 @@
+shopify auth login
+shopify theme pull --store synergify-2.myshopify.com 
+
+
+shopify theme dev --store synergify-2.myshopify.com
+
+
+shopify theme push --store synergify-2.myshopify.com
+
+
+
+
+shopify theme pull --store synergify-2.myshopify.com 
+
+
+shopify theme dev --store synergify-2.myshopify.com
+
+
+shopify theme push --store synergify-2.myshopify.com
+
+
+git config --global http.proxy socks5h://127.0.0.1:16666
+git config --global https.proxy socks5h://127.0.0.1:16666
+
+git push --set-upstream origin main
+
+
+

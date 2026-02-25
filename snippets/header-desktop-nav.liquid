@@ -1,0 +1,62 @@
+<nav class="header-nav-desktop">
+  <ul class="main-menu-list">
+    {%- for link in menu.links -%}
+      {%- liquid
+        assign has_mega = false
+        assign mega_block = nil
+        assign link_title_downcase = link.title | downcase
+        
+        for block in blocks
+          assign trigger_downcase = block.settings.trigger_link | downcase
+          if block.type == 'mega_menu' and trigger_downcase == link_title_downcase
+            assign has_mega = true
+            assign mega_block = block
+            break
+          endif
+        endfor
+      -%}
+
+      <li class="nav-item {% if has_mega %}has-mega{% endif %}">
+        <a href="{{ link.url }}" class="nav-link">{{ link.title | upcase }}</a>
+        
+        {%- if has_mega -%}
+          {%- comment -%} 超级菜单渲染 {%- endcomment -%}
+          <div class="mega-menu-wrapper">
+            <div class="mega-container">
+              <div class="mega-links-area">
+                {%- for childlink in link.links -%}
+                  <div class="mega-col">
+                    <span class="mega-title">{{ childlink.title }}</span>
+                    <ul class="mega-list">
+                      {%- for grandchildlink in childlink.links -%}
+                        <li><a href="{{ grandchildlink.url }}">{{ grandchildlink.title }}</a></li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if mega_block.settings.promo_image != blank or mega_block.settings.promo_product != blank -%}
+                <div class="mega-promo-area" style="width: 300px; border-left: 1px solid #eee; padding-left: 40px;">
+                   {%- if mega_block.settings.promo_image != blank -%}
+                     <a href="{{ mega_block.settings.promo_url }}" style="text-decoration:none;">
+                       <img src="{{ mega_block.settings.promo_image | image_url: width: 300 }}" style="width:100%; border-radius:8px;">
+                       <p style="font-weight:800; color:#000; margin-top:10px;">{{ mega_block.settings.promo_heading }}</p>
+                     </a>
+                   {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- elsif link.links != blank -%}
+          {%- comment -%} 标准二级下拉菜单渲染 {%- endcomment -%}
+          <ul class="standard-dropdown">
+            {%- for childlink in link.links -%}
+              <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>

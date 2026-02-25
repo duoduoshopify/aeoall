@@ -1,0 +1,41 @@
+.price {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    letter-spacing: 0.05rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .price--sold-out .price__regular,
+  .price--sold-out .price__sale {
+    opacity: 0.6;
+  }
+  
+  .price--on-sale .price__regular {
+    display: none;
+  }
+  
+  .price__sale {
+    display: none;
+    flex-direction: row;
+    gap: 0.8rem;
+  }
+  
+  .price--on-sale .price__sale {
+    display: flex;
+  }
+  
+  .price-item--sale {
+    color: rgb(var(--color-foreground));
+    font-weight: bold;
+  }
+  
+  .price-item--regular {
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  
+  .price__sale .price-item--regular {
+    text-decoration: line-through;
+    font-size: 1.2rem;
+    opacity: 0.7;
+  }

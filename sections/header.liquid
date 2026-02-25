@@ -1,0 +1,98 @@
+{{ 'header-desktop.css' | asset_url | stylesheet_tag }}
+{{ 'header-mobile.css' | asset_url | stylesheet_tag }}
+
+<div class="announcement-bar" style="background:#000; color:#fff; text-align:center; padding:10px 0; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px;">
+  {{ section.settings.announcement_text }}
+</div>
+
+<header class="header-main">
+  <div class="page-width header-wrap">
+    
+    <!-- 1. 移动端触发器 -->
+    {% render 'header-mobile-trigger' %}
+
+    <!-- 2. Logo -->
+    <div class="header-logo">
+      <a href="{{ routes.root_url }}" class="logo" style="text-decoration:none; font-size:2.4rem; font-weight:800; color:#000;">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 200 | image_tag: loading: 'eager' }}
+        {%- else -%}
+          {{ shop.name | upcase }}.
+        {%- endif -%}
+      </a>
+    </div>
+
+    <!-- 3. PC端导航 -->
+    <div class="desktop-nav-container">
+      {% render 'header-desktop-nav', menu: section.settings.menu, blocks: section.blocks %}
+    </div>
+
+    <!-- 4. 工具栏 -->
+    <!-- 4. 工具栏 (工具栏升级：集成预测性搜索) -->
+    <div class="header-tools">
+      <!-- 搜索组件 -->
+      <predictive-search class="header-search-container">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+          <div class="search-input-group">
+            <input
+              id="Search-Header"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="Search products..."
+              role="combobox"
+              aria-expanded="false"
+              aria-owns="predictive-search-results"
+              aria-controls="predictive-search-results"
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            >
+            <input name="options[prefix]" type="hidden" value="last">
+            
+            <button class="search-icon-btn" aria-label="Search">
+              {% render 'icon-search' %}
+            </button>
+          </div>
+
+          <!-- 关键：结果容器必须在这里，相对于 search-container 定位 -->
+          <div id="predictive-search" tabindex="-1" class="predictive-search-dropdown"></div>
+        </form>
+      </predictive-search>
+
+      <!-- 购物车 -->
+      <a href="{{ routes.cart_url }}" class="tool-icon-link" id="cart-icon-bubble">
+        {% render 'icon-cart' %}
+        <span class="cart-count-badge">{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+{% render 'header-mobile-drawer', menu: section.settings.menu %}
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "link_list", "id": "menu", "label": "Main Menu", "default": "main-menu" },
+    { "type": "text", "id": "announcement_text", "label": "Announcement", "default": "Free Worldwide Shipping Today" }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu",
+      "settings": [
+        { "type": "text", "id": "trigger_link", "label": "Menu Item Title" },
+        { "type": "image_picker", "id": "promo_image", "label": "Promo Image" },
+        { "type": "text", "id": "promo_heading", "label": "Promo Title", "default": "New Arrivals" },
+        { "type": "url", "id": "promo_url", "label": "Promo Link" }
+      ]
+    }
+  ]
+}
+{% endschema %}

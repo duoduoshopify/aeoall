@@ -1,0 +1,16 @@
+<div class="button-block" {{ block.shopify_attributes }}>
+  <a href="{{ block.settings.link }}" class="custom-btn {% if block.settings.outline %}custom-btn--outline{% endif %}">
+    {{ block.settings.label }}
+  </a>
+</div>
+
+{% schema %}
+{
+  "name": "Button",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label", "default": "Learn More" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "checkbox", "id": "outline", "label": "Outline Style", "default": false }
+  ]
+}
+{% endschema %}

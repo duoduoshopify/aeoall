@@ -1,0 +1,32 @@
+{% comment %}
+  AEOall Pro - Product Description Block
+  Located in: /blocks/product-description.liquid
+  Renders the main product description as a modular block.
+{% endcomment %}
+
+<div class="product__description-block {{ block.settings.text_alignment }}" {{ block.shopify_attributes }}>
+  {%- if product.description != blank -%}
+    <div class="product__description rte">
+      {{ product.description }}
+    </div>
+  {%- endif -%}
+</div>
+
+
+{% schema %}
+{
+  "name": "Description",
+  "settings": [
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" }
+      ],
+      "default": "text-left"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,114 @@
+{{ 'component-grid.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .template-search__header {
+    margin-bottom: 5rem;
+  }
+
+  .template-search__title {
+    margin: 0 0 1.5rem;
+    font-size: calc(var(--font-heading-scale) * 3.2rem);
+  }
+
+  .template-search__status {
+    font-size: 1.4rem;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+  }
+{%- endstyle -%}
+
+<div class="template-search page-width section-{{ section.id }}-padding" style="padding-top: 60px; padding-bottom: 80px;">
+  
+  {%- comment -%} 1. 搜索头部状态区 {%- endcomment -%}
+  <div class="template-search__header text-center">
+    {%- if search.performed -%}
+      <h1 class="template-search__title">
+        {%- if search.results_count == 0 -%}
+          No results found
+        {%- else -%}
+          Search Results
+        {%- endif -%}
+      </h1>
+      <p class="template-search__status">
+        {{ search.results_count }} results found for "<strong>{{ search.terms }}</strong>"
+      </p>
+    {%- else -%}
+      <h1 class="template-search__title">Search our store</h1>
+    {%- endif -%}
+  </div>
+
+  {%- if search.performed -%}
+    {%- paginate search.results by section.settings.products_per_page -%}
+      <div id="ProductGridContainer">
+        
+        {%- if search.results_count == 0 -%}
+          {%- comment -%} 搜索无结果时的空状态 {%- endcomment -%}
+          <div class="text-center" style="padding: 6rem 0;">
+            <p style="font-size: 1.6rem; margin-bottom: 3rem;">Try checking your spelling or use more general terms.</p>
+            <a href="{{ routes.all_products_collection_url }}" class="atc-btn" style="width: auto; padding: 1.5rem 5rem;">
+              CONTINUE SHOPPING
+            </a>
+          </div>
+        {%- else -%}
+          
+          {%- comment -%} 2. 紧凑型产品网格 (4列) {%- endcomment -%}
+          <ul class="grid grid--2-col grid--3-col-tablet grid--4-col-desktop" role="list" style="list-style: none; padding: 0;">
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                <li class="grid__item">
+                  {% render 'card-product', 
+                    card_product: item, 
+                    show_vendor: section.settings.show_vendor,
+                    media_aspect_ratio: section.settings.image_ratio 
+                  %}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+
+          {%- comment -%} 3. 调用美化后的分页组件 {%- endcomment -%}
+          {%- if paginate.pages > 1 -%}
+            {% render 'pagination', paginate: paginate %}
+          {%- endif -%}
+          
+        {%- endif -%}
+      </div>
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Search Results",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "square",
+      "label": "Image ratio"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show Vendor"
+    }
+  ]
+}
+{% endschema %}

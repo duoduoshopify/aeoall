@@ -1,0 +1,68 @@
+{% comment %}
+  AEOall Pro - Fixed Product Card
+  解决了链接无法点击和全卡片覆盖的问题
+{% endcomment %}
+
+<div class="card-wrapper">
+  <div class="card card--product">
+    
+    {%- comment -%} 1. 媒体区域 (内部不再放 a 标签，防止嵌套冲突) {%- endcomment -%}
+    <div class="card__inner">
+      {%- if card_product.featured_media -%}
+        <div class="media media--hover-effect" style="padding-bottom: 100%;">
+          <img srcset="{{ card_product.featured_media | image_url: width: 360 }} 360w, 
+                       {{ card_product.featured_media | image_url: width: 533 }} 533w,
+                       {{ card_product.featured_media | image_url: width: 720 }} 720w"
+            src="{{ card_product.featured_media | image_url: width: 533 }}"
+            sizes="(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw"
+            alt="{{ card_product.featured_media.alt | escape }}"
+            loading="lazy" class="motion-reduce" 
+            width="{{ card_product.featured_media.width }}" 
+            height="{{ card_product.featured_media.height }}">
+
+          {%- if card_product.media[1] != nil -%}
+            <img src="{{ card_product.media[1] | image_url: width: 533 }}" 
+                 alt="{{ card_product.media[1].alt | escape }}" 
+                 loading="lazy" class="motion-reduce card__media-hover"
+                 width="{{ card_product.media[1].width }}"
+                 height="{{ card_product.media[1].height }}">
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        <div class="media" style="padding-bottom: 100%;">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} 状态标签 {%- endcomment -%}
+      <div class="card__badge">
+        {%- if card_product.available == false -%}
+          <span class="badge badge--sold-out">{{ 'products.product.sold_out' | t }}</span>
+        {%- elsif card_product.compare_at_price > card_product.price -%}
+          <span class="badge badge--on-sale">{{ 'products.product.on_sale' | t }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} 2. 内容区域 {%- endcomment -%}
+    <div class="card__content">
+      <div class="card__information">
+        <h3 class="card__heading">
+          {%- comment -%} 
+            这是全站唯一的跳转链接，通过 base.css 中的 ::after 撑满全图
+          {%- endcomment -%}
+          {%- if card_product.url != blank -%}
+            <a href="{{ card_product.url }}" class="full-unstyled-link">
+              {{ card_product.title | escape }}
+            </a>
+          {%- else -%}
+            <span class="full-unstyled-link">Example Product Title</span>
+          {%- endif -%}
+        </h3>
+        
+        {%- comment -%} 价格展示 {%- endcomment -%}
+        {% render 'price', product: card_product, use_variant: false %}
+      </div>
+    </div>
+  </div>
+</div>

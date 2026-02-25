@@ -1,0 +1,23 @@
+{% layout none %}
+{%- if predictive_search.performed -%}
+  <div id="predictive-search-results">
+    <div class="results-pane" style="padding: 2rem;">
+      <ul role="listbox" style="list-style: none; padding: 0; margin: 0;">
+        {%- for product in predictive_search.resources.products -%}
+          <li role="option" style="margin-bottom: 1.5rem; position: relative;">
+            <a href="{{ product.url }}" class="full-unstyled-link" style="display: flex; gap: 1.5rem; align-items: center;">
+              <img src="{{ product.featured_media | image_url: width: 100 }}" width="50" height="50" style="border-radius: 8px;">
+              <div>
+                <span style="display: block; font-size: 1.4rem; font-weight: 600;">{{ product.title }}</span>
+                <span style="font-size: 1.2rem; color: var(--color-accent);">{{ product.price | money }}</span>
+              </div>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <button class="atc-btn" style="width: 100%;" onclick="this.closest('form').submit();">
+        VIEW ALL
+      </button>
+    </div>
+  </div>
+{%- endif -%}

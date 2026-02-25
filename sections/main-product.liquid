@@ -1,0 +1,49 @@
+{{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+
+<section class="page-width section-{{ section.id }}-padding">
+  <div class="product-grid-layout">
+    
+    <!-- 左侧：媒体展示 -->
+    <div class="product__media-wrapper">
+      <div class="pdp-gallery">
+        {%- for media in product.media -%}
+          <div class="gallery-item" id="{{ section.id }}-{{ media.id }}">
+            {{ media.preview_image | image_url: width: 1200 | image_tag: loading: 'eager', class: 'responsive-img' }}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <!-- 右侧：Theme Blocks 渲染槽位 -->
+    <div class="product__info-wrapper">
+      <div class="product__info-container">
+        {%- comment -%} 
+          这是 2024 架构的核心：它会自动渲染 templates/product.json 中 
+          main 节点下定义的所有 @theme 类型的 blocks
+        {%- endcomment -%}
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Main",
+  "tag": "section",
+  "class": "section",
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable Sticky Info",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

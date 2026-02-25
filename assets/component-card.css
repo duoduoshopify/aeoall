@@ -1,0 +1,88 @@
+.card-wrapper {
+    position: relative;
+    height: 100%;
+  }
+  
+  .card--product {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* --- 图片容器：关键修复 --- */
+  .card__inner {
+    position: relative;
+    width: 100%;
+    background: #f5f5f7; /* 高级浅灰底 */
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* 强制图片保持 1:1 或 4:3 比例，防止巨型图 */
+  .media {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* 1:1 正方形 */
+    overflow: hidden;
+  }
+  
+  .media img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 关键：确保自行车完整显示，不被裁剪 */
+    padding: 2rem; /* 给自行车一点呼吸空间 */
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  
+  .card-wrapper:hover .media img {
+    transform: scale(1.08);
+  }
+  
+  /* --- 内容美化 --- */
+  .card__heading {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 0.8rem;
+  }
+  
+  .card__heading a {
+    color: #1d1d1f;
+    text-decoration: none !important;
+  }
+  
+  .price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* --- 销售标签 --- */
+  .badge--on-sale {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #000;
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 4px;
+    z-index: 2;
+  }
+  
+  .badge-save {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }

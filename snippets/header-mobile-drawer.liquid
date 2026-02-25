@@ -1,0 +1,43 @@
+<div class="mobile-nav-drawer" id="MobileNavDrawer">
+  <div class="mobile-nav-inner">
+    <ul class="mobile-menu-list">
+      {%- for link in menu.links -%}
+        <li class="mobile-item">
+          <div class="mobile-link-row">
+            <a href="{{ link.url }}" class="mobile-main-link">{{ link.title | upcase }}</a>
+            {%- if link.links != blank -%}
+              <button class="mobile-toggle" aria-label="Expand Submenu" aria-expanded="false">
+                {% render 'icon-caret' %}
+              </button>
+            {%- endif -%}
+          </div>
+          
+          {%- if link.links != blank -%}
+            <ul class="mobile-submenu">
+              {%- for childlink in link.links -%}
+                <li class="submenu-item">
+                  <a href="{{ childlink.url }}" class="submenu-link">{{ childlink.title }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="mobile-nav-footer">
+      <div class="footer-links">
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="mobile-footer-link">My Account</a>
+        {%- endif -%}
+        <a href="{{ routes.search_url }}" class="mobile-footer-link">Search</a>
+      </div>
+      <div class="mobile-socials">
+        {% render 'social-icons' %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 移动端抽屉遮罩 -->
+<div class="mobile-drawer-overlay" id="MobileDrawerOverlay"></div>

@@ -1,0 +1,59 @@
+/* assets/component-base.css */
+
+/* 标题组件 */
+.heading-element {
+    margin: 0;
+    line-height: 1.2;
+    color: rgb(var(--color-foreground));
+    word-break: break-word;
+  }
+  
+  .heading-size-h1 { font-size: calc(var(--font-heading-scale) * 4rem); }
+  .heading-size-h2 { font-size: calc(var(--font-heading-scale) * 3rem); }
+  .heading-size-h3 { font-size: calc(var(--font-heading-scale) * 2.4rem); }
+  .heading-size-h4 { font-size: calc(var(--font-heading-scale) * 1.8rem); }
+  
+  /* 文本组件 */
+  .text-element {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  .text-element strong { color: rgb(var(--color-foreground)); }
+  .text-style-subtitle { text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.2rem; opacity: 0.8; }
+  
+  /* 按钮组件 */
+  .button-element {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: var(--buttons-border-width) solid transparent;
+    border-radius: var(--buttons-radius);
+    padding: 1rem 3rem;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: box-shadow var(--duration-default) ease;
+    margin-top: 1.5rem;
+    min-height: 4.4rem; /* 移动端触摸优化 */
+  }
+  
+  /* 主要按钮 */
+  .button-primary {
+    background-color: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+  .button-primary:hover {
+    box-shadow: 0 0 0 0.2rem rgb(var(--color-background)), 0 0 0 0.4rem rgba(var(--color-button), 0.7);
+  }
+  
+  /* 次要/轮廓按钮 */
+  .button-secondary {
+    background-color: transparent;
+    border-color: rgb(var(--color-button));
+    color: rgb(var(--color-button));
+  }
+  .button-secondary:hover {
+    box-shadow: 0 0 0 0.1rem rgb(var(--color-button));
+  }

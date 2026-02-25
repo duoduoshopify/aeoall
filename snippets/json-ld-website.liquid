@@ -1,0 +1,17 @@
+{%- comment -%} 隔离大括号变量防止 Liquid 报错 {%- endcomment -%}
+{%- capture search_query_placeholder -%}?q={search_term_string}{%- endcapture -%}
+{%- capture full_search_url -%}{{ request.origin }}{{ routes.search_url }}{{ search_query_placeholder }}{%- endcapture -%}
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  "name": {{ shop.name | json }},
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {{ full_search_url | json }},
+    "query-input": "required name=search_term_string"
+  },
+  "url": {{ request.origin | append: page.url | json }}
+}
+</script>

@@ -1,0 +1,100 @@
+/* --- 基础重置 --- */
+*, *::before, *::after { box-sizing: inherit; }
+html { box-sizing: border-box; font-size: 62.5%; height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 1.6rem;
+  line-height: 1.5;
+  color: rgb(var(--color-text));
+  background-color: rgb(var(--color-background));
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* --- 标题系统 --- */
+h1, h2, h3, .h1, .h2 {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5rem;
+  line-height: 1.1;
+}
+.h1 { font-size: calc(var(--font-heading-scale) * 4.4rem); }
+.h2 { font-size: calc(var(--font-heading-scale) * 3.2rem); }
+
+/* --- 通用容器 --- */
+.page-width { max-width: var(--page-width); margin: 0 auto; padding: 0 2rem; }
+@media screen and (min-width: 750px) { .page-width { padding: 0 5rem; } }
+
+/* --- 高转化加购按钮 --- */
+.atc-btn {
+    height: 60px;
+    border-radius: 30px;
+    font-weight: 800;
+    border: none;
+    background: #000;
+    color: #fff;
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+.atc-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.atc-btn:active { transform: translateY(0); }
+
+/* 加载动画样式 */
+.atc-btn.loading { color: transparent !important; position: relative; pointer-events: none; }
+.atc-btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 辅助类 */
+.visually-hidden { position: absolute !important; overflow: hidden; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; clip: rect(0 0 0 0); }
+/* --- 链接正常化 --- */
+.full-unstyled-link {
+    text-decoration: none;
+    color: currentColor;
+    display: block;
+  }
+  
+  /* 关键：让链接的伪元素撑满整个具有 position: relative 的父容器 */
+  .full-unstyled-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10; /* 确保在图片和文字之上 */
+    cursor: pointer;
+  }
+  
+  /* 确保父容器是定位基准 */
+  .card-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* 即使全卡片可点，也要给标题一个悬停反馈 */
+  .card-wrapper:hover .card__heading {
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+  }
+
+  /* 这个伪元素会让点击范围扩大到整个 card-wrapper */
+.full-unstyled-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+  }

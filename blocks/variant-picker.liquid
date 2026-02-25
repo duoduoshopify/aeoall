@@ -1,0 +1,29 @@
+{%- unless product.has_only_default_variant -%}
+  <div class="variant-picker-block" {{ block.shopify_attributes }}>
+    <variant-selects data-section="{{ section.id }}" data-url="{{ product.url }}">
+      {%- for option in product.options_with_values -%}
+        <fieldset class="variant-picker__fieldset">
+          <legend class="variant-picker__label">
+            {{ option.name }}: <span class="variant-picker__selected-value">{{ option.selected_value }}</span>
+          </legend>
+          <div class="variant-picker__options">
+            {%- for value in option.values -%}
+              <input type="radio" id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                    name="{{ option.name }}" value="{{ value | escape }}"
+                    form="product-form-main" {% if option.selected_value == value %}checked{% endif %}
+                    class="variant-picker__input">
+              <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" 
+                      class="variant-picker__option-button">
+                {{ value }}
+              </label>
+            {%- endfor -%}
+          </div>
+        </fieldset>
+      {%- endfor -%}
+    </variant-selects>
+  </div>
+{%- endunless -%}
+    
+    {% schema %}
+    { "name": "Variant Picker" }
+    {% endschema %}

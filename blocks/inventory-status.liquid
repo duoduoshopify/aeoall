@@ -1,0 +1,34 @@
+<div class="inventory-status" id="inventory-{{ section.id }}" {{ block.shopify_attributes }}>
+  {%- assign variant = product.selected_or_first_available_variant -%}
+  {%- if variant.inventory_management == 'shopify' -%}
+    {%- if variant.inventory_quantity > 0 -%}
+      {%- if variant.inventory_quantity <= block.settings.low_threshold -%}
+        <div class="inventory--low">
+          <span class="pulse-dot"></span>
+          Only {{ variant.inventory_quantity }} left in stock!
+        </div>
+      {%- else -%}
+        <div class="inventory--in-stock">Ready to Ship</div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="inventory--out">Out of Stock</div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+<style>
+  .inventory-status { font-size: 1.3rem; font-weight: 700; margin: 1.5rem 0; }
+  .inventory--low { color: var(--color-urgency); display: flex; align-items: center; gap: 0.8rem; }
+  .inventory--in-stock { color: var(--color-success); }
+  .pulse-dot { width: 8px; height: 8px; background: var(--color-urgency); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(var(--color-urgency), 0.4); } 100% { box-shadow: 0 0 0 10px rgba(var(--color-urgency), 0); } }
+</style>
+
+{% schema %}
+{
+  "name": "Inventory Status",
+  "settings": [
+    { "type": "range", "id": "low_threshold", "label": "Low Stock Threshold", "min": 1, "max": 20, "default": 5 }
+  ]
+}
+{% endschema %}

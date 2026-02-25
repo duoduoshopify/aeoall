@@ -1,0 +1,71 @@
+<footer class="footer" style="background:#000; color:#fff; padding:80px 0 40px;">
+  <div class="page-width">
+    <div class="footer-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
+      <!-- A. 品牌信息 -->
+      <div class="footer-col-info">
+        <div class="footer-logo" style="font-size:2.4rem; font-weight:800; margin-bottom:20px;">{{ shop.name | upcase }}.</div>
+        <p style="opacity:0.6; font-size:1.4rem; line-height:1.6; max-width:300px;">{{ section.settings.bio }}</p>
+        <div class="footer-socials" style="margin-top:25px;">{% render 'social-icons' %}</div>
+      </div>
+
+      <!-- B. 动态菜单列 -->
+      {%- for block in section.blocks -%}
+        <div class="footer-col-menu" {{ block.shopify_attributes }}>
+          <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">{{ block.settings.heading }}</h4>
+          <ul style="list-style:none; padding:0; margin:0;">
+            {%- for link in block.settings.menu.links -%}
+              <li style="margin-bottom:12px;">
+                <a href="{{ link.url }}" style="color:#a1a1a6; text-decoration:none; font-size:1.4rem; transition:0.3s;">{{ link.title }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endfor -%}
+
+      <!-- C. 订阅区域 -->
+      <div class="footer-col-newsletter">
+        <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">Insider Access</h4>
+        <p style="color:#a1a1a6; font-size:1.3rem; margin-bottom:20px;">Get exclusive offers and health tips.</p>
+        {%- form 'customer' -%}
+          <div style="position:relative;">
+            <input type="email" name="contact[email]" placeholder="Email address" required style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:15px; border-radius:8px;">
+            <button type="submit" style="position:absolute; right:5px; top:5px; background:#fff; border:none; padding:10px 20px; border-radius:6px; font-weight:700; cursor:pointer;">JOIN</button>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+
+    <!-- D. 底部版权与支付图标 -->
+    <div class="footer-bottom" style="margin-top:80px; padding-top:40px; border-top:1px solid #1a1a1a; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px;">
+      <div style="font-size:1.2rem; color:#666;">
+        &copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. All Rights Reserved.
+      </div>
+      <div class="payment-icons" style="display:flex; gap:15px; filter:grayscale(1) invert(1); opacity:0.5;">
+        {%- comment -%} 自动渲染已启用的支付图标 {%- endcomment -%}
+        {%- for type in shop.enabled_payment_types -%}
+          {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "textarea", "id": "bio", "label": "Brand Bio", "default": "Revolutionizing ergonomic science." }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Footer Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Quick Links" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    }
+  ]
+}
+{% endschema %}

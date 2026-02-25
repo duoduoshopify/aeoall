@@ -1,0 +1,45 @@
+[
+    {
+      "name": "theme_info",
+      "theme_name": "AEOall Pro",
+      "theme_author": "Expert Developer",
+      "theme_version": "1.2.0",
+      "theme_documentation_url": "https://synergify.myshopify.com/docs",
+      "theme_support_url": "https://synergify.myshopify.com/support"
+    },
+    {
+      "name": "色彩系统 (Colors)",
+      "settings": [
+        { "type": "header", "content": "基础色调" },
+        { "type": "color", "id": "colors_text", "label": "正文文本", "default": "#1d1d1f" },
+        { "type": "color", "id": "colors_background", "label": "页面背景", "default": "#ffffff" },
+        { "type": "color", "id": "colors_border", "label": "线条边框", "default": "#e5e7eb" },
+        { "type": "header", "content": "主按钮 (CTA)" },
+        { "type": "color", "id": "colors_button", "label": "按钮背景", "default": "#000000" },
+        { "type": "color", "id": "colors_button_text", "label": "按钮文本", "default": "#ffffff" },
+        { "type": "header", "content": "高转化强调感" },
+        { "type": "color", "id": "colors_accent", "label": "强调色 (蓝色/选中态)", "default": "#2563eb" },
+        { "type": "color", "id": "colors_accent_soft", "label": "强调色浅背景", "default": "#eff6ff" },
+        { "type": "color", "id": "colors_urgency", "label": "紧迫感颜色 (库存/粉色)", "default": "#db2777" },
+        { "type": "color", "id": "colors_success", "label": "成功颜色 (省钱/绿色)", "default": "#059669" }
+      ]
+    },
+    {
+      "name": "排版系统 (Typography)",
+      "settings": [
+        { "type": "font_picker", "id": "type_header_font", "label": "标题字体", "default": "assistant_n7" },
+        { "type": "range", "id": "type_header_scale", "min": 80, "max": 150, "step": 5, "unit": "%", "label": "标题缩放比例", "default": 100 },
+        { "type": "font_picker", "id": "type_body_font", "label": "正文字体", "default": "assistant_n4" }
+      ]
+    },
+    {
+      "name": "营销设置 (Marketing)",
+      "settings": [
+        { "type": "checkbox", "id": "show_exit_intent", "label": "启用退出意图弹窗", "default": true },
+        { "type": "text", "id": "exit_intent_discount", "label": "弹窗折扣码", "default": "SAVE50" },
+        { "type": "header", "content": "社交媒体链接" },
+        { "type": "text", "id": "social_facebook_link", "label": "Facebook Link" },
+        { "type": "text", "id": "social_instagram_link", "label": "Instagram Link" }
+      ]
+    }
+  ]

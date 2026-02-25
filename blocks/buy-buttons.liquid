@@ -1,0 +1,48 @@
+<div class="product-form__buttons" {{ block.shopify_attributes }}>
+  {%- style -%}
+    /* 允许通过后台覆盖默认颜色 */
+    .btn-atc-custom {
+      --atc-bg: {{ block.settings.atc_bg_color }};
+      --atc-text: {{ block.settings.atc_text_color }};
+    }
+    .btn-buy-now-custom .shopify-payment-button__button--unbranded {
+      /* 这里可以通过 Liquid 动态控制初始颜色 */
+    }
+  {%- endstyle -%}
+
+  {%- form 'product', product, id: 'product-form-main', class: 'form', novalidate: 'novalidate' -%}
+    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+    
+    <div class="buy-buttons-group">
+      {%- comment -%} 1. Add to Cart (白底 + 黑色滑块) {%- endcomment -%}
+      <button
+        type="submit"
+        name="add"
+        class="atc-btn atc-slider-effect"
+        {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
+      >
+        <span class="atc-text">{{ 'products.product.add_to_cart' | t }}</span>
+        <div class="atc-slider"></div>
+      </button>
+
+      {%- comment -%} 2. Buy it Now (黑色 + 悬停紫) {%- endcomment -%}
+      {%- if block.settings.show_dynamic_checkout -%}
+        <div class="dynamic-checkout-wrapper btn-buy-now-custom">
+          {{ form | payment_button }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "Buy Buttons",
+  "settings": [
+    { "type": "checkbox", "id": "show_dynamic_checkout", "default": true, "label": "Show Buy it Now" },
+    { "type": "header", "content": "Customization (Optional)" },
+    { "type": "color", "id": "atc_bg_color", "label": "ATC Default Background", "default": "#ffffff" },
+    { "type": "color", "id": "atc_text_color", "label": "ATC Default Text", "default": "#000000" }
+  ]
+}
+{% endschema %}

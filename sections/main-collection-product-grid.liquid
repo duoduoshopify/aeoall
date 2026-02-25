@@ -1,0 +1,122 @@
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-grid.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .collection-header {
+    margin-bottom: 5rem;
+  }
+
+  .collection-hero__title {
+    margin: 0 0 1.5rem;
+    font-size: calc(var(--font-heading-scale) * 4rem);
+  }
+
+  .collection-description {
+    max-width: 70rem;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: rgba(var(--color-text), 0.7);
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding page-width">
+  {%- comment -%} 1. 分类头部排版优化 {%- endcomment -%}
+  <div class="collection-header text-center">
+    <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
+    {%- if collection.description != blank -%}
+      <div class="collection-description rte">
+        {{ collection.description }}
+      </div>
+    {%- endif -%}
+    
+    {%- comment -%} 统计信息提示 {%- endcomment -%}
+    <p style="font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 2rem; opacity: 0.5;">
+      {{ collection.products_count }} Products
+    </p>
+  </div>
+
+  {%- comment -%} 2. 产品网格区域 {%- endcomment -%}
+  <div id="ProductGridContainer">
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      {%- if collection.products.size == 0 -%}
+        <div class="text-center" style="padding: 10rem 0;">
+          <p>No products found in this collection.</p>
+        </div>
+      {%- else -%}
+        <ul id="product-grid" class="grid grid--2-col grid--3-col-tablet grid--4-col-desktop">
+          {%- for product in collection.products -%}
+            <li class="grid__item">
+              {% render 'card-product',
+                card_product: product,
+                show_vendor: section.settings.show_vendor
+              %}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- comment -%} 3. 调用美化后的分页组件 {%- endcomment -%}
+        {%- if paginate.pages > 1 -%}
+          {% render 'pagination', paginate: paginate %}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show Vendor"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "label": "Top Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "label": "Bottom Padding"
+    }
+  ]
+}
+{% endschema %}

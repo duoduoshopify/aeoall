@@ -1,0 +1,47 @@
+{
+    "general": {
+      "share": {
+        "success_message": "Link copied to clipboard",
+        "share_on": "Share"
+      }
+    },
+    "sections": {
+      "cart": {
+        "title": "Your Cart",
+        "checkout": "Check Out",
+        "cart_error": "Error updating cart.",
+        "cart_quantity_error_html": "Only [quantity] left in stock."
+      }
+    },
+    "products": {
+      "product": {
+        "add_to_cart": "Add to Cart",
+        "sold_out": "Sold Out",
+        "unavailable": "Unavailable",
+        "on_sale": "Sale",
+        "sku": "SKU",
+        "inventory_low_stock_html": "Only {{ count }} left in stock",
+        "inventory_in_stock": "In stock",
+        "price": {
+          "regular_price": "Regular price",
+          "sale_price": "Sale price"
+        }
+      }
+    },
+    "accessibility": {
+      "skip_to_text": "Skip to content",
+      "close": "Close",
+      "refresh_page": "Refresh page",
+      "star_reviews_info": "{{ rating_value }} out of {{ rating_max }} stars",
+      "total_reviews": "total reviews",
+      "link_messages": { "new_window": "Opens in a new window" }
+    },
+    "templates": {
+        "search": {
+        "results_with_count": {
+            "one": "{{ count }} result found for \"{{ terms }}\"",
+            "other": "{{ count }} results found for \"{{ terms }}\""
+        }
+        }
+    }
+  }

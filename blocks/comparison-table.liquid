@@ -1,0 +1,31 @@
+<div class="comparison-section" {{ block.shopify_attributes }}>
+  <h3 class="comp-title">{{ block.settings.title }}</h3>
+  <div class="table-scroll">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>SPEC</th>
+          <th class="highlight">{{ product.title }}</th>
+          <th>OTHERS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Material</td><td class="highlight">Aerospace Carbon</td><td>Hardened Plastic</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Comparison Table",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Designed for Performance"
+    }
+  ]
+}
+{% endschema %}

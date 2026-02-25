@@ -1,0 +1,36 @@
+{%- style -%}
+    /* 字体资源加载 */
+    {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {{ settings.type_body_font | font_face: font_display: 'swap' }}
+    
+    {%- assign header_font_bold = settings.type_header_font | font_modify: 'weight', 'bold' -%}
+    {%- if header_font_bold -%}{{ header_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+  
+    :root {
+      /* 颜色系统 (RGB格式支持透明度操作) */
+      --color-text: {{ settings.colors_text.red }}, {{ settings.colors_text.green }}, {{ settings.colors_text.blue }};
+      --color-background: {{ settings.colors_background.red }}, {{ settings.colors_background.green }}, {{ settings.colors_background.blue }};
+      --color-border: {{ settings.colors_border }};
+      --color-button: {{ settings.colors_button.red }}, {{ settings.colors_button.green }}, {{ settings.colors_button.blue }};
+      --color-button-text: {{ settings.colors_button_text.red }}, {{ settings.colors_button_text.green }}, {{ settings.colors_button_text.blue }};
+  
+      /* 功能强调色 */
+      --color-accent: {{ settings.colors_accent }};
+      --color-accent-soft: {{ settings.colors_accent_soft }};
+      --color-urgency: {{ settings.colors_urgency }};
+      --color-success: {{ settings.colors_success }};
+      --color-bg-gray: #f5f5f7;
+  
+      /* 字体排版 */
+      --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+      --font-heading-weight: {{ settings.type_header_font.weight }};
+      --font-heading-scale: {{ settings.type_header_scale | divided_by: 100.0 }};
+      --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+  
+      /* UI 基准间距 */
+      --page-width: 1400px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --duration-default: 0.3s;
+    }
+  {%- endstyle -%}

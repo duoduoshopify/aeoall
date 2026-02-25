@@ -1,0 +1,106 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title_node": {
+          "type": "product-title",
+          "settings": {}
+        },
+        "price_node": {
+          "type": "product-price",
+          "settings": {}
+        },
+        "variant_node": {
+          "type": "variant-picker",
+          "settings": {}
+        },
+        "buy_node": {
+          "type": "buy-buttons",
+          "settings": {}
+        },
+        "desc_node": {
+          "type": "product-description",
+          "settings": {}
+        },
+        "comp_node": {
+          "type": "comparison-table",
+          "settings": {}
+        },
+        "button_node": {
+          "type": "button",
+          "settings": {}
+        },
+        "custom_liquid_node": {
+          "type": "custom-liquid",
+          "settings": {}
+        },
+        "heading_node": {
+          "type": "heading",
+          "settings": {}
+        },
+        "inventory_status_node": {
+          "type": "inventory-status",
+          "settings": {}
+        },
+        "product_rating_node": {
+          "type": "product-rating",
+          "settings": {}
+        },
+        "product_share_node": {
+          "type": "product-share",
+          "settings": {}
+        },
+        "product_sku_node": {
+          "type": "product-sku",
+          "settings": {}
+        },
+        "product_vendor_node": {
+          "type": "product-vendor",
+          "settings": {}
+        },
+        "spacer_node": {
+          "type": "spacer",
+          "settings": {}
+        },
+        "text_node": {
+          "type": "text",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "title_node",
+        "product_rating_node",
+        "price_node",
+        "variant_node",
+        "inventory_status_node",
+        "buy_node",
+        "product_share_node",
+        "product_vendor_node",
+        "product_sku_node",
+        "desc_node",
+        "comp_node",
+        "button_node",
+        "custom_liquid_node",
+        "heading_node",
+        "spacer_node",
+        "text_node"
+      ],
+      "settings": {
+        "enable_sticky": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

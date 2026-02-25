@@ -1,0 +1,55 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections": {
+      "main": {
+        "type": "dynamic-group",
+        "blocks": {
+          "heading": {
+            "type": "heading",
+            "settings": {
+              "heading": "404 Page Not Found",
+              "size": "h1",
+              "tag": "h1"
+            }
+          },
+          "text": {
+            "type": "text",
+            "settings": {
+              "text": "<p>The page you were looking for does not exist.</p>",
+              "style": "body"
+            }
+          },
+          "button": {
+            "type": "button",
+            "settings": {
+              "button_label": "Back to Home",
+              "button_link": "",
+              "button_style": "primary"
+            }
+          }
+        },
+        "block_order": [
+          "heading",
+          "text",
+          "button"
+        ],
+        "settings": {
+          "alignment": "center",
+          "content_width": 80,
+          "padding_top": 100,
+          "padding_bottom": 100
+        }
+      }
+    },
+    "order": [
+      "main"
+    ]
+  }

@@ -1,0 +1,16 @@
+<div class="heading-block" {{ block.shopify_attributes }}>
+  <{{ block.settings.tag }} class="h{{ block.settings.size }}">
+    {{ block.settings.text }}
+  </{{ block.settings.tag }}>
+</div>
+
+{% schema %}
+{
+  "name": "Heading",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Text", "default": "Headline Content" },
+    { "type": "select", "id": "tag", "label": "HTML Tag", "options": [{"value":"h1","label":"H1"},{"value":"h2","label":"H2"},{"value":"h3","label":"H3"}], "default": "h2" },
+    { "type": "select", "id": "size", "label": "Visual Size", "options": [{"value":"1","label":"XL"},{"value":"2","label":"L"},{"value":"3","label":"M"}], "default": "2" }
+  ]
+}
+{% endschema %}

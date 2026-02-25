@@ -1,0 +1,16 @@
+<div class="text-block rte" {{ block.shopify_attributes }}>
+  {{ block.settings.content }}
+</div>
+
+<style>
+  .text-block { font-size: 1.6rem; line-height: 1.6; color: rgba(var(--color-text), 0.8); }
+</style>
+
+{% schema %}
+{
+  "name": "Text",
+  "settings": [
+    { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Share details about your product or brand.</p>" }
+  ]
+}
+{% endschema %}

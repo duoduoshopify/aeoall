@@ -1,0 +1,8 @@
+<div class="product-sku" id="sku-{{ section.id }}" {{ block.shopify_attributes }}>
+  <span class="sku-label">SKU:</span>
+  <span class="sku-value">{{ product.selected_or_first_available_variant.sku | default: 'N/A' }}</span>
+</div>
+
+{% schema %}
+{ "name": "SKU" }
+{% endschema %}

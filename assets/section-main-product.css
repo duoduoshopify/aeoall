@@ -1,0 +1,511 @@
+/**
+ * AEOall Pro - Product Page Master Stylesheet
+ * -----------------------------------------------------------------------------
+ * 1. 核心布局 & 粘性逻辑
+ * 2. 媒体库 (Media Gallery)
+ * 3. 价格 & 标签 (Pricing & Badges)
+ * 4. 变体选择器 (Variant Swatches)
+ * 5. 高转化按钮 (ATC & Buy it Now)
+ * 6. 库存紧迫感 & 叙事组件
+ * 7. 描述 & 文本 (Description & Text)
+ * 8. 响应式微调
+ */
+
+/* --- 1. 核心布局 --- */
+.section-product-main {
+  padding-top: 4rem;
+  padding-bottom: 8rem;
+  background-color: #ffffff;
+}
+
+.product-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+
+@media screen and (min-width: 990px) {
+  .product-grid-layout {
+    grid-template-columns: 1.2fr 0.8fr; /* 黄金比例布局 */
+    gap: 8rem;
+    align-items: start;
+  }
+
+  .product__info-wrapper {
+    position: sticky;
+    top: 120px; /* 留出 Header 空间 */
+    height: fit-content;
+    padding-right: 2rem; /* 增加右侧留白 */
+  }
+}
+
+/* --- 2. 媒体库 (Media Gallery) --- */
+.pdp-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.gallery-item {
+  position: relative;
+  background-color: #f9f9fa; /* 更柔和的浅灰 */
+  border-radius: 12px; /* 更圆润的圆角 */
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.responsive-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.gallery-item:hover .responsive-img {
+  transform: scale(1.03);
+}
+
+/* --- 3. 价格 & 标题 --- */
+.product__info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 减小间距 */
+}
+
+.pdp-title {
+  font-size: 3.6rem; /* 调整标题大小，更精致 */
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: rgb(var(--color-text));
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.price-item--sale {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.price-item--regular {
+  font-size: 1.8rem;
+  text-decoration: line-through;
+  color: rgba(var(--color-text), 0.5);
+}
+
+.badge-save {
+  background: #e6f4ea; /* 柔和的绿色背景 */
+  color: #1e7e34;
+  padding: 0.4rem 1.2rem;
+  border-radius: 20px; /* 胶囊状 */
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- 4. 变体选择器 (Variant Picker) --- */
+.variant-picker-block {
+  margin-bottom: 1.5rem;
+}
+
+.variant-picker__fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.variant-picker__fieldset:last-child {
+  margin-bottom: 0;
+}
+
+.variant-picker__label {
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.2rem;
+  display: block;
+  color: rgba(var(--color-text), 0.8);
+}
+
+.variant-picker__selected-value {
+  color: rgb(var(--color-text));
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+.variant-picker__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.variant-picker__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.variant-picker__option-button {
+  padding: 1rem 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 50px; /* 胶囊按钮风格 */
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: 500;
+  background: #fff;
+  transition: all 0.2s ease;
+  color: rgb(var(--color-text));
+  min-width: 60px;
+  text-align: center;
+}
+
+.variant-picker__option-button:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.variant-picker__input:checked + .variant-picker__option-button {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  font-weight: 600;
+}
+
+/* 缺货状态视觉控制 */
+.variant-picker__input:disabled + .variant-picker__option-button,
+.variant-picker__label-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  border-color: #f3f4f6;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+/* --- 5. 核心购买按钮 (Buy Buttons) --- */
+.product-form__buttons {
+  margin-top: 1rem;
+}
+
+.buy-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* A. Add to Cart - 黑色滑块反转动效 */
+.atc-btn.atc-slider-effect {
+  position: relative;
+  height: 56px;
+  background-color: #ffffff; /* 初始白色 */
+  color: #000000;            /* 初始黑字 */
+  border: 1px solid #000000;
+  border-radius: 50px; /* 圆角胶囊 */
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color 0.4s ease;
+  width: 100%;
+}
+
+.atc-btn.atc-slider-effect .atc-text {
+  position: relative;
+  z-index: 3; /* 确保文字在滑块层之上 */
+}
+
+.atc-slider {
+  position: absolute;
+  top: 0;
+  left: -100%; /* 初始位置 */
+  width: 100%;
+  height: 100%;
+  background-color: #000000; /* 黑色滑块 */
+  z-index: 2;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.atc-btn.atc-slider-effect:hover {
+  color: #ffffff; /* 文字在滑块划过时变白 */
+}
+
+.atc-btn.atc-slider-effect:hover .atc-slider {
+  transform: translateX(100%); /* 刷向右侧 */
+}
+
+/* B. Buy it Now - 纯黑转 ShopPay 紫色 */
+.btn-buy-now-custom .shopify-payment-button__button--unbranded {
+  background-color: #000000 !important; /* 初始纯黑 */
+  color: #ffffff !important;
+  border-radius: 50px !important;       /* 圆角胶囊 */
+  height: 56px !important;
+  border: none !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+}
+
+.btn-buy-now-custom .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background-color: #4a4a4a !important; /* 稍微变亮 */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+}
+
+.shopify-payment-button__more-options {
+  display: none !important; /* 隐藏多余支付说明文字 */
+}
+
+/* --- 6. 库存紧迫感区块 (Urgency Block) --- */
+.urgency-block {
+  background: #fff9f0;
+  border: 1px solid #ffeeba;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.urgency-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #856404;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.pulse-icon {
+  width: 8px;
+  height: 8px;
+  background: #ffc107;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  100% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+}
+
+.urgency-bar {
+  height: 6px;
+  background: rgba(255, 193, 7, 0.2);
+  border-radius: 3px;
+  margin: 1.2rem 0 0.5rem 0;
+  overflow: hidden;
+}
+
+.urgency-bar-fill {
+  height: 100%;
+  background: #ffc107;
+  transition: width 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 7. 描述 & 文本 (Description & Text) --- */
+.product__description-block {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.product__description.rte {
+  font-size: 1.6rem;
+  line-height: 1.8;
+  color: rgba(var(--color-text), 0.8);
+}
+
+.product__description.rte p {
+  margin-bottom: 1.5rem;
+}
+
+.product__description.rte ul {
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.product__description.rte h3, 
+.product__description.rte h4 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: rgb(var(--color-text));
+}
+
+/* 文本对齐配置 */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+
+/* --- 8. 对比表 (Comparison Table) --- */
+.comparison-section {
+  margin-top: 6rem;
+  padding-top: 6rem;
+  border-top: 1px solid #f0f0f2;
+}
+
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.4rem;
+}
+
+.comp-table th, .comp-table td {
+  padding: 1.8rem;
+  border-bottom: 1px solid #f5f5f7;
+  text-align: left;
+}
+
+.comp-table .highlight {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+/* --- 9. 附加信息 (Share, Vendor, SKU, Button) --- */
+.product__share {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f2;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.button-block {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.custom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 3rem;
+  background-color: #000;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid #000;
+}
+
+.custom-btn:hover {
+  background-color: #333;
+  border-color: #333;
+  color: #fff;
+}
+
+.custom-btn--outline {
+  background-color: transparent;
+  color: #000;
+}
+
+.custom-btn--outline:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.share-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(var(--color-text), 0.6);
+}
+
+.list-social {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-social__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--color-text), 0.6);
+  transition: color 0.2s ease;
+}
+
+.list-social__link:hover {
+  color: rgb(var(--color-text));
+}
+
+.list-social__link .icon {
+  height: 2rem;
+  width: 2rem;
+  fill: currentColor;
+}
+
+.product-vendor {
+  margin-bottom: 1.5rem;
+}
+
+.product-vendor__link {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(var(--color-text), 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.product-vendor__link:hover {
+  color: rgb(var(--color-text));
+}
+
+.product-sku {
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  color: rgba(var(--color-text), 0.6);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sku-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sku-value {
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+/* --- 10. 响应式微调 --- */
+@media screen and (max-width: 749px) {
+  .section-product-main { padding-top: 2rem; padding-bottom: 4rem; }
+  .pdp-title { font-size: 2.8rem; }
+  .price-item--sale { font-size: 2.4rem; }
+  .buy-buttons-group { gap: 1rem; }
+  .atc-btn, .shopify-payment-button__button--unbranded {
+    height: 50px !important; /* 手机端略微减小高度 */
+  }
+  .product-grid-layout { gap: 3rem; }
+}

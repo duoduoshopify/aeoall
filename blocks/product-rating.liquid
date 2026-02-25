@@ -1,0 +1,22 @@
+<div class="product-rating" {{ block.shopify_attributes }}>
+  {%- if product.metafields.reviews.rating.value != blank -%}
+    <div class="rating-stars" role="img" aria-label="{{ product.metafields.reviews.rating.value }} out of 5 stars">
+      <span class="stars-filled">★★★★★</span>
+      <span class="rating-value">{{ product.metafields.reviews.rating.value | round: 1 }}</span>
+      <span class="rating-count">({{ product.metafields.reviews.rating_count }})</span>
+    </div>
+  {%- else -%}
+    <div class="rating-stars--empty">★★★★★ <span class="rating-count">(0)</span></div>
+  {%- endif -%}
+</div>
+
+<style>
+  .product-rating { display: flex; align-items: center; gap: 1rem; font-size: 2.5rem; color: #ffb800; margin-bottom: 1rem; }
+  .rating-value { color: rgb(var(--color-text)); font-weight: 700; }
+  .rating-count { color: rgba(var(--color-text), 0.4); font-size: 1.2rem; }
+  .rating-stars--empty { color: #e5e7eb; }
+</style>
+
+{% schema %}
+{ "name": "Product Rating" }
+{% endschema %}
