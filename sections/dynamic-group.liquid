@@ -1,3 +1,9 @@
+{% comment %}
+  Lumina Pro - Dynamic Group (Universal Container)
+  Architecture: Theme Blocks 2024 Standard
+  此 Section 是全站最通用的布局容器，支持在后台任意插入原子 Blocks。
+{% endcomment %}
+
 {{ 'component-base.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
@@ -13,46 +19,33 @@
     }
   }
 
-  /* 简单的 Flex 布局 */
-  .dynamic-group-content {
+  .dynamic-group-{{ section.id }} {
     display: flex;
     flex-direction: column;
-    align-items: {{ section.settings.alignment }};
-    text-align: {{ section.settings.alignment }};
-    gap: 1.5rem;
-    max-width: {{ section.settings.content_width }}rem;
+    justify-content: center;
+    align-items: {{ section.settings.content_alignment }};
+    text-align: {{ section.settings.content_alignment }};
+    max-width: {{ section.settings.container_width }}rem;
     margin: 0 auto;
+    gap: {{ section.settings.block_spacing }}rem;
+  }
+
+  /* 针对 Flex 对齐的修复 */
+  .dynamic-group-{{ section.id }} > * {
+    width: 100%;
   }
 {%- endstyle -%}
 
 <div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
   <div class="page-width">
-    <div class="dynamic-group-content">
-      {%- for block in section.blocks -%}
-        {%- case block.type -%}
-          
-          {%- when 'heading' -%}
-            {% render 'element-heading', 
-              title: block.settings.heading, 
-              size: block.settings.size,
-              tag: block.settings.tag 
-            %}
-
-          {%- when 'text' -%}
-            {% render 'element-text', 
-              text: block.settings.text,
-              style: block.settings.style 
-            %}
-
-          {%- when 'button' -%}
-            {% render 'element-button', 
-              label: block.settings.button_label, 
-              link: block.settings.button_link,
-              style: block.settings.button_style
-            %}
-
-        {%- endcase -%}
-      {%- endfor -%}
+    <div class="dynamic-group-{{ section.id }} container-vibe-{{ section.settings.visual_vibe }}">
+      
+      {%- comment -%} 
+        核心渲染指令：
+        它会拉取 templates/*.json 中该 section 节点下定义的所有 Theme Blocks。
+      {%- endcomment -%}
+      {% content_for 'blocks' %}
+      
     </div>
   </div>
 </div>
@@ -61,148 +54,101 @@
 {
   "name": "Dynamic Group",
   "tag": "section",
-  "class": "section",
+  "class": "section-dynamic-group",
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "settings": [
     {
+      "type": "header",
+      "content": "Layout (布局)"
+    },
+    {
       "type": "select",
-      "id": "alignment",
+      "id": "container_width",
+      "label": "Container max width",
+      "options": [
+        { "value": "60", "label": "Narrow (600px)" },
+        { "value": "80", "label": "Standard (800px)" },
+        { "value": "100", "label": "Wide (1000px)" },
+        { "value": "140", "label": "Full Page" }
+      ],
+      "default": "80"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
       "options": [
         { "value": "flex-start", "label": "Left" },
         { "value": "center", "label": "Center" },
         { "value": "flex-end", "label": "Right" }
       ],
-      "default": "center",
-      "label": "Content Alignment"
+      "default": "center"
     },
     {
       "type": "range",
-      "id": "content_width",
-      "min": 40,
-      "max": 120,
-      "step": 5,
+      "id": "block_spacing",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
       "unit": "rem",
-      "label": "Content Max Width",
-      "default": 80
+      "label": "Spacing between blocks",
+      "default": 2
     },
     {
       "type": "header",
-      "content": "Spacing"
+      "content": "Style (风格)"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "visual_vibe",
+      "label": "Visual Vibe",
+      "info": "为容器添加特殊的视觉质感",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "glass", "label": "Glassmorphism (毛玻璃)" },
+        { "value": "soft-shadow", "label": "Soft Floating (柔和阴影)" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Spacing (间距)"
     },
     {
       "type": "range",
       "id": "padding_top",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "unit": "px",
-      "label": "Top Padding",
-      "default": 40
+      "label": "Top padding",
+      "default": 60
     },
     {
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "unit": "px",
-      "label": "Bottom Padding",
-      "default": 40
-    }
-  ],
-  "blocks": [
-    {
-      "type": "heading",
-      "name": "Heading",
-      "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "default": "Talk about your brand",
-          "label": "Heading"
-        },
-        {
-          "type": "select",
-          "id": "size",
-          "options": [
-            { "value": "h1", "label": "Extra Large" },
-            { "value": "h2", "label": "Large" },
-            { "value": "h3", "label": "Medium" },
-            { "value": "h4", "label": "Small" }
-          ],
-          "default": "h2",
-          "label": "Size"
-        },
-        {
-          "type": "select",
-          "id": "tag",
-          "options": [
-            { "value": "h1", "label": "H1" },
-            { "value": "h2", "label": "H2" },
-            { "value": "h3", "label": "H3" }
-          ],
-          "default": "h2",
-          "label": "HTML Tag (SEO)"
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "name": "Text",
-      "settings": [
-        {
-          "type": "richtext",
-          "id": "text",
-          "default": "<p>Share information about your brand with your customers.</p>",
-          "label": "Description"
-        },
-        {
-          "type": "select",
-          "id": "style",
-          "options": [
-            { "value": "body", "label": "Body" },
-            { "value": "subtitle", "label": "Subtitle (Uppercase)" }
-          ],
-          "default": "body",
-          "label": "Style"
-        }
-      ]
-    },
-    {
-      "type": "button",
-      "name": "Button",
-      "settings": [
-        {
-          "type": "text",
-          "id": "button_label",
-          "default": "Button label",
-          "label": "Button Label"
-        },
-        {
-          "type": "url",
-          "id": "button_link",
-          "label": "Button Link"
-        },
-        {
-          "type": "select",
-          "id": "button_style",
-          "options": [
-            { "value": "primary", "label": "Primary" },
-            { "value": "secondary", "label": "Outline" }
-          ],
-          "default": "primary",
-          "label": "Style"
-        }
-      ]
+      "label": "Bottom padding",
+      "default": 60
     }
   ],
   "presets": [
     {
-      "name": "Dynamic Content Group",
-      "blocks": [
-        { "type": "heading" },
-        { "type": "text" },
-        { "type": "button" }
-      ]
+      "name": "Dynamic Group",
+      "blocks": []
     }
   ]
 }

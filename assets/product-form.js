@@ -1,5 +1,5 @@
 /**
- * AEOall Theme - Product Form Logic
+ * Lumina Theme - Product Form Logic
  * Handles asynchronous "Add to Cart" functionality using Web Components.
  * Reference: Shopify Skeleton / Dawn Standards
  */

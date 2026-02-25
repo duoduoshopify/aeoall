@@ -1,5 +1,5 @@
 /**
- * AEOall Theme - Global JS Engine
+ * Lumina Theme - Global JS Engine
  * -----------------------------------------------------------------------------
  * 包含：基础工具、移动端抽屉导航、变体选择(Web Component)、AJAX 加购逻辑
  */
