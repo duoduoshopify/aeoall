@@ -153,6 +153,50 @@ AEOall/
 
 ---
 
+## Preset Styles
+
+The theme includes 8 built-in presets that you can switch between in Theme Settings:
+
+| Preset | Description | Best For |
+|--------|-------------|----------|
+| **Default** | Clean blue accent, balanced design | General stores |
+| **Modern Dark** | Dark mode with blue accents | Tech/Fashion stores |
+| **Minimal White** | Monochrome, minimal aesthetic | Luxury/Minimalist brands |
+| **Warm Earth** | Warm tones, earthy feel | Organic/Natural products |
+| **Luxury Gold** | Gold accents, elegant feel | High-end jewelry/Fashion |
+| **Eco Green** | Green theme, sustainable vibe | Eco-friendly products |
+| **Bold Contrast** | High contrast, bold typography | Streetwear/Youth brands |
+| **Soft Pastel** | Pastel colors, soft feel | Baby/Kids/Beauty products |
+
+### Switching Presets
+1. Go to Shopify Admin → Online Store → Themes
+2. Click **Customize** on AEOall Pro
+3. Click the **Theme settings** icon (paintbrush)
+4. Select a preset from the dropdown at the top
+
+---
+
+## Multi-Language Support
+
+The theme supports 6 languages out of the box:
+
+| Language | File | Code |
+|----------|------|------|
+| English | `locales/en.default.json` | en |
+| Spanish | `locales/es.json` | es |
+| French | `locales/fr.json` | fr |
+| German | `locales/de.json` | de |
+| Japanese | `locales/ja.json` | ja |
+| Chinese (Simplified) | `locales/zh-CN.json` | zh-CN |
+
+### Adding More Languages
+1. Go to Shopify Admin → Online Store → Themes
+2. Click **Languages** in the theme actions menu
+3. Click "Add language" and select your desired language
+4. The theme will automatically use translations if available
+
+---
+
 ## Quick Commands
 
 ```bash
@@ -172,6 +216,11 @@ shopify theme push --store your-store.myshopify.com
 ---
 
 ## Changelog
+
+### v1.3.0
+- Added 7 new preset styles (Modern Dark, Minimal White, Warm Earth, Luxury Gold, Eco Green, Bold Contrast, Soft Pastel)
+- Added multi-language support: Spanish, French, German, Japanese, Chinese (Simplified)
+- Enhanced theme documentation with preset and translation guides
 
 ### v1.2.0
 - Added modular product page block system
