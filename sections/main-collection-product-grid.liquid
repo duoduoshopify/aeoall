@@ -30,6 +30,43 @@
     line-height: 1.6;
     color: rgba(var(--color-text), 0.7);
   }
+
+  .collection-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgb(var(--color-border));
+  }
+
+  .collection-sort {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .collection-sort__label {
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  .collection-sort__select {
+    padding: 0.8rem 3rem 0.8rem 1.2rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 4px;
+    font-size: 1.4rem;
+    background: rgb(var(--color-background));
+    cursor: pointer;
+  }
+
+  @media (max-width: 749px) {
+    .collection-toolbar {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+  }
 {%- endstyle -%}
 
 <div class="section-{{ section.id }}-padding page-width">
@@ -51,6 +88,64 @@
       </p>
     {%- endif -%}
   </div>
+
+  {%- comment -%} 2. 工具栏（排序和筛选）{%- endcomment -%}
+  {%- if section.settings.enable_sorting -%}
+  <div class="collection-toolbar">
+    <div class="collection-toolbar__item collection-toolbar__item--left">
+      <p class="collection-toolbar__count">
+        {{ 'collections.general.items_with_count' | t: count: collection.products_count }}
+      </p>
+    </div>
+
+    <div class="collection-toolbar__item collection-toolbar__item--right">
+      <div class="collection-sort">
+        <label for="SortBy" class="collection-sort__label">
+          {{ 'collections.sorting.title' | t }}
+        </label>
+        <select 
+          id="SortBy" 
+          class="collection-sort__select"
+          aria-describedby="a11y-refresh-page-message"
+        >
+          {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+          <option value="manual" {% if sort_by == 'manual' %}selected{% endif %}>
+            {{ 'collections.sorting.featured' | t }}
+          </option>
+          <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>
+            {{ 'collections.sorting.best_selling' | t }}
+          </option>
+          <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>
+            {{ 'collections.sorting.az' | t }}
+          </option>
+          <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>
+            {{ 'collections.sorting.za' | t }}
+          </option>
+          <option value="price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>
+            {{ 'collections.sorting.price_ascending' | t }}
+          </option>
+          <option value="price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>
+            {{ 'collections.sorting.price_descending' | t }}
+          </option>
+          <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>
+            {{ 'collections.sorting.date_descending' | t }}
+          </option>
+          <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>
+            {{ 'collections.sorting.date_ascending' | t }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  {%- endif -%}
+
+  <script>
+    document.getElementById('SortBy')?.addEventListener('change', function(e) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', e.target.value);
+      window.location.href = url.toString();
+    });
+  </script>
 
   {%- comment -%} 2. 产品网格区域 {%- endcomment -%}
   <div id="ProductGridContainer">
@@ -105,6 +200,12 @@
       "id": "show_product_count",
       "default": true,
       "label": "Show Product Count"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "Enable Sorting"
     },
     {
       "type": "header",

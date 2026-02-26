@@ -12,7 +12,6 @@
     "hero_banner": {
       "type": "hero-banner",
       "settings": {
-        "image": "shopify://shop_images/e-mountain-bike-adventure.png",
         "subheading": "NEW ARRIVALS",
         "heading": "Premium Products for Your Lifestyle",
         "description": "<p>Discover our curated collection of high-quality products designed to elevate your everyday experience.</p>",
@@ -40,7 +39,6 @@
     "image_with_text_1": {
       "type": "image-with-text",
       "settings": {
-        "image": "shopify://shop_images/urban-e-bike.png",
         "subheading": "QUALITY GUARANTEED",
         "heading": "Why Choose Our Products",
         "description": "<p>We source only the finest materials and work with trusted manufacturers to bring you products that stand the test of time. Every purchase comes with our satisfaction guarantee.</p>",
@@ -57,7 +55,6 @@
     "image_with_text_2": {
       "type": "image-with-text",
       "settings": {
-        "image": "shopify://shop_images/9022a705161ff42b7879d88f1fd6d0e8.png",
         "subheading": "DELIVERY",
         "heading": "Fast & Free Shipping",
         "description": "<p>Enjoy free shipping on all orders over $50. Most orders are processed within 24 hours and delivered within 3-5 business days.</p>",

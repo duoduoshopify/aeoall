@@ -1,6 +1,6 @@
 {%- unless product.has_only_default_variant -%}
   <div class="variant-picker-block" {{ block.shopify_attributes }}>
-    <variant-selects data-section="{{ section.id }}" data-url="{{ product.url }}">
+    <variant-selects class="no-js-hidden variant-picker" data-section="{{ section.id }}" data-url="{{ product.url }}">
       {%- for option in product.options_with_values -%}
         <fieldset class="variant-picker__fieldset">
           <legend class="variant-picker__label">
@@ -21,9 +21,51 @@
         </fieldset>
       {%- endfor -%}
     </variant-selects>
+
+    <noscript>
+      <div class="variant-picker-fallback">
+        {%- for option in product.options_with_values -%}
+          <div class="variant-picker-fallback__option">
+            <label for="variant-option-{{ option.position }}">
+              {{ option.name }}
+            </label>
+            <select 
+              id="variant-option-{{ option.position }}"
+              name="options[{{ option.name }}]"
+              form="product-form-main"
+              class="variant-picker-fallback__select"
+            >
+              {%- for value in option.values -%}
+                <option 
+                  value="{{ value | escape }}"
+                  {% if option.selected_value == value %}selected{% endif %}
+                >
+                  {{ value }}
+                </option>
+              {%- endfor -%}
+            </select>
+          </div>
+        {%- endfor -%}
+      </div>
+    </noscript>
   </div>
 {%- endunless -%}
+
+<style>
+  .no-js-hidden { display: block; }
+  .no-js .no-js-hidden { display: none; }
+  .variant-picker-fallback { display: none; }
+  .no-js .variant-picker-fallback { display: block; }
+  .variant-picker-fallback__option { margin-bottom: 1.5rem; }
+  .variant-picker-fallback__select {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 4px;
+    font-size: 1.4rem;
+  }
+</style>
     
-    {% schema %}
-    { "name": "Variant Picker" }
-    {% endschema %}
+{% schema %}
+{ "name": "Variant Picker" }
+{% endschema %}
