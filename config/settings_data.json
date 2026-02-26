@@ -1,5 +1,28 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
+    "logo": "shopify://shop_images/aeoall-logo.png",
+    "logo_mobile": "shopify://shop_images/aeoall-logo.png",
+    "enable_pwa": true,
+    "sections": {
+      "cart-drawer": {
+        "type": "cart-drawer",
+        "settings": {
+          "show_free_shipping_bar": true,
+          "free_shipping_threshold": 100,
+          "free_shipping_message": "You're {amount} away from free shipping!",
+          "free_shipping_success_message": "You've unlocked free shipping!"
+        }
+      }
+    },
     "content_for_index": []
   },
   "presets": {

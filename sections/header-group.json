@@ -11,6 +11,17 @@
   "name": "Header Group",
   "type": "header",
   "sections": {
+    "announcement_bar_q7GgdG": {
+      "type": "announcement-bar",
+      "name": "Announcement bar",
+      "settings": {
+        "text": "Free shipping on all orders",
+        "link": "",
+        "background_color": "#000000",
+        "text_color": "#ffffff",
+        "color_scheme": "background-1"
+      }
+    },
     "main-header": {
       "type": "header",
       "blocks": {
@@ -27,12 +38,14 @@
         "mega_menu_HrBYBd"
       ],
       "settings": {
+        "logo": "shopify://shop_images/aeoall-logo.png",
         "menu": "main-menu",
-        "announcement_text": "FREE SHIPPING ON ORDERS OVER $50 | USE CODE SAVE50 FOR 50% OFF"
+        "announcement_text": ""
       }
     }
   },
   "order": [
+    "announcement_bar_q7GgdG",
     "main-header"
   ]
 }

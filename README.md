@@ -65,18 +65,9 @@
 
 ## 📸 Screenshots
 
-<div align="center">
+![Homepage](wiki/images/homepage.png)
 
-### Homepage
-![Homepage](docs/images/homepage.png)
-
-### Product Page
-![Product Page](docs/images/product-page.png)
-
-### Mobile View
-![Mobile](docs/images/mobile.png)
-
-</div>
+![Product Page](wiki/images/product-page.png)
 
 ---
 
