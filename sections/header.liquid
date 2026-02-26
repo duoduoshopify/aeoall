@@ -1,7 +1,7 @@
 {{ 'header-desktop.css' | asset_url | stylesheet_tag }}
 {{ 'header-mobile.css' | asset_url | stylesheet_tag }}
 
-<div class="announcement-bar" style="background:#000; color:#fff; text-align:center; padding:10px 0; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px;">
+<div class="announcement-bar">
   {{ section.settings.announcement_text }}
 </div>
 
@@ -13,7 +13,7 @@
 
     <!-- 2. Logo -->
     <div class="header-logo">
-      <a href="{{ routes.root_url }}" class="logo" style="text-decoration:none; font-size:2.4rem; font-weight:800; color:#000;">
+      <a href="{{ routes.root_url }}" class="logo">
         {%- if section.settings.logo != blank -%}
           {{ section.settings.logo | image_url: width: 200 | image_tag: loading: 'eager' }}
         {%- else -%}
@@ -34,18 +34,22 @@
       <predictive-search class="header-search-container">
         <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
           <div class="search-input-group">
+            <label for="Search-Header" class="visually-hidden">
+              {{ 'general.search.search' | t }}
+            </label>
             <input
               id="Search-Header"
               type="search"
               name="q"
               value="{{ search.terms | escape }}"
-              placeholder="Search products..."
+              placeholder="{{ 'general.search.placeholder' | t }}"
               role="combobox"
               aria-expanded="false"
               aria-owns="predictive-search-results"
               aria-controls="predictive-search-results"
               aria-haspopup="listbox"
               aria-autocomplete="list"
+              aria-label="{{ 'general.search.search' | t }}"
               autocorrect="off"
               autocomplete="off"
               autocapitalize="off"
@@ -66,7 +70,7 @@
       <!-- 购物车 -->
       <a href="{{ routes.cart_url }}" class="tool-icon-link" id="cart-icon-bubble">
         {% render 'icon-cart' %}
-        <span class="cart-count-badge">{{ cart.item_count }}</span>
+        <span class="cart-count-badge" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
       </a>
     </div>
   </div>

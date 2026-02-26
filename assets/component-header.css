@@ -4,6 +4,18 @@
  * 核心逻辑：全宽定位、毛玻璃效果、DTC 促销布局
  */
 
+/* --- 0. Announcement Bar --- */
+.announcement-bar {
+  background: rgb(var(--color-text));
+  color: rgb(var(--color-background));
+  padding: var(--spacing-sm) 0;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
 /* --- 1. Header Layout (Sticky & Transparent) --- */
 .header-main {
     position: sticky;

@@ -27,10 +27,70 @@
       --font-heading-scale: {{ settings.type_header_scale | divided_by: 100.0 }};
       --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
   
+      /* 间距系统 */
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 2rem;
+      --spacing-lg: 4rem;
+      --spacing-xl: 6rem;
+      --spacing-xxl: 8rem;
+  
+      /* 网格系统 */
+      --grid-gutter: 2rem;
+      --grid-gutter-mobile: 1.5rem;
+      --page-width: {{ settings.page_width | default: 1400 }}px;
+      --page-width-narrow: 800px;
+  
+      /* 区段间距 */
+      --section-padding-top: 6rem;
+      --section-padding-bottom: 6rem;
+      --section-padding-top-mobile: 4rem;
+      --section-padding-bottom-mobile: 4rem;
+  
+      /* 字体大小 */
+      --font-size-base: 1.6rem;
+      --font-size-sm: 1.4rem;
+      --font-size-xs: 1.2rem;
+      --font-size-lg: 1.8rem;
+      --font-size-xl: 2.4rem;
+  
+      /* 圆角 */
+      --border-radius-sm: 4px;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --border-radius-full: 9999px;
+  
+      /* 阴影 */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+      /* 过渡 */
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.2s ease;
+      --transition-slow: 0.3s ease;
+  
+      /* Z-index */
+      --z-dropdown: 1000;
+      --z-sticky: 1020;
+      --z-fixed: 1030;
+      --z-modal-backdrop: 1040;
+      --z-modal: 1050;
+      --z-popover: 1060;
+      --z-tooltip: 1070;
+  
       /* UI 基准间距 */
-      --page-width: 1400px;
       --radius-md: 12px;
       --radius-sm: 8px;
       --duration-default: 0.3s;
+    }
+  
+    @media (max-width: 749px) {
+      :root {
+        --grid-gutter: var(--grid-gutter-mobile);
+        --section-padding-top: var(--section-padding-top-mobile);
+        --section-padding-bottom: var(--section-padding-bottom-mobile);
+      }
     }
   {%- endstyle -%}

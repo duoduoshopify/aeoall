@@ -54,6 +54,32 @@
       ]
     },
     {
+      "name": "布局 (Layout)",
+      "settings": [
+        {
+          "type": "range",
+          "id": "page_width",
+          "min": 1000,
+          "max": 1600,
+          "step": 100,
+          "unit": "px",
+          "label": "页面宽度",
+          "default": 1400
+        }
+      ]
+    },
+    {
+      "name": "Favicon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "favicon",
+          "label": "Favicon image",
+          "info": "Will be scaled down to 32x32px"
+        }
+      ]
+    },    
+    {
       "name": "排版系统 (Typography)",
       "settings": [
         { "type": "font_picker", "id": "type_header_font", "label": "标题字体", "default": "assistant_n7" },
