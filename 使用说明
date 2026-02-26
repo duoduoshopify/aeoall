@@ -26,3 +26,32 @@ git push --set-upstream origin main
 
 
 
+# ========== GitHub Wiki 管理命令 ==========
+
+# 1. 克隆 Wiki 仓库到本地
+git clone https://github.com/duoduoshopify/aeoall.wiki.git wiki
+
+# 2. 进入 wiki 目录
+cd wiki
+
+# 3. 复制文档文件（重命名为 Wiki 格式：Title-Case.md）
+cp ../INSTALLATION.md ./Installation.md
+cp ../USER_GUIDE.md ./User-Guide.md
+cp ../CONTRIBUTING.md ./Contributing.md
+
+# 4. 编辑 Home.md 作为导航首页
+# 编辑 Home.md 内容...
+
+# 5. 提交更改
+git add .
+git commit -m "Add documentation"
+
+# 6. 推送到 GitHub
+git push origin master
+
+# 7. 以后更新时只需：
+# cd wiki
+# vim Installation.md  # 编辑内容
+# git add .
+# git commit -m "Update Installation guide"
+# git push origin master
