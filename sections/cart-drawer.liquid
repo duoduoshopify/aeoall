@@ -37,9 +37,9 @@
           <div class="shipping-goal-text">
             {%- if remaining_amount > 0 -%}
               {%- assign remaining_money = remaining_amount | money -%}
-              {{ section.settings.free_shipping_message | replace: '{amount}', remaining_money }}
+              <span>You're <b>{{ remaining_money }}</b> away from <b>FREE SHIPPING</b></span>
             {%- else -%}
-              {{ section.settings.free_shipping_success_message }}
+              <span>🎉 You've unlocked <b>FREE SHIPPING</b></span>
             {%- endif -%}
           </div>
           <div class="shipping-progress-bar">
@@ -55,7 +55,7 @@
               <div class="cart-item" id="CartDrawer-Item-{{ item.index | plus: 1 }}">
                 <div class="cart-item__media">
                   {% if item.image %}
-                    <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.product.title }}" loading="lazy">
+                    <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.product.title | escape }}" loading="lazy" width="200" height="{{ 200 | divided_by: item.image.aspect_ratio | ceil }}">
                   {% endif %}
                 </div>
                 <div class="cart-item__details">
