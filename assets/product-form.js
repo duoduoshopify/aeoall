@@ -102,11 +102,26 @@ if (!customElements.get('product-form')) {
         if (!this.errorMessageWrapper) return;
         
         this.errorMessage = this.errorMessage || this.errorMessageWrapper.querySelector('.product-form__error-message');
-  
+        
+        const variantSelect = this.form.querySelector('[name="id"]');
+
         this.errorMessageWrapper.toggleAttribute('hidden', !errorMessage);
-  
+
         if (errorMessage) {
           this.errorMessage.textContent = errorMessage;
+          this.errorMessage.setAttribute('role', 'alert');
+          
+          if (variantSelect) {
+            variantSelect.setAttribute('aria-describedby', 'product-form-error');
+            variantSelect.setAttribute('aria-invalid', 'true');
+          }
+        } else {
+          this.errorMessage.removeAttribute('role');
+          
+          if (variantSelect) {
+            variantSelect.removeAttribute('aria-describedby');
+            variantSelect.removeAttribute('aria-invalid');
+          }
         }
       }
     });
