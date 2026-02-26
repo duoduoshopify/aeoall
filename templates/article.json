@@ -1,49 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
-    "sections": {
-      "main": {
-        "type": "main-article",
-        "blocks": {
-          "featured_image": {
-            "type": "featured_image",
-            "settings": {
-              "image_height": "medium"
-            }
-          },
-          "title": {
-            "type": "title",
-            "settings": {}
-          },
-          "meta": {
-            "type": "meta",
-            "settings": {
-              "show_author": true,
-              "show_date": true
-            }
-          },
-          "content": {
-            "type": "content",
-            "settings": {}
-          },
-          "share": {
-            "type": "share",
-            "settings": {
-              "share_label": "Share this article"
-            }
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "blocks": {
+        "featured_image": {
+          "type": "featured_image",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "meta": {
+          "type": "meta",
+          "settings": {
+            "show_date": true,
+            "show_author": true
           }
         },
-        "block_order": ["featured_image", "title", "meta", "content", "share"],
-        "settings": {
-          "show_comments": true
+        "content": {
+          "type": "content",
+          "settings": {}
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share this article"
+          }
         }
       },
-      "related-articles": {
-        "type": "related-articles",
-        "settings": {
-          "heading": "Related Articles",
-          "articles_to_show": 3
-        }
+      "block_order": [
+        "featured_image",
+        "title",
+        "meta",
+        "content",
+        "share"
+      ],
+      "settings": {
+        "show_comments": true
       }
     },
-    "order": ["main", "related-articles"]
-  }
-  
+    "related-articles": {
+      "type": "related-articles",
+      "settings": {
+        "heading": "Related Articles",
+        "articles_to_show": 3
+      }
+    }
+  },
+  "order": [
+    "main",
+    "related-articles"
+  ]
+}

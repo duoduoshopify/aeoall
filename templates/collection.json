@@ -8,27 +8,30 @@
  * ------------------------------------------------------------
  */
 {
-    "sections": {
-      "banner": {
-        "type": "main-collection-banner",
-        "settings": {
-          "show_collection_description": true,
-          "show_collection_image": true,
-          "color_scheme": "background-1"
-        }
-      },
-      "product-grid": {
-        "type": "main-collection-product-grid",
-        "settings": {
-          "products_per_page": 16,
-          "show_vendor": false,
-          "padding_top": 36,
-          "padding_bottom": 36
-        }
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "show_collection_description": true,
+        "show_collection_image": true,
+        "color_scheme": "background-1"
       }
     },
-    "order": [
-      "banner",
-      "product-grid"
-    ]
-  }
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "settings": {
+        "show_title": false,
+        "show_description": false,
+        "show_product_count": true,
+        "products_per_page": 16,
+        "show_vendor": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "product-grid"
+  ]
+}
