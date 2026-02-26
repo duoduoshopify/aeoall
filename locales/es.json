@@ -410,8 +410,8 @@
       "total": "Total",
       "fulfilled_at_html": "Cumplido {{ date }}",
       "track_shipment": "Rastrear envío",
-      "tracking_url": "Enlace      "tracking de rastreo",
-_company": "Transportista",
+      "tracking_url": "Enlace de rastreo",
+      "tracking_company": "Transportista",
       "tracking_number": "Número de rastreo",
       "subtotal": "Subtotal"
     },

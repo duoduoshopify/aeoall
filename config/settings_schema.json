@@ -107,5 +107,49 @@
         { "type": "checkbox", "id": "enable_shopify_credit", "label": "Show Shopify Credit", "default": true },
         { "type": "checkbox", "id": "enable_copyright", "label": "Show Copyright", "default": true }
       ]
+    },
+    {
+      "name": "产品卡片 (Product Card)",
+      "settings": [
+        { "type": "checkbox", "id": "product_card_show_vendor", "label": "显示供应商", "default": false },
+        { "type": "checkbox", "id": "product_card_show_rating", "label": "显示评分", "default": true },
+        { "type": "checkbox", "id": "product_card_show_sale_badge", "label": "显示促销标签", "default": true },
+        { "type": "checkbox", "id": "product_card_show_sold_out", "label": "显示售罄标签", "default": true },
+        { "type": "checkbox", "id": "product_card_show_new_badge", "label": "显示新品标签", "default": true },
+        { "type": "range", "id": "product_card_new_days", "min": 1, "max": 30, "step": 1, "unit": "天", "label": "新品标签天数", "default": 7 },
+        { "type": "select", "id": "product_card_hover_effect", "label": "悬停效果", "default": "second_image", "options": [
+          {"value": "none", "label": "无"},
+          {"value": "second_image", "label": "显示第二张图片"},
+          {"value": "zoom", "label": "放大图片"},
+          {"value": "slide_up", "label": "上滑显示按钮"}
+        ]}
+      ]
+    },
+    {
+      "name": "动画效果 (Animations)",
+      "settings": [
+        { "type": "checkbox", "id": "enable_animations", "label": "启用动画效果", "default": true },
+        { "type": "select", "id": "animation_style", "label": "动画风格", "default": "fade", "options": [
+          {"value": "fade", "label": "淡入"},
+          {"value": "slide", "label": "滑动"},
+          {"value": "zoom", "label": "缩放"}
+        ]},
+        { "type": "checkbox", "id": "enable_stagger_animation", "label": "交错动画延迟", "default": true }
+      ]
+    },
+    {
+      "name": "结账设置 (Checkout)",
+      "settings": [
+        { "type": "checkbox", "id": "show_cart_note", "label": "显示订单备注", "default": true },
+        { "type": "checkbox", "id": "enable_cart_drawer", "label": "启用购物车侧边栏", "default": true },
+        { "type": "checkbox", "id": "enable_ajax_cart", "label": "启用AJAX购物车", "default": true }
+      ]
+    },
+    {
+      "name": "高级功能 (Advanced)",
+      "settings": [
+        { "type": "checkbox", "id": "enable_pwa", "label": "启用PWA支持", "default": false },
+        { "type": "checkbox", "id": "enable_lazy_load", "label": "启用图片懒加载", "default": true }
+      ]
     }
   ]
