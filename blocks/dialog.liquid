@@ -1,0 +1,154 @@
+{% comment %}
+  Dialog Block - 对话框组件
+  使用原生 <dialog> 元素
+  
+  参数:
+  - dialog_id: 对话框唯一 ID
+  - dialog_title: 对话框标题
+  - dialog_content: 对话框内容
+{% endcomment %}
+
+{%- liquid
+  assign dialog_id = block.settings.dialog_id | default: block.id
+  assign dialog_title = block.settings.dialog_title | default: 'Dialog'
+  assign dialog_content = block.settings.dialog_content
+-%}
+
+<dialog-component id="{{ dialog_id }}" class="dialog-wrapper" {{ block.shopify_attributes }}>
+  <dialog class="dialog">
+    <div class="dialog__header">
+      <h2 class="dialog__title">{{ dialog_title }}</h2>
+      <button 
+        type="button"
+        data-dialog-close 
+        class="dialog__close"
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {% render 'icon-close' %}
+      </button>
+    </div>
+    
+    <div class="dialog__content">
+      {{ dialog_content }}
+    </div>
+  </dialog>
+</dialog-component>
+
+<style>
+  .dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: backdrop-fade-in 0.2s ease;
+  }
+
+  @keyframes backdrop-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .dialog[open] {
+    animation: dialog-slide-up 0.3s ease;
+  }
+
+  @keyframes dialog-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .dialog__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    border-bottom: 1px solid rgb(var(--color-border));
+  }
+
+  .dialog__title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .dialog__close {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .dialog__close:hover {
+    background-color: rgb(var(--color-border));
+  }
+
+  .dialog__close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .dialog__content {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* 移动端优化 */
+  @media (max-width: 749px) {
+    .dialog {
+      width: 95%;
+      max-width: none;
+    }
+
+    .dialog__header,
+    .dialog__content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Dialog",
+  "class": "dialog-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "dialog_id",
+      "label": "Dialog ID",
+      "info": "Unique identifier for this dialog"
+    },
+    {
+      "type": "text",
+      "id": "dialog_title",
+      "label": "Dialog Title",
+      "default": "Dialog"
+    },
+    {
+      "type": "richtext",
+      "id": "dialog_content",
+      "label": "Dialog Content",
+      "default": "<p>Add your content here</p>"
+    }
+  ]
+}
+{% endschema %}

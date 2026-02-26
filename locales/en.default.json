@@ -31,6 +31,16 @@
     "accessibility": {
       "skip_to_text": "Skip to content",
       "close": "Close",
+      "products": {
+        "size_guide": {
+          "title": "Size Guide",
+          "button": "Size Guide",
+          "size": "Size",
+          "chest": "Chest",
+          "waist": "Waist",
+          "hips": "Hips"
+        }
+      },      
       "refresh_page": "Refresh page",
       "star_reviews_info": "{{ rating_value }} out of {{ rating_max }} stars",
       "total_reviews": "total reviews",

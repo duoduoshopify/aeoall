@@ -61,6 +61,21 @@
         unavailable: `{{ 'products.product.unavailable' | t }}`
       };
     </script>
+    <!-- 性能监控 -->
+<script src="{{ 'performance.js' | asset_url }}" defer></script>
+
+<!-- 对话框组件 -->
+<script src="{{ 'dialog.js' | asset_url }}" defer></script>
+
+<!-- 区段懒加载 -->
+<script src="{{ 'section-hydration.js' | asset_url }}" defer></script>
+
+<!-- 视图过渡 (渐进增强) -->
+{% if settings.enable_view_transitions %}
+  <script src="{{ 'view-transitions.js' | asset_url }}" defer></script>
+{% endif %}
+
+
 
     {{ content_for_header }}
   </head>

@@ -1,0 +1,94 @@
+{% comment %}
+  Main Cart Items Section
+{% endcomment %}
+
+<div class="cart-items" data-section="{{ section.id }}">
+  <form action="{{ routes.cart_url }}" method="post" id="cart-form">
+    <div class="cart-items__header">
+      <h1 class="cart-items__title">{{ 'sections.cart.title' | t }}</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="cart-items__continue">
+        {{ 'sections.cart.continue_shopping' | t }}
+      </a>
+    </div>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-items__list">
+        {%- for item in cart.items -%}
+          <div class="cart-item" data-index="{{ forloop.index }}">
+            <div class="cart-item__media">
+              {%- if item.image -%}
+                <img src="{{ item.image | image_url: width: 150 }}" 
+                     alt="{{ item.image.alt | escape }}"
+                     loading="lazy">
+              {%- endif -%}
+            </div>
+
+            <div class="cart-item__details">
+              <a href="{{ item.url }}" class="cart-item__title">
+                {{ item.product.title }}
+              </a>
+              
+              {%- unless item.variant.title == 'Default Title' -%}
+                <div class="cart-item__variant">
+                  {{ item.variant.title }}
+                </div>
+              {%- endunless -%}
+
+              <div class="cart-item__price">
+                {% render 'price', product: item, use_variant: true %}
+              </div>
+            </div>
+
+            <div class="cart-item__quantity">
+              <quantity-input class="quantity">
+                <button class="quantity__button" name="minus" type="button">
+                  <span class="visually-hidden">{{ 'products.product.quantity.decrease' | t }}</span>
+                  -
+                </button>
+                <input class="quantity__input"
+                       type="number"
+                       name="updates[]"
+                       value="{{ item.quantity }}"
+                       min="0"
+                       data-index="{{ forloop.index }}"
+                       id="Quantity-{{ forloop.index }}">
+                <button class="quantity__button" name="plus" type="button">
+                  <span class="visually-hidden">{{ 'products.product.quantity.increase' | t }}</span>
+                  +
+                </button>
+              </quantity-input>
+            </div>
+
+            <div class="cart-item__totals">
+              <div class="cart-item__price-wrapper">
+                {{ item.final_line_price | money }}
+              </div>
+            </div>
+
+            <div class="cart-item__remove">
+              <a href="{{ item.url_to_remove }}" 
+                 class="cart-item__remove-button"
+                 aria-label="{{ 'sections.cart.remove_title' | t: title: item.title }}">
+                {% render 'icon-close' %}
+              </a>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="cart-empty">
+        <p>{{ 'sections.cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button">
+          {{ 'general.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </form>
+</div>
+
+{% schema %}
+{
+  "name": "Cart Items",
+  "class": "section-cart-items"
+}
+{% endschema %}

@@ -1,0 +1,99 @@
+{% comment %}
+  Dialog Trigger Block - 对话框触发按钮
+{% endcomment %}
+
+{%- liquid
+  assign target_dialog = block.settings.target_dialog
+  assign button_text = block.settings.button_text | default: 'Open Dialog'
+  assign button_style = block.settings.button_style | default: 'primary'
+-%}
+
+<div class="dialog-trigger-wrapper" {{ block.shopify_attributes }}>
+  <button 
+    type="button"
+    class="button button--{{ button_style }}"
+    data-dialog-open="{{ target_dialog }}"
+  >
+    {{ button_text }}
+  </button>
+</div>
+
+<style>
+  .dialog-trigger-wrapper {
+    margin: 1rem 0;
+  }
+
+  .button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .button--primary {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  .button--secondary {
+    background: transparent;
+    color: rgb(var(--color-text));
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  .button--link {
+    background: none;
+    color: rgb(var(--color-accent));
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Dialog Trigger",
+  "class": "dialog-trigger-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "target_dialog",
+      "label": "Target Dialog ID",
+      "info": "ID of the dialog to open"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Open Dialog"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button Style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "link",
+          "label": "Link"
+        }
+      ],
+      "default": "primary"
+    }
+  ]
+}
+{% endschema %}

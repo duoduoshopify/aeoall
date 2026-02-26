@@ -76,6 +76,32 @@
       ]
     },
     {
+      "name": "Performance",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable_section_hydration",
+          "label": "Enable section lazy loading",
+          "default": true,
+          "info": "Improves initial page load speed"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_performance_monitoring",
+          "label": "Enable performance monitoring",
+          "default": true,
+          "info": "Track real user performance metrics"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_view_transitions",
+          "label": "Enable view transitions (experimental)",
+          "default": false,
+          "info": "Smooth page transitions (Chrome 111+ only)"
+        }
+      ]
+    },    
+    {
       "name": "Footer",
       "settings": [
         { "type": "checkbox", "id": "enable_shopify_credit", "label": "Show Shopify Credit", "default": true },
