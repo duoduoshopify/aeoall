@@ -3,7 +3,7 @@
 {% endcomment %}
 
 <article class="article section-{{ section.id }}" data-section="{{ section.id }}">
-  <div class="page-width page-width--narrow">
+  <div class="article-wrapper">
     {%- for block in section.blocks -%}
       {%- case block.type -%}
         {%- when 'featured_image' -%}
@@ -17,7 +17,7 @@
                   {%- if article.image.width >= 1500 -%}{{ article.image | image_url: width: 1500 }} 1500w,{%- endif -%}
                   {{ article.image | image_url }} {{ article.image.width }}w
                 "
-                sizes="(min-width: 750px) 750px, calc(100vw - 3rem)"
+                sizes="100vw"
                 src="{{ article.image | image_url: width: 1100 }}"
                 loading="eager"
                 fetchpriority="high"
@@ -30,43 +30,75 @@
 
         {%- when 'title' -%}
           <header class="article__header" {{ block.shopify_attributes }}>
-            <h1 class="article__title">{{ article.title }}</h1>
+            <div class="article-container">
+              <h1 class="article__title">{{ article.title }}</h1>
+              <div class="article__title-decoration"></div>
+            </div>
           </header>
 
         {%- when 'meta' -%}
           <div class="article__meta" {{ block.shopify_attributes }}>
-            {%- if block.settings.show_date -%}
-              <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-                {{ article.published_at | time_tag: format: 'date' }}
-              </time>
-            {%- endif -%}
+            <div class="article-container">
+              {%- if block.settings.show_date -%}
+                <span class="meta-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | time_tag: format: 'date' }}
+                  </time>
+                </span>
+              {%- endif -%}
 
-            {%- if block.settings.show_author -%}
-              <span class="article__author">
-                {{ 'blogs.article.by_author' | t: author: article.author }}
+              {%- if block.settings.show_author -%}
+                <span class="meta-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  {{ article.author }}
+                </span>
+              {%- endif -%}
+              
+              <span class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {{ 'blogs.comments.count' | t: count: article.comments_count }}
               </span>
-            {%- endif -%}
+            </div>
           </div>
 
         {%- when 'content' -%}
-          <div class="article__content rte" {{ block.shopify_attributes }}>
-            {{ article.content }}
+          <div class="article__content-wrapper">
+            <div class="article__content rte" {{ block.shopify_attributes }}>
+              {{ article.content }}
+            </div>
           </div>
 
         {%- when 'share' -%}
           <div class="article__share" {{ block.shopify_attributes }}>
-            {%- if block.settings.share_label != blank -%}
-              <span class="article__share-label">{{ block.settings.share_label }}</span>
-            {%- endif -%}
-            {% render 'social-icons', share_url: article.url, share_title: article.title %}
+            <div class="article-container">
+              {%- if block.settings.share_label != blank -%}
+                <span class="article__share-label">{{ block.settings.share_label }}</span>
+              {%- endif -%}
+              {% render 'social-icons', share_url: article.url, share_title: article.title %}
+            </div>
           </div>
 
       {%- endcase -%}
     {%- endfor -%}
 
-    {%- if section.settings.show_comments and blog.comments_enabled? -%}
-      <div class="article__comments">
-        <h2 class="article__comments-title">{{ 'blogs.comments.title' | t }}</h2>
+    <div class="article-container">
+      {%- if section.settings.show_comments and blog.comments_enabled? -%}
+        <div class="article__comments">
+        <div class="comments-section-header">
+          <h2 class="article__comments-title">{{ 'blogs.comments.title' | t }}</h2>
+          <p class="comments-count">{{ article.comments_count }} {{ 'blogs.comments.count' | t: count: article.comments_count }}</p>
+        </div>
         
         {%- paginate article.comments by 5 -%}
           {%- if article.comments_count > 0 -%}
@@ -74,10 +106,17 @@
               {%- for comment in article.comments -%}
                 <div class="article__comment">
                   <div class="article__comment-header">
-                    <strong>{{ comment.author }}</strong>
-                    <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
-                      {{ comment.created_at | time_tag: format: 'date' }}
-                    </time>
+                    <div class="comment-author-info">
+                      <div class="comment-avatar">
+                        {{ comment.author | slice: 0, 1 | upcase }}
+                      </div>
+                      <div>
+                        <strong>{{ comment.author }}</strong>
+                        <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                          {{ comment.created_at | time_tag: format: 'date' }}
+                        </time>
+                      </div>
+                    </div>
                   </div>
                   <div class="article__comment-content rte">
                     {{ comment.content }}
@@ -93,9 +132,9 @@
         {%- endpaginate -%}
 
         <div class="article__comment-form">
+          <h3>{{ 'blogs.comments.form_title' | t }}</h3>
+          
           {% form 'new_comment', article %}
-            <h3>{{ 'blogs.comments.form_title' | t }}</h3>
-
             {%- if form.posted_successfully? -%}
               <div class="form-message form-message--success">
                 {%- if blog.moderated? -%}
@@ -106,19 +145,21 @@
               </div>
             {%- endif -%}
 
-            <div class="form-row">
-              <label for="comment-author">{{ 'blogs.comments.name' | t }}</label>
-              <input type="text" id="comment-author" name="comment[author]" value="{{ form.author }}" required>
-            </div>
+            <div class="form-grid">
+              <div class="form-row">
+                <label for="comment-author">{{ 'blogs.comments.name' | t }}</label>
+                <input type="text" id="comment-author" name="comment[author]" value="{{ form.author }}" required placeholder="Your name">
+              </div>
 
-            <div class="form-row">
-              <label for="comment-email">{{ 'blogs.comments.email' | t }}</label>
-              <input type="email" id="comment-email" name="comment[email]" value="{{ form.email }}" required>
+              <div class="form-row">
+                <label for="comment-email">{{ 'blogs.comments.email' | t }}</label>
+                <input type="email" id="comment-email" name="comment[email]" value="{{ form.email }}" required placeholder="your@email.com">
+              </div>
             </div>
 
             <div class="form-row">
               <label for="comment-body">{{ 'blogs.comments.message' | t }}</label>
-              <textarea id="comment-body" name="comment[body]" required>{{ form.body }}</textarea>
+              <textarea id="comment-body" name="comment[body]" required placeholder="Write your comment...">{{ form.body }}</textarea>
             </div>
 
             <button type="submit" class="button button--primary">
@@ -128,63 +169,98 @@
         </div>
       </div>
     {%- endif -%}
+    </div>
   </div>
 </article>
 
 <style>
-  .page-width--narrow {
+  .article-wrapper {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .article-container {
     max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
 
   .article__featured-image {
-    margin-bottom: 4rem;
-    border-radius: 8px;
-    overflow: hidden;
+    width: 100%;
+    margin-bottom: 3rem;
   }
 
   .article__featured-image img {
     width: 100%;
     height: auto;
     display: block;
+    max-height: 600px;
+    object-fit: cover;
   }
 
   .article__header {
-    margin-bottom: 2rem;
     text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   .article__title {
     margin: 0;
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 800;
     line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .article__title-decoration {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-foreground)));
+    margin: 1.5rem auto 0;
+    border-radius: 2px;
   }
 
   .article__meta {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-bottom: 4rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgb(var(--color-border));
-    font-size: 1.4rem;
-    color: rgb(var(--color-text) / 0.7);
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: rgb(var(--color-text) / 0.6);
+  }
+
+  .meta-item svg {
+    opacity: 0.6;
+  }
+
+  .article__content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
 
   .article__content {
-    margin-bottom: 4rem;
-    font-size: 1.8rem;
-    line-height: 1.8;
+    font-size: 1.25rem;
+    line-height: 1.9;
+    color: rgb(var(--color-text) / 0.9);
   }
 
   .article__content h2 {
-    margin: 3rem 0 1.5rem;
-    font-size: 2.8rem;
+    margin: 2.5rem 0 1.25rem;
+    font-size: 1.875rem;
+    font-weight: 700;
   }
 
   .article__content h3 {
-    margin: 2.5rem 0 1.5rem;
-    font-size: 2.2rem;
+    margin: 2rem 0 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
   }
 
   .article__content p {
@@ -193,90 +269,243 @@
 
   .article__content img {
     max-width: 100%;
+    width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 12px;
     margin: 2rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .article__content a {
+    color: rgb(var(--color-accent));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .article__content a:hover {
+    text-decoration: none;
+  }
+
+  .article__content ul,
+  .article__content ol {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .article__content li {
+    margin-bottom: 0.75rem;
+  }
+
+  .article__content blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    border-left: 4px solid rgb(var(--color-accent));
+    background: rgb(var(--color-background-secondary));
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
   }
 
   .article__share {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1.5rem;
-    padding: 2rem 0;
+    padding: 2.5rem 0;
+    margin: 3rem 0;
     border-top: 1px solid rgb(var(--color-border));
     border-bottom: 1px solid rgb(var(--color-border));
-    margin-bottom: 4rem;
   }
 
   .article__share-label {
     font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(var(--color-text) / 0.7);
   }
 
   .article__comments {
-    margin-top: 6rem;
+    margin-top: 5rem;
+  }
+
+  .comments-section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgb(var(--color-border));
   }
 
   .article__comments-title {
-    margin-bottom: 3rem;
-    font-size: 2.8rem;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .comments-count {
+    margin: 0;
+    color: rgb(var(--color-text) / 0.6);
+    font-size: 1rem;
   }
 
   .article__comment {
     padding: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     background: rgb(var(--color-background-secondary));
-    border-radius: 8px;
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-border));
   }
 
   .article__comment-header {
-    display: flex;
-    justify-content: space-between;
     margin-bottom: 1rem;
-    font-size: 1.4rem;
+  }
+
+  .comment-author-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .comment-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgb(var(--color-accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  .comment-author-info strong {
+    display: block;
+    font-size: 1.1rem;
+  }
+
+  .comment-author-info time {
+    font-size: 0.875rem;
+    color: rgb(var(--color-text) / 0.5);
   }
 
   .article__comment-content {
-    color: rgb(var(--color-text) / 0.8);
+    color: rgb(var(--color-text) / 0.85);
+    line-height: 1.7;
   }
 
   .article__comment-form {
-    margin-top: 4rem;
+    margin-top: 3rem;
     padding: 3rem;
-    background: rgb(var(--color-background-secondary));
-    border-radius: 8px;
+    background: rgb(var(--color-background));
+    border-radius: 16px;
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  .article__comment-form h3 {
+    margin: 0 0 2rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
 
   .form-row {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .form-row label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
+    font-size: 0.9rem;
+    color: rgb(var(--color-text) / 0.8);
   }
 
   .form-row input,
   .form-row textarea {
     width: 100%;
-    padding: 1rem;
+    padding: 1rem 1.25rem;
     border: 1px solid rgb(var(--color-border));
-    border-radius: 4px;
-    font-size: 1.4rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgb(var(--color-background));
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-row input:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: rgb(var(--color-accent));
+    box-shadow: 0 0 0 3px rgba(var(--color-accent), 0.1);
   }
 
   .form-row textarea {
-    min-height: 150px;
+    min-height: 120px;
     resize: vertical;
   }
 
+  .button--primary {
+    padding: 1rem 2.5rem;
+    background: rgb(var(--color-accent));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .button--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--color-accent), 0.3);
+  }
+
   @media (max-width: 749px) {
+    .article-container {
+      padding: 0 1.25rem;
+    }
+
+    .article__content-wrapper {
+      padding: 0 1.25rem;
+    }
+
+    .article__featured-image {
+      margin-bottom: 1.5rem;
+    }
+
     .article__title {
-      font-size: 3rem;
+      font-size: 2rem;
+    }
+
+    .article__meta {
+      gap: 1.25rem;
     }
 
     .article__content {
-      font-size: 1.6rem;
+      font-size: 1.1rem;
+    }
+
+    .article__content h2 {
+      font-size: 1.5rem;
+    }
+
+    .article__content h3 {
+      font-size: 1.25rem;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .article__comment-form {
+      padding: 1.5rem;
     }
   }
 </style>

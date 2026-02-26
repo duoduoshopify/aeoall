@@ -104,6 +104,7 @@
     display: grid;
     gap: 1.5rem;
     margin-bottom: 2rem;
+    align-items: start;
   }
 
   .blog-articles--grid .blog-articles__grid {
@@ -131,7 +132,7 @@
   .blog-article-card__image-wrapper {
     display: block;
     overflow: hidden;
-    min-height: 200px;
+    aspect-ratio: 4/3;
     background: rgb(var(--color-border));
   }
 
@@ -204,14 +205,16 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: rgb(var(--color-accent));
+    color: rgb(var(--color-foreground));
     font-weight: 600;
+    font-size: 1.1rem;
     text-decoration: none;
-    transition: gap 0.2s;
+    transition: all 0.2s;
   }
 
   .blog-article-card__link:hover {
     gap: 1rem;
+    color: rgb(var(--color-accent));
   }
 
   .blog-article-card__link svg {
