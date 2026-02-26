@@ -1,4 +1,4 @@
-<nav class="header-nav-desktop">
+<nav class="header-nav-desktop" aria-label="Main navigation">
   <ul class="main-menu-list">
     {%- for link in menu.links -%}
       {%- liquid
@@ -16,43 +16,222 @@
         endfor
       -%}
 
-      <li class="nav-item {% if has_mega %}has-mega{% endif %}">
-        <a href="{{ link.url }}" class="nav-link">{{ link.title | upcase }}</a>
+      <li class="nav-item {% if has_mega %}has-mega{% endif %}{% if link.links != blank %} has-children{% endif %}">
+        <a href="{{ link.url }}" class="nav-link"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | upcase }}</a>
         
         {%- if has_mega -%}
-          {%- comment -%} 超级菜单渲染 {%- endcomment -%}
-          <div class="mega-menu-wrapper">
-            <div class="mega-container">
-              <div class="mega-links-area">
-                {%- for childlink in link.links -%}
-                  <div class="mega-col">
-                    <span class="mega-title">{{ childlink.title }}</span>
-                    <ul class="mega-list">
-                      {%- for grandchildlink in childlink.links -%}
-                        <li><a href="{{ grandchildlink.url }}">{{ grandchildlink.title }}</a></li>
-                      {%- endfor -%}
-                    </ul>
-                  </div>
-                {%- endfor -%}
-              </div>
+          {%- assign mega_style = mega_block.settings.mega_style | default: 'columns' -%}
+          {%- capture mega_promo_markup -%}
+            {% render 'mega-menu-promo', mega_block: mega_block, link: link %}
+          {%- endcapture -%}
 
-              {%- if mega_block.settings.promo_image != blank or mega_block.settings.promo_product != blank -%}
-                <div class="mega-promo-area" style="width: 300px; border-left: 1px solid #eee; padding-left: 40px;">
-                   {%- if mega_block.settings.promo_image != blank -%}
-                     <a href="{{ mega_block.settings.promo_url }}" style="text-decoration:none;">
-                       <img src="{{ mega_block.settings.promo_image | image_url: width: 300 }}" style="width:100%; border-radius:8px;">
-                       <p style="font-weight:800; color:#000; margin-top:10px;">{{ mega_block.settings.promo_heading }}</p>
-                     </a>
-                   {%- endif -%}
-                </div>
-              {%- endif -%}
+          <div class="mega-menu-wrapper mega-menu--{{ mega_style }}">
+            <div class="mega-container">
+              {%- case mega_style -%}
+                {%- when 'columns' -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+
+                {%- when 'cards' -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+
+                {%- when 'promo_split' -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+                  {{ mega_promo_markup }}
+
+                {%- when 'tabs' -%}
+                  <div class="mega-tabs-layout">
+                    <div class="mega-tabs-links">
+                      {%- for childlink in link.links -%}
+                        <a href="{{ childlink.url }}" class="mega-tab-link"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title }}</a>
+                      {%- endfor -%}
+                    </div>
+                    <div class="mega-tabs-panels">
+                      {%- for childlink in link.links -%}
+                        <section class="mega-tab-panel" aria-label="{{ childlink.title | escape }}">
+                          <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                          {%- if childlink.links != blank -%}
+                            <ul class="mega-list">
+                              {%- for grandchildlink in childlink.links -%}
+                                <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </section>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+
+                {%- when 'editorial' -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+                  {{ mega_promo_markup }}
+
+                {%- when 'featured_products' -%}
+                  {%- assign featured_collection = mega_block.settings.featured_collection -%}
+                  {%- if featured_collection != blank and featured_collection.products_count > 0 -%}
+                    <div class="mega-products" role="list">
+                      {%- for product in featured_collection.products limit: 4 -%}
+                        <a href="{{ product.url }}" class="mega-product-card" role="listitem">
+                          <div class="mega-product-card__image-wrap">
+                            {%- if product.featured_image != blank -%}
+                              {{
+                                product.featured_image
+                                | image_url: width: 320
+                                | image_tag:
+                                  loading: 'lazy',
+                                  widths: '160,220,320',
+                                  sizes: '220px',
+                                  alt: product.title
+                              }}
+                            {%- endif -%}
+                          </div>
+                          <p class="mega-product-card__title">{{ product.title }}</p>
+                          <p class="mega-product-card__price">{{ product.price | money }}</p>
+                        </a>
+                      {%- endfor -%}
+                    </div>
+                  {%- else -%}
+                    <div class="mega-links-area" role="list">
+                      {%- for childlink in link.links -%}
+                        <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                          <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                          {%- if childlink.links != blank -%}
+                            <ul class="mega-list">
+                              {%- for grandchildlink in childlink.links -%}
+                                <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </section>
+                      {%- endfor -%}
+                    </div>
+                  {%- endif -%}
+
+                {%- when 'visual' -%}
+                  {{ mega_promo_markup }}
+
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+
+                {%- when 'minimal' -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+
+                {%- when 'image_title_cards' -%}
+                  {% render 'mega-menu-style-image-title-cards', link: link %}
+
+                {%- when 'circle_categories' -%}
+                  {% render 'mega-menu-style-circle-categories', link: link %}
+
+                {%- else -%}
+                  <div class="mega-links-area" role="list">
+                    {%- for childlink in link.links -%}
+                      <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+                        <a href="{{ childlink.url }}" class="mega-title">{{ childlink.title }}</a>
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-list">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </section>
+                    {%- endfor -%}
+                  </div>
+
+                  {{ mega_promo_markup }}
+              {%- endcase -%}
             </div>
           </div>
         {%- elsif link.links != blank -%}
-          {%- comment -%} 标准二级下拉菜单渲染 {%- endcomment -%}
-          <ul class="standard-dropdown">
+          {%- comment -%} 标准多级下拉菜单渲染（支持三级） {%- endcomment -%}
+          <ul class="standard-dropdown" role="list">
             {%- for childlink in link.links -%}
-              <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+              <li class="dropdown-item{% if childlink.links != blank %} has-grandchild{% endif %}">
+                <a href="{{ childlink.url }}"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title }}</a>
+                {%- if childlink.links != blank -%}
+                  <ul class="grandchild-dropdown" role="list">
+                    {%- for grandchildlink in childlink.links -%}
+                      <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </li>
             {%- endfor -%}
           </ul>
         {%- endif -%}

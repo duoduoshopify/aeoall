@@ -5,8 +5,8 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    column-gap: var(--grid-mobile-horizontal-spacing, 1.5rem);
-    row-gap: var(--grid-mobile-vertical-spacing, 3rem);
+    column-gap: var(--grid-mobile-horizontal-spacing, 1.2rem);
+    row-gap: var(--grid-mobile-vertical-spacing, 2.2rem);
   }
   
   .grid__item {
@@ -18,8 +18,8 @@
   /* --- 桌面端 4 列布局 --- */
   @media screen and (min-width: 990px) {
     .grid {
-      column-gap: var(--grid-desktop-horizontal-spacing, 3rem);
-      row-gap: var(--grid-desktop-vertical-spacing, 5rem);
+      column-gap: var(--grid-desktop-horizontal-spacing, 2.4rem);
+      row-gap: var(--grid-desktop-vertical-spacing, 3.4rem);
     }
   
     .grid--4-col-desktop .grid__item {
@@ -30,11 +30,45 @@
     }
   }
   
+  /* --- 平板端 3 列布局 --- */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .grid {
+      column-gap: var(--grid-desktop-horizontal-spacing, 1.8rem);
+      row-gap: var(--grid-desktop-vertical-spacing, 2.6rem);
+    }
+    .grid--3-col-tablet .grid__item,
+    .grid--4-col-desktop .grid__item {
+      width: calc(33.33% - (var(--grid-desktop-horizontal-spacing, 2rem) * 2 / 3));
+      max-width: calc(33.33% - (var(--grid-desktop-horizontal-spacing, 2rem) * 2 / 3));
+      flex: 0 0 auto;
+    }
+  }
+
   /* --- 手机端 2 列布局 --- */
   @media screen and (max-width: 749px) {
-    .grid--2-col .grid__item {
-      width: calc(50% - (var(--grid-mobile-horizontal-spacing, 1.5rem) / 2));
-      max-width: calc(50% - (var(--grid-mobile-horizontal-spacing, 1.5rem) / 2));
+    .grid {
+      column-gap: var(--grid-mobile-horizontal-spacing, 1rem);
+      row-gap: var(--grid-mobile-vertical-spacing, 1.8rem);
+    }
+    .grid--2-col .grid__item,
+    .grid--4-col-desktop .grid__item {
+      width: calc(50% - (var(--grid-mobile-horizontal-spacing, 1rem) / 2));
+      max-width: calc(50% - (var(--grid-mobile-horizontal-spacing, 1rem) / 2));
       flex: 0 0 auto;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .grid--2-col .grid__item,
+    .grid--4-col-desktop .grid__item {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grid,
+    .grid__item {
+      transition: none !important;
     }
   }

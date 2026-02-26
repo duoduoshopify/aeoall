@@ -1,4 +1,4 @@
-<div class="mobile-nav-drawer" id="MobileNavDrawer">
+<div class="mobile-nav-drawer" id="MobileNavDrawer" aria-hidden="true">
   <div class="mobile-nav-inner">
     <ul class="mobile-menu-list">
       {%- for link in menu.links -%}
@@ -6,17 +6,33 @@
           <div class="mobile-link-row">
             <a href="{{ link.url }}" class="mobile-main-link">{{ link.title | upcase }}</a>
             {%- if link.links != blank -%}
-              <button class="mobile-toggle" aria-label="Expand Submenu" aria-expanded="false">
+              <button class="mobile-toggle" aria-label="Expand Submenu" aria-expanded="false" aria-controls="mobile-submenu-{{ forloop.index0 }}">
                 {% render 'icon-caret' %}
               </button>
             {%- endif -%}
           </div>
           
           {%- if link.links != blank -%}
-            <ul class="mobile-submenu">
+            <ul class="mobile-submenu" id="mobile-submenu-{{ forloop.index0 }}">
               {%- for childlink in link.links -%}
-                <li class="submenu-item">
-                  <a href="{{ childlink.url }}" class="submenu-link">{{ childlink.title }}</a>
+                <li class="submenu-item mobile-item{% if childlink.links != blank %} has-children{% endif %}">
+                  <div class="mobile-link-row mobile-link-row--nested">
+                    <a href="{{ childlink.url }}" class="submenu-link">{{ childlink.title }}</a>
+                    {%- if childlink.links != blank -%}
+                      <button class="mobile-toggle" aria-label="Expand Submenu" aria-expanded="false" aria-controls="mobile-submenu-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}">
+                        {% render 'icon-caret' %}
+                      </button>
+                    {%- endif -%}
+                  </div>
+                  {%- if childlink.links != blank -%}
+                    <ul class="mobile-submenu mobile-submenu--grandchild" id="mobile-submenu-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}">
+                      {%- for grandchildlink in childlink.links -%}
+                        <li class="submenu-item submenu-item--grandchild">
+                          <a href="{{ grandchildlink.url }}" class="submenu-link submenu-link--grandchild">{{ grandchildlink.title }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
                 </li>
               {%- endfor -%}
             </ul>

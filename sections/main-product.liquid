@@ -1,6 +1,14 @@
 {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
 
-<section class="page-width section-{{ section.id }}-padding">
+<section
+  class="page-width section-{{ section.id }}-padding"
+  data-product-analytics
+  data-product-id="{{ product.id }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-vendor="{{ product.vendor | escape }}"
+  data-product-price="{{ product.selected_or_first_available_variant.price }}"
+  data-currency="{{ cart.currency.iso_code }}"
+>
   <div class="product-grid-layout">
     
     <!-- 左侧：媒体展示 -->
@@ -22,6 +30,58 @@
           main 节点下定义的所有 @theme 类型的 blocks
         {%- endcomment -%}
         {% content_for 'blocks' %}
+
+        {%- if section.settings.show_trust_badges -%}
+          <div class="product-trust-badges" aria-label="Store trust highlights">
+            {%- if section.settings.trust_badge_1 != blank -%}
+              <div class="product-trust-badge">
+                {% render 'icon-success' %}
+                <span>{{ section.settings.trust_badge_1 }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.trust_badge_2 != blank -%}
+              <div class="product-trust-badge">
+                {% render 'icon-success' %}
+                <span>{{ section.settings.trust_badge_2 }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.trust_badge_3 != blank -%}
+              <div class="product-trust-badge">
+                {% render 'icon-success' %}
+                <span>{{ section.settings.trust_badge_3 }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_shipping_promise -%}
+          <div class="product-shipping-promise" aria-label="Shipping and returns policy">
+            {%- if section.settings.shipping_promise_heading != blank -%}
+              <h3 class="product-shipping-promise__heading">{{ section.settings.shipping_promise_heading }}</h3>
+            {%- endif -%}
+
+            <ul class="product-shipping-promise__list" role="list">
+              {%- if section.settings.shipping_promise_eta != blank -%}
+                <li class="product-shipping-promise__item">
+                  {% render 'icon-success' %}
+                  <span>{{ section.settings.shipping_promise_eta }}</span>
+                </li>
+              {%- endif -%}
+              {%- if section.settings.shipping_promise_dispatch != blank -%}
+                <li class="product-shipping-promise__item">
+                  {% render 'icon-success' %}
+                  <span>{{ section.settings.shipping_promise_dispatch }}</span>
+                </li>
+              {%- endif -%}
+              {%- if section.settings.shipping_promise_return != blank -%}
+                <li class="product-shipping-promise__item">
+                  {% render 'icon-success' %}
+                  <span>{{ section.settings.shipping_promise_return }}</span>
+                </li>
+              {%- endif -%}
+            </ul>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   </div>
@@ -43,6 +103,68 @@
       "id": "enable_sticky",
       "label": "Enable Sticky Info",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Trust badges"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_badges",
+      "label": "Show trust badges",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_1",
+      "label": "Badge text 1",
+      "default": "Secure checkout & encrypted payment"
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_2",
+      "label": "Badge text 2",
+      "default": "Fast shipping with tracking"
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_3",
+      "label": "Badge text 3",
+      "default": "30-day hassle-free returns"
+    },
+    {
+      "type": "header",
+      "content": "Shipping promise"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_promise",
+      "label": "Show shipping and returns promise",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shipping_promise_heading",
+      "label": "Promise heading",
+      "default": "Delivery & Returns"
+    },
+    {
+      "type": "text",
+      "id": "shipping_promise_eta",
+      "label": "Promise line 1",
+      "default": "Estimated delivery: 5-9 business days"
+    },
+    {
+      "type": "text",
+      "id": "shipping_promise_dispatch",
+      "label": "Promise line 2",
+      "default": "Ships in 24-48 hours from payment confirmation"
+    },
+    {
+      "type": "text",
+      "id": "shipping_promise_return",
+      "label": "Promise line 3",
+      "default": "30-day easy returns and responsive support"
     }
   ]
 }

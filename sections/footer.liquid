@@ -1,23 +1,25 @@
-<footer class="footer" style="background:#000; color:#fff; padding:80px 0 40px;">
+{{ 'component-footer.css' | asset_url | stylesheet_tag }}
+
+<footer class="footer">
   <div class="page-width">
-    <div class="footer-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:40px;">
+    <div class="footer-grid">
       <!-- A. 品牌信息 -->
       <div class="footer-col-info">
-        <div class="footer-logo" style="font-size:2.4rem; font-weight:800; margin-bottom:20px;">{{ shop.name | upcase }}.</div>
-        <p style="opacity:0.6; font-size:1.4rem; line-height:1.6; max-width:300px;">{{ section.settings.bio }}</p>
+        <div class="footer-logo">{{ shop.name | upcase }}.</div>
+        <div class="footer-bio">{{ section.settings.bio }}</div>
         {%- if section.settings.show_social -%}
-        <div class="footer-socials" style="margin-top:25px;">{% render 'social-icons' %}</div>
+          <div class="footer-socials">{% render 'social-icons' %}</div>
         {%- endif -%}
       </div>
 
       <!-- B. 动态菜单列 -->
       {%- for block in section.blocks -%}
         <div class="footer-col-menu" {{ block.shopify_attributes }}>
-          <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">{{ block.settings.heading }}</h4>
-          <ul style="list-style:none; padding:0; margin:0;">
+          <h4 class="footer-heading">{{ block.settings.heading }}</h4>
+          <ul class="footer-menu-list">
             {%- for link in block.settings.menu.links -%}
-              <li style="margin-bottom:12px;">
-                <a href="{{ link.url }}" style="color:#a1a1a6; text-decoration:none; font-size:1.4rem; transition:0.3s;">{{ link.title }}</a>
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
               </li>
             {%- endfor -%}
           </ul>
@@ -26,26 +28,52 @@
 
       <!-- C. 订阅区域 -->
       {%- if section.settings.newsletter_enable -%}
-      <div class="footer-col-newsletter">
-        <h4 style="font-size:1.4rem; font-weight:700; text-transform:uppercase; margin-bottom:25px; letter-spacing:1px;">{{ section.settings.newsletter_heading }}</h4>
-        {{ section.settings.newsletter_text }}
-        {%- form 'customer' -%}
-          <div style="position:relative;">
-            <input type="email" name="contact[email]" placeholder="Email address" required style="width:100%; background:#1a1a1a; border:1px solid #333; color:#fff; padding:15px; border-radius:8px;">
-            <button type="submit" style="position:absolute; right:5px; top:5px; background:#fff; border:none; padding:10px 20px; border-radius:6px; font-weight:700; cursor:pointer;">JOIN</button>
-          </div>
-        {%- endform -%}
-      </div>
+        <div class="footer-col-newsletter">
+          <h4 class="footer-heading">{{ section.settings.newsletter_heading }}</h4>
+          <div class="footer-newsletter-text">{{ section.settings.newsletter_text }}</div>
+          {%- form 'customer', class: 'footer-newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="footer-newsletter-input-wrapper">
+              <input
+                type="email"
+                name="contact[email]"
+                class="footer-newsletter-input"
+                value="{{ form.email }}"
+                aria-required="true"
+                autocorrect="off"
+                autocapitalize="off"
+                autocomplete="email"
+                {% if form.errors %}
+                  autofocus
+                  aria-invalid="true"
+                  aria-describedby="ContactFooter-error"
+                {% elsif form.posted_successfully? %}
+                  aria-describedby="ContactFooter-success"
+                {% endif %}
+                placeholder="Email address"
+                required
+              >
+              <button type="submit" class="footer-newsletter-button" name="commit" id="Subscribe">
+                JOIN
+              </button>
+            </div>
+            {%- if form.errors -%}
+              <small class="footer__newsletter-error" id="ContactFooter-error">{% render 'icon-error' %}{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</small>
+            {%- endif -%}
+            {%- if form.posted_successfully? -%}
+              <h3 class="footer__newsletter-success" id="ContactFooter-success" tabindex="-1" autofocus>{% render 'icon-success' %}{{ 'newsletter.success' | t }}</h3>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
       {%- endif -%}
     </div>
 
     <!-- D. 底部版权与支付图标 -->
-    <div class="footer-bottom" style="margin-top:80px; padding-top:40px; border-top:1px solid #1a1a1a; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px;">
-      <div style="font-size:1.2rem; color:#666;">
+    <div class="footer-bottom">
+      <div class="footer-copyright">
         &copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. All Rights Reserved.
       </div>
-      <div class="payment-icons" style="display:flex; gap:15px; filter:grayscale(1) invert(1); opacity:0.5;">
-        {%- comment -%} 自动渲染已启用的支付图标 {%- endcomment -%}
+      <div class="payment-icons">
         {%- for type in shop.enabled_payment_types -%}
           {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
         {%- endfor -%}

@@ -168,7 +168,18 @@
       "settings": [
         { "type": "checkbox", "id": "show_cart_note", "label": "显示订单备注", "default": true },
         { "type": "checkbox", "id": "enable_cart_drawer", "label": "启用购物车侧边栏", "default": true },
-        { "type": "checkbox", "id": "enable_ajax_cart", "label": "启用AJAX购物车", "default": true }
+        { "type": "checkbox", "id": "enable_ajax_cart", "label": "启用AJAX购物车", "default": true },
+        {
+          "type": "select",
+          "id": "cart_behavior_mode",
+          "label": "全局购物车交互方式",
+          "default": "drawer",
+          "options": [
+            { "value": "drawer", "label": "抽屉（Drawer）" },
+            { "value": "redirect", "label": "跳转购物车页（Redirect）" },
+            { "value": "popover", "label": "顶部快速弹层（Popover）" }
+          ]
+        }
       ]
     },
     {

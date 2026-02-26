@@ -1,0 +1,89 @@
+{%- liquid
+  assign promo_image_fit = mega_block.settings.promo_image_fit | default: 'cover'
+  assign enable_promo_slider = mega_block.settings.enable_promo_slider
+  assign promo_image_count = 0
+  if mega_block.settings.promo_image != blank
+    assign promo_image_count = promo_image_count | plus: 1
+  endif
+  if mega_block.settings.promo_image_2 != blank
+    assign promo_image_count = promo_image_count | plus: 1
+  endif
+  if mega_block.settings.promo_image_3 != blank
+    assign promo_image_count = promo_image_count | plus: 1
+  endif
+-%}
+
+{%- if promo_image_count > 0 -%}
+  <div class="mega-promo-area" data-promo-fit="{{ promo_image_fit }}">
+    <div class="mega-promo-viewport" data-mega-slider{% if enable_promo_slider and promo_image_count > 1 %} data-slider-enabled="true"{% endif %}>
+      <div class="mega-promo-track">
+        {%- if mega_block.settings.promo_image != blank -%}
+          <a href="{{ mega_block.settings.promo_url | default: link.url }}" class="mega-promo-slide is-active" data-slide-index="0">
+            {{
+              mega_block.settings.promo_image
+              | image_url: width: 960
+              | image_tag:
+                loading: 'lazy',
+                class: 'mega-promo-image',
+                widths: '280,420,640,960',
+                sizes: '(min-width: 1200px) 420px, 300px',
+                alt: mega_block.settings.promo_heading
+            }}
+            <p class="mega-promo-title">{{ mega_block.settings.promo_heading }}</p>
+          </a>
+        {%- endif -%}
+
+        {%- if mega_block.settings.promo_image_2 != blank -%}
+          <a href="{{ mega_block.settings.promo_url | default: link.url }}" class="mega-promo-slide" data-slide-index="1">
+            {{
+              mega_block.settings.promo_image_2
+              | image_url: width: 960
+              | image_tag:
+                loading: 'lazy',
+                class: 'mega-promo-image',
+                widths: '280,420,640,960',
+                sizes: '(min-width: 1200px) 420px, 300px',
+                alt: mega_block.settings.promo_heading
+            }}
+            <p class="mega-promo-title">{{ mega_block.settings.promo_heading }}</p>
+          </a>
+        {%- endif -%}
+
+        {%- if mega_block.settings.promo_image_3 != blank -%}
+          <a href="{{ mega_block.settings.promo_url | default: link.url }}" class="mega-promo-slide" data-slide-index="2">
+            {{
+              mega_block.settings.promo_image_3
+              | image_url: width: 960
+              | image_tag:
+                loading: 'lazy',
+                class: 'mega-promo-image',
+                widths: '280,420,640,960',
+                sizes: '(min-width: 1200px) 420px, 300px',
+                alt: mega_block.settings.promo_heading
+            }}
+            <p class="mega-promo-title">{{ mega_block.settings.promo_heading }}</p>
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if enable_promo_slider and promo_image_count > 1 -%}
+        <button type="button" class="mega-slider-btn mega-slider-btn--prev" aria-label="Previous promo image" data-slide-prev>
+          {% render 'icon-arrow-left' %}
+        </button>
+        <button type="button" class="mega-slider-btn mega-slider-btn--next" aria-label="Next promo image" data-slide-next>
+          {% render 'icon-arrow-right' %}
+        </button>
+        <div class="mega-slider-dots" role="tablist" aria-label="Promo image selector">
+          {%- for i in (1..promo_image_count) -%}
+            <button
+              type="button"
+              class="mega-slider-dot{% if forloop.first %} is-active{% endif %}"
+              aria-label="Promo image {{ i }}"
+              data-slide-dot="{{ forloop.index0 }}"
+            ></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

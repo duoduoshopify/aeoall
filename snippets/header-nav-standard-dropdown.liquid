@@ -1,0 +1,14 @@
+<ul class="standard-dropdown" role="list">
+  {%- for childlink in link.links -%}
+    <li class="dropdown-item{% if childlink.links != blank %} has-grandchild{% endif %}">
+      <a href="{{ childlink.url }}"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title }}</a>
+      {%- if childlink.links != blank -%}
+        <ul class="grandchild-dropdown" role="list">
+          {%- for grandchildlink in childlink.links -%}
+            <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+</ul>

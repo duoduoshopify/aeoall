@@ -2,7 +2,13 @@
   Main Cart Items Section
 {% endcomment %}
 
-<div class="cart-items" data-section="{{ section.id }}">
+<div
+  class="cart-items"
+  data-section="{{ section.id }}"
+  data-cart-analytics
+  data-cart-currency="{{ cart.currency.iso_code }}"
+  data-cart-total="{{ cart.total_price }}"
+>
   <form action="{{ routes.cart_url }}" method="post" id="cart-form">
     <div class="cart-items__header">
       <h1 class="cart-items__title">{{ 'sections.cart.title' | t }}</h1>
@@ -14,12 +20,24 @@
     {%- if cart.item_count > 0 -%}
       <div class="cart-items__list">
         {%- for item in cart.items -%}
-          <div class="cart-item" data-index="{{ forloop.index }}">
+          <div
+            class="cart-item"
+            data-index="{{ forloop.index }}"
+            data-cart-item
+            data-product-id="{{ item.product_id }}"
+            data-variant-id="{{ item.variant_id }}"
+            data-product-title="{{ item.product.title | escape }}"
+            data-product-vendor="{{ item.vendor | escape }}"
+            data-quantity="{{ item.quantity }}"
+            data-price="{{ item.final_price }}"
+          >
             <div class="cart-item__media">
               {%- if item.image -%}
                 <img src="{{ item.image | image_url: width: 150 }}" 
                      alt="{{ item.image.alt | escape }}"
-                     loading="lazy">
+                     loading="lazy"
+                     width="150"
+                     height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}">
               {%- endif -%}
             </div>
 
@@ -68,6 +86,13 @@
             <div class="cart-item__remove">
               <a href="{{ item.url_to_remove }}" 
                  class="cart-item__remove-button"
+                 data-remove-cart-item
+                 data-product-id="{{ item.product_id }}"
+                 data-variant-id="{{ item.variant_id }}"
+                 data-product-title="{{ item.product.title | escape }}"
+                 data-product-vendor="{{ item.vendor | escape }}"
+                 data-quantity="{{ item.quantity }}"
+                 data-price="{{ item.final_price }}"
                  aria-label="{{ 'sections.cart.remove_title' | t: title: item.title }}">
                 {% render 'icon-close' %}
               </a>

@@ -1,0 +1,14 @@
+<div class="mega-links-area" role="list">
+  {%- for childlink in link.links -%}
+    <section class="mega-col" role="listitem" aria-label="{{ childlink.title | escape }}">
+      <a href="{{ childlink.url }}" class="mega-title"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title }}</a>
+      {%- if childlink.links != blank -%}
+        <ul class="mega-list">
+          {%- for grandchildlink in childlink.links -%}
+            <li><a href="{{ grandchildlink.url }}"{% if grandchildlink.current %} aria-current="page"{% endif %}>{{ grandchildlink.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </section>
+  {%- endfor -%}
+</div>

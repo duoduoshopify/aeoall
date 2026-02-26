@@ -16,6 +16,11 @@ function debounce(fn, wait) {
       t = setTimeout(() => fn.apply(this, args), wait);
     };
   }
+
+  function pushAnalyticsEvent(eventName, payload = {}) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: eventName, ...payload });
+  }
   
   // 货币格式化 (Shopify 标准货币转换工具)
   function formatMoney(cents, format) {
@@ -50,28 +55,197 @@ function debounce(fn, wait) {
   // ==========================================
   
   document.addEventListener('DOMContentLoaded', () => {
+    const globalCartBehavior = window.themeSettings?.cartBehaviorMode || 'drawer';
+    const headerMain = document.querySelector('.header-main');
+    const cartIcon = document.getElementById('cart-icon-bubble');
+    const cartPopover = document.getElementById('HeaderCartPopover');
     const burgerBtn = document.querySelector('.burger-menu');
     const mobileDrawer = document.getElementById('MobileNavDrawer');
+    const mobileOverlay = document.getElementById('MobileDrawerOverlay');
     const body = document.body;
+
+    // Header sticky behavior
+    if (headerMain) {
+      const stickyMode = headerMain.dataset.stickyMode || 'always';
+      const cartBehavior = globalCartBehavior || headerMain.dataset.cartBehavior || cartIcon?.dataset.cartBehavior || 'drawer';
+      const headerSectionId = headerMain.dataset.headerSection || '';
+      const stickySentinel = headerSectionId
+        ? document.querySelector(`[data-header-sentinel="${headerSectionId}"]`)
+        : null;
+      const headerSpacer = headerSectionId
+        ? document.querySelector(`[data-header-spacer="${headerSectionId}"]`)
+        : null;
+      window.themeCartBehavior = cartBehavior;
+      let lastScrollY = window.scrollY;
+      let isHeaderPinned = false;
+      let stickyObserver = null;
+
+      const getCurrentStickyTop = () => {
+        const computed = window.getComputedStyle(headerMain);
+        if (window.matchMedia('(min-width: 990px)').matches) {
+          return parseFloat(computed.getPropertyValue('--header-sticky-top-desktop')) || 0;
+        }
+        if (window.matchMedia('(min-width: 750px)').matches) {
+          return parseFloat(computed.getPropertyValue('--header-sticky-top-tablet')) || 0;
+        }
+        return parseFloat(computed.getPropertyValue('--header-sticky-top-mobile')) || 0;
+      };
+
+      const setupStickyObserver = () => {
+        if (stickyObserver) {
+          stickyObserver.disconnect();
+          stickyObserver = null;
+        }
+
+        if (stickyMode === 'always' || stickyMode === 'hide_on_scroll') {
+          isHeaderPinned = true;
+          headerMain.classList.add('is-pinned');
+          headerMain.classList.add('is-stuck');
+          if (headerSpacer) {
+            headerSpacer.style.height = `${Math.round(headerMain.getBoundingClientRect().height)}px`;
+          }
+          return;
+        }
+
+        if (stickyMode !== 'on_scroll' || !stickySentinel) {
+          isHeaderPinned = false;
+          headerMain.classList.remove('is-pinned');
+          headerMain.classList.remove('is-stuck');
+          headerMain.classList.remove('is-hidden');
+          if (headerSpacer) headerSpacer.style.height = '0px';
+          return;
+        }
+
+        const topOffset = Math.max(0, Math.round(getCurrentStickyTop()));
+        stickyObserver = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            if (!entry) return;
+
+            const nextPinned = !entry.isIntersecting;
+            isHeaderPinned = nextPinned;
+
+            headerMain.classList.toggle('is-pinned', nextPinned);
+            headerMain.classList.toggle('is-stuck', nextPinned);
+
+            if (headerSpacer) {
+              headerSpacer.style.height = nextPinned ? `${Math.round(headerMain.getBoundingClientRect().height)}px` : '0px';
+            }
+
+            if (!nextPinned) {
+              headerMain.classList.remove('is-hidden');
+            }
+          },
+          {
+            threshold: [0, 1],
+            rootMargin: `-${topOffset}px 0px 0px 0px`
+          }
+        );
+
+        stickyObserver.observe(stickySentinel);
+      };
+
+      const applyHeaderOffset = () => {
+        if (stickyMode === 'always' || stickyMode === 'hide_on_scroll' || stickyMode === 'on_scroll') {
+          document.body.classList.add('has-sticky-header');
+          setupStickyObserver();
+          if (headerMain.classList.contains('is-pinned') && headerSpacer) {
+            headerSpacer.style.height = `${Math.round(headerMain.getBoundingClientRect().height)}px`;
+          }
+        } else {
+          document.body.classList.remove('has-sticky-header');
+          setupStickyObserver();
+        }
+      };
+
+      const onScroll = () => {
+        const currentY = window.scrollY;
+        headerMain.classList.toggle('header-scrolled', currentY > 8);
+
+        if (stickyMode === 'hide_on_scroll' && isHeaderPinned) {
+          if (currentY > lastScrollY && currentY > 120) {
+            headerMain.classList.add('is-hidden');
+          } else {
+            headerMain.classList.remove('is-hidden');
+          }
+        } else {
+          headerMain.classList.remove('is-hidden');
+        }
+
+        lastScrollY = currentY;
+      };
+
+      applyHeaderOffset();
+      onScroll();
+      window.addEventListener('scroll', debounce(onScroll, 16), { passive: true });
+      window.addEventListener('resize', debounce(applyHeaderOffset, 100));
+    }
+
+    // Cart icon behavior: drawer / redirect / popover
+    if (cartIcon) {
+      const cartBehavior = window.themeCartBehavior || globalCartBehavior || headerMain?.dataset.cartBehavior || cartIcon.dataset.cartBehavior || 'drawer';
+      cartIcon.dataset.cartBehavior = cartBehavior;
+
+      if (cartBehavior === 'popover' && cartPopover) {
+        cartIcon.addEventListener('click', (event) => {
+          event.preventDefault();
+          const isHidden = cartPopover.hasAttribute('hidden');
+          if (isHidden) {
+            cartPopover.removeAttribute('hidden');
+          } else {
+            cartPopover.setAttribute('hidden', 'hidden');
+          }
+        });
+
+        document.addEventListener('click', (event) => {
+          if (!cartPopover.hasAttribute('hidden') && !cartPopover.contains(event.target) && !cartIcon.contains(event.target)) {
+            cartPopover.setAttribute('hidden', 'hidden');
+          }
+        });
+      }
+      // redirect 模式无需 JS；drawer 模式由 cart-drawer.js 接管
+    }
+
+    const closeMobileDrawer = () => {
+      if (!burgerBtn || !mobileDrawer) return;
+      burgerBtn.classList.remove('active');
+      burgerBtn.setAttribute('aria-expanded', 'false');
+      mobileDrawer.classList.remove('active');
+      mobileDrawer.setAttribute('aria-hidden', 'true');
+      body.style.overflow = '';
+    };
+
+    const openMobileDrawer = () => {
+      if (!burgerBtn || !mobileDrawer) return;
+      burgerBtn.classList.add('active');
+      burgerBtn.setAttribute('aria-expanded', 'true');
+      mobileDrawer.classList.add('active');
+      mobileDrawer.setAttribute('aria-hidden', 'false');
+      body.style.overflow = 'hidden';
+    };
   
     // A. 移动端抽屉菜单开启/关闭逻辑
     if (burgerBtn && mobileDrawer) {
       burgerBtn.addEventListener('click', (e) => {
         e.preventDefault();
         const isActive = burgerBtn.classList.contains('active');
-        
-        // 切换按钮状态 (汉堡变X)
-        burgerBtn.classList.toggle('active');
-        burgerBtn.setAttribute('aria-expanded', !isActive);
-        
-        // 切换侧边抽屉滑入/滑出
-        mobileDrawer.classList.toggle('active');
-        
-        // 防止背景页面滚动
-        if (!isActive) {
-          body.style.overflow = 'hidden';
+
+        if (isActive) {
+          closeMobileDrawer();
         } else {
-          body.style.overflow = '';
+          openMobileDrawer();
+        }
+      });
+
+      // 点击遮罩关闭
+      if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', closeMobileDrawer);
+      }
+
+      // ESC 关闭
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileDrawer.classList.contains('active')) {
+          closeMobileDrawer();
         }
       });
     }
@@ -83,6 +257,7 @@ function debounce(fn, wait) {
         e.preventDefault();
         e.stopPropagation();
         const parentItem = toggle.closest('.mobile-item');
+        if (!parentItem) return;
         
         // 切换展开状态
         parentItem.classList.toggle('is-open');
@@ -92,11 +267,13 @@ function debounce(fn, wait) {
         toggle.setAttribute('aria-expanded', !isExpanded);
         
         // 关闭同级其他展开的菜单
-        const siblings = parentItem.parentElement.querySelectorAll('.mobile-item.is-open');
+        const siblings = parentItem.parentElement
+          ? Array.from(parentItem.parentElement.children).filter((el) => el.classList && el.classList.contains('mobile-item') && el.classList.contains('is-open'))
+          : [];
         siblings.forEach(sibling => {
           if (sibling !== parentItem) {
             sibling.classList.remove('is-open');
-            const siblingToggle = sibling.querySelector('.mobile-toggle');
+            const siblingToggle = sibling.querySelector(':scope > .mobile-link-row .mobile-toggle');
             if (siblingToggle) {
               siblingToggle.setAttribute('aria-expanded', 'false');
             }
@@ -104,6 +281,88 @@ function debounce(fn, wait) {
         });
       });
     });
+
+    const productAnalyticsNode = document.querySelector('[data-product-analytics]');
+    if (productAnalyticsNode) {
+      pushAnalyticsEvent('view_item', {
+        ecommerce: {
+          items: [
+            {
+              item_id: productAnalyticsNode.dataset.productId,
+              item_name: productAnalyticsNode.dataset.productTitle,
+              item_brand: productAnalyticsNode.dataset.productVendor,
+              price: Number(productAnalyticsNode.dataset.productPrice || 0) / 100,
+              currency: productAnalyticsNode.dataset.currency || ''
+            }
+          ]
+        }
+      });
+    }
+
+    const checkoutButton = document.querySelector('button[name="checkout"]');
+    if (checkoutButton) {
+      checkoutButton.addEventListener('click', () => {
+        pushAnalyticsEvent('begin_checkout', {
+          source: 'cart'
+        });
+      });
+    }
+
+    const cartAnalyticsNode = document.querySelector('[data-cart-analytics]');
+    if (cartAnalyticsNode) {
+      const cartItems = Array.from(document.querySelectorAll('[data-cart-item]')).map((item) => ({
+        item_id: item.dataset.variantId || item.dataset.productId || '',
+        item_name: item.dataset.productTitle || '',
+        item_brand: item.dataset.productVendor || '',
+        quantity: Number(item.dataset.quantity || 0),
+        price: Number(item.dataset.price || 0) / 100
+      }));
+
+      pushAnalyticsEvent('view_cart', {
+        ecommerce: {
+          currency: cartAnalyticsNode.dataset.cartCurrency || '',
+          value: Number(cartAnalyticsNode.dataset.cartTotal || 0) / 100,
+          items: cartItems
+        }
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      const removeButton = event.target.closest('[data-remove-cart-item]');
+      if (!removeButton) return;
+
+      pushAnalyticsEvent('remove_from_cart', {
+        ecommerce: {
+          items: [
+            {
+              item_id: removeButton.dataset.variantId || removeButton.dataset.productId || '',
+              item_name: removeButton.dataset.productTitle || '',
+              item_brand: removeButton.dataset.productVendor || '',
+              quantity: Number(removeButton.dataset.quantity || 1),
+              price: Number(removeButton.dataset.price || 0) / 100
+            }
+          ]
+        }
+      });
+    });
+
+    if (window.Shopify && window.Shopify.checkout && window.Shopify.checkout.order_id) {
+      const checkout = window.Shopify.checkout;
+      pushAnalyticsEvent('purchase', {
+        ecommerce: {
+          transaction_id: checkout.order_id,
+          currency: checkout.currency || '',
+          value: Number(checkout.total_price || 0),
+          items: (checkout.line_items || []).map((item) => ({
+            item_id: item.variant_id || item.product_id || '',
+            item_name: item.title || '',
+            item_brand: item.vendor || '',
+            quantity: Number(item.quantity || 0),
+            price: Number(item.price || 0)
+          }))
+        }
+      });
+    }
   });
   
   // ==========================================
@@ -293,12 +552,46 @@ function debounce(fn, wait) {
               this.handleErrorMessage(response.description);
               return;
             }
+
+            const variantInput = this.form.querySelector('[name="id"]');
+            const productAnalyticsNode = document.querySelector('[data-product-analytics]');
+            pushAnalyticsEvent('add_to_cart', {
+              ecommerce: {
+                items: [
+                  {
+                    item_id: variantInput ? variantInput.value : '',
+                    item_name: productAnalyticsNode?.dataset.productTitle || '',
+                    item_brand: productAnalyticsNode?.dataset.productVendor || ''
+                  }
+                ]
+              }
+            });
             
-            if (this.cart) {
-              // 将 API 返回的 HTML 交给抽屉去渲染并自动打开
-              this.cart.renderContents(response);
+            const cartBehavior = window.themeCartBehavior || 'drawer';
+            const cartPopover = document.getElementById('HeaderCartPopover');
+            const cartBadge = document.querySelector('.cart-count-badge');
+
+            if (cartBehavior === 'drawer') {
+              if (this.cart) {
+                // 将 API 返回的 HTML 交给抽屉去渲染并自动打开
+                this.cart.renderContents(response);
+              } else {
+                window.location = window.routes.cart_url;
+              }
+            } else if (cartBehavior === 'popover') {
+              fetch(`${window.routes.cart_url}.js`)
+                .then((res) => res.json())
+                .then((cart) => {
+                  if (cartBadge) cartBadge.textContent = cart.item_count;
+                })
+                .catch(() => {});
+
+              if (cartPopover) {
+                cartPopover.removeAttribute('hidden');
+                window.setTimeout(() => cartPopover.setAttribute('hidden', 'hidden'), 2600);
+              }
             } else {
-              // 后备方案：如果没有抽屉，跳往购物车页面
+              // redirect
               window.location = window.routes.cart_url;
             }
 

@@ -64,6 +64,10 @@
         soldOut: `{{ 'products.product.sold_out' | t }}`,
         unavailable: `{{ 'products.product.unavailable' | t }}`
       };
+
+      window.themeSettings = {
+        cartBehaviorMode: {{ settings.cart_behavior_mode | default: 'drawer' | json }}
+      };
     </script>
     <!-- 性能监控 -->
 <script src="{{ 'performance.js' | asset_url }}" defer></script>

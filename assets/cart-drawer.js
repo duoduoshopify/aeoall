@@ -11,10 +11,16 @@ if (!customElements.get('cart-drawer')) {
         this.querySelector('#CartDrawer-Overlay').addEventListener('click', this.close.bind(this));
         
         const cartIcon = document.querySelector('#cart-icon-bubble');
+        const headerMain = document.querySelector('.header-main');
         if (cartIcon) {
           cartIcon.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.open();
+            const behavior = window.themeCartBehavior || window.themeSettings?.cartBehaviorMode || cartIcon.dataset.cartBehavior || headerMain?.dataset.cartBehavior || 'drawer';
+
+            // 仅在 drawer 模式下拦截并打开抽屉
+            if (behavior === 'drawer') {
+              e.preventDefault();
+              this.open();
+            }
           });
         }
       }

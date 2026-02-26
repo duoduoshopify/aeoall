@@ -2,13 +2,16 @@
   <div class="sticky-cta-content">
     <div class="sticky-info">
       <span class="sticky-title">{{ product.title | truncate: 25 }}</span>
-      <span class="sticky-price">{{ product.price | money }}</span>
+      <span class="sticky-price" data-sticky-price>{{ product.selected_or_first_available_variant.price | money }}</span>
     </div>
-    <button class="atc-btn" style="height: 50px; width: auto; padding: 0 2.5rem;" onclick="document.querySelector('.atc-btn').click()">
+    <button class="sticky-atc-btn" type="button" style="height: 50px; width: auto; padding: 0 2.5rem;">
       ADD TO CART
     </button>
   </div>
 </div>
+
+{% capture sticky_variants_json %}{{ product.variants | json }}{% endcapture %}
+<div id="MobileStickyVariantsData" class="visually-hidden" aria-hidden="true">{{ sticky_variants_json | escape }}</div>
 
 <style>
   .mobile-sticky-cta {
@@ -27,15 +30,40 @@
 </style>
 
 <script>
-  window.addEventListener('scroll', () => {
-    const mainBtn = document.querySelector('.section-product-main .atc-btn');
+  (() => {
     const sticky = document.getElementById('MobileStickyCTA');
-    if(!mainBtn || !sticky) return;
-    const rect = mainBtn.getBoundingClientRect();
-    if (rect.bottom < 0) {
-      sticky.classList.add('visible');
-    } else {
-      sticky.classList.remove('visible');
-    }
-  });
+    const mainBtn = document.querySelector('.section-product-main #ProductSubmitButton-main');
+    const stickyBtn = sticky?.querySelector('.sticky-atc-btn');
+    const stickyPrice = sticky?.querySelector('[data-sticky-price]');
+    const variantInput = document.querySelector('#product-form-main [name="id"]');
+
+    if (!sticky || !mainBtn || !stickyBtn) return;
+
+    const rawVariants = document.getElementById('MobileStickyVariantsData')?.textContent || '[]';
+    const variants = JSON.parse(rawVariants);
+
+    const updateStickyPrice = () => {
+      if (!stickyPrice || !variantInput) return;
+      const currentId = Number(variantInput.value);
+      const currentVariant = variants.find((v) => Number(v.id) === currentId);
+      if (!currentVariant) return;
+
+      if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
+        stickyPrice.textContent = window.Shopify.formatMoney(currentVariant.price, window.routes?.money_format || '${{amount}}');
+      } else {
+        stickyPrice.textContent = (currentVariant.price / 100).toFixed(2);
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      const rect = mainBtn.getBoundingClientRect();
+      sticky.classList.toggle('visible', rect.bottom < 0);
+    });
+
+    stickyBtn.addEventListener('click', () => mainBtn.click());
+
+    if (variantInput) variantInput.addEventListener('change', updateStickyPrice);
+
+    updateStickyPrice();
+  })();
 </script>

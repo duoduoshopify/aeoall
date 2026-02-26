@@ -15,7 +15,7 @@
           "heading": {
             "type": "heading",
             "settings": {
-              "heading": "404 Page Not Found",
+              "heading": "404 · Page not found",
               "size": "h1",
               "tag": "h1"
             }
@@ -23,7 +23,7 @@
           "text": {
             "type": "text",
             "settings": {
-              "text": "<p>The page you were looking for does not exist.</p>",
+              "text": "<p>The page you are looking for doesn\u2019t exist or has moved. Try heading back to the homepage.</p>",
               "style": "body"
             }
           },
@@ -31,7 +31,7 @@
             "type": "button",
             "settings": {
               "button_label": "Back to Home",
-              "button_link": "",
+              "button_link": "/",
               "button_style": "primary"
             }
           }
@@ -43,9 +43,10 @@
         ],
         "settings": {
           "alignment": "center",
-          "content_width": 80,
-          "padding_top": 100,
-          "padding_bottom": 100
+          "content_width": 60,
+          "padding_top": 120,
+          "padding_bottom": 120,
+          "visual_vibe": "soft-shadow"
         }
       }
     },

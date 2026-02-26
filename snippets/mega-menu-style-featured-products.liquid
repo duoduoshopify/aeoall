@@ -1,0 +1,27 @@
+{%- assign featured_collection = mega_block.settings.featured_collection -%}
+
+{%- if featured_collection != blank and featured_collection.products_count > 0 -%}
+  <div class="mega-products" role="list">
+    {%- for product in featured_collection.products limit: 4 -%}
+      <a href="{{ product.url }}" class="mega-product-card" role="listitem">
+        <div class="mega-product-card__image-wrap">
+          {%- if product.featured_image != blank -%}
+            {{
+              product.featured_image
+              | image_url: width: 320
+              | image_tag:
+                loading: 'lazy',
+                widths: '160,220,320',
+                sizes: '220px',
+                alt: product.title
+            }}
+          {%- endif -%}
+        </div>
+        <p class="mega-product-card__title">{{ product.title }}</p>
+        <p class="mega-product-card__price">{{ product.price | money }}</p>
+      </a>
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  {% render 'mega-menu-links-columns', link: link %}
+{%- endif -%}

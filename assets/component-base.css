@@ -4,7 +4,7 @@
 .heading-element {
     margin: 0;
     line-height: 1.2;
-    color: rgb(var(--color-foreground));
+    color: rgb(var(--color-text));
     word-break: break-word;
   }
   
@@ -18,9 +18,9 @@
     margin-top: 1rem;
     margin-bottom: 0;
     line-height: 1.6;
-    color: rgba(var(--color-foreground), 0.75);
+    color: rgba(var(--color-text), 0.75);
   }
-  .text-element strong { color: rgb(var(--color-foreground)); }
+  .text-element strong { color: rgb(var(--color-text)); }
   .text-style-subtitle { text-transform: uppercase; letter-spacing: 0.1em; font-size: 1.2rem; opacity: 0.8; }
   
   /* 按钮组件 */
@@ -29,12 +29,12 @@
     justify-content: center;
     align-items: center;
     border: var(--buttons-border-width) solid transparent;
-    border-radius: var(--buttons-radius);
+    border-radius: var(--buttons-radius, var(--border-radius-full));
     padding: 1rem 3rem;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
-    transition: box-shadow var(--duration-default) ease;
+    transition: box-shadow var(--duration-default) ease, transform var(--transition-base);
     margin-top: 1.5rem;
     min-height: 4.4rem; /* 移动端触摸优化 */
   }
@@ -46,6 +46,7 @@
   }
   .button-primary:hover {
     box-shadow: 0 0 0 0.2rem rgb(var(--color-background)), 0 0 0 0.4rem rgba(var(--color-button), 0.7);
+    transform: translateY(-1px);
   }
   
   /* 次要/轮廓按钮 */
@@ -56,4 +57,5 @@
   }
   .button-secondary:hover {
     box-shadow: 0 0 0 0.1rem rgb(var(--color-button));
+    transform: translateY(-1px);
   }

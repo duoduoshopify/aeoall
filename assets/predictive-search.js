@@ -6,7 +6,9 @@ class PredictiveSearch extends HTMLElement {
     constructor() {
       super();
       this.input = this.querySelector('input[type="search"]');
-      this.predictiveSearchResults = this.querySelector('#predictive-search');
+      this.predictiveSearchResults = this.querySelector('.predictive-search-dropdown');
+
+      if (!this.input || !this.predictiveSearchResults) return;
   
       this.input.addEventListener('input', this.debounce((event) => {
         this.onChange(event);
@@ -15,6 +17,10 @@ class PredictiveSearch extends HTMLElement {
       // 点击外部关闭
       document.addEventListener('click', (event) => {
         if (!this.contains(event.target)) this.close();
+      });
+
+      this.input.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') this.close();
       });
     }
   

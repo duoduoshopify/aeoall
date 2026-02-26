@@ -1,0 +1,31 @@
+<div class="mega-circle-grid" role="list">
+  {%- for childlink in link.links -%}
+    {%- liquid
+      assign mega_circle_image = blank
+      if childlink.type == 'collection_link' and childlink.object != blank and childlink.object.image != blank
+        assign mega_circle_image = childlink.object.image
+      elsif childlink.type == 'product_link' and childlink.object != blank and childlink.object.featured_image != blank
+        assign mega_circle_image = childlink.object.featured_image
+      endif
+    -%}
+    <a href="{{ childlink.url }}" class="mega-circle-item" role="listitem"{% if childlink.current %} aria-current="page"{% endif %}>
+      <span class="mega-circle-item__avatar">
+        {%- if mega_circle_image != blank -%}
+          {{
+            mega_circle_image
+            | image_url: width: 420
+            | image_tag:
+              loading: 'lazy',
+              class: 'mega-circle-item__image',
+              widths: '120,180,260,360,420',
+              sizes: '(min-width: 1200px) 100px, 80px',
+              alt: childlink.title
+          }}
+        {%- else -%}
+          <span class="mega-circle-item__initial">{{ childlink.title | slice: 0, 1 | upcase }}</span>
+        {%- endif -%}
+      </span>
+      <span class="mega-circle-item__label">{{ childlink.title }}</span>
+    </a>
+  {%- endfor -%}
+</div>

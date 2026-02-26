@@ -16,18 +16,19 @@
   }
 
   .collection-header {
-    margin-bottom: 5rem;
+    margin-bottom: clamp(3rem, 5vw, 5rem);
   }
 
   .collection-hero__title {
     margin: 0 0 1.5rem;
-    font-size: calc(var(--font-heading-scale) * 4rem);
+    font-size: clamp(2.8rem, 2.2rem + 1.5vw, calc(var(--font-heading-scale) * 4rem));
   }
 
   .collection-description {
     max-width: 70rem;
     margin: 0 auto;
-    line-height: 1.6;
+    font-size: clamp(1.45rem, 1.35rem + 0.2vw, 1.65rem);
+    line-height: 1.7;
     color: rgba(var(--color-text), 0.7);
   }
 
@@ -35,8 +36,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
+    margin-bottom: 2.6rem;
+    padding-bottom: 1.8rem;
     border-bottom: 1px solid rgb(var(--color-border));
   }
 
@@ -52,12 +53,34 @@
   }
 
   .collection-sort__select {
+    min-height: 4.2rem;
     padding: 0.8rem 3rem 0.8rem 1.2rem;
     border: 1px solid rgb(var(--color-border));
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 1.4rem;
     background: rgb(var(--color-background));
     cursor: pointer;
+  }
+
+  .collection-sort__select:focus-visible {
+    outline: 2px solid rgba(var(--color-text), 0.35);
+    outline-offset: 2px;
+  }
+
+  .collection-empty {
+    text-align: center;
+    padding: clamp(6rem, 12vw, 10rem) 0;
+  }
+
+  .collection-empty__title {
+    font-size: clamp(2rem, 1.8rem + 0.8vw, 2.8rem);
+    margin-bottom: 1rem;
+  }
+
+  .collection-empty__text {
+    font-size: 1.45rem;
+    color: rgba(var(--color-text), 0.7);
+    margin-bottom: 2.2rem;
   }
 
   @media (max-width: 749px) {
@@ -151,8 +174,10 @@
   <div id="ProductGridContainer">
     {%- paginate collection.products by section.settings.products_per_page -%}
       {%- if collection.products.size == 0 -%}
-        <div class="text-center" style="padding: 10rem 0;">
-          <p>No products found in this collection.</p>
+        <div class="collection-empty">
+          <h2 class="collection-empty__title">No products found</h2>
+          <p class="collection-empty__text">Try a different sorting option or browse all products.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="atc-btn" style="display:inline-flex; width:auto; padding:0 3rem; min-height:4.8rem; text-decoration:none;">View all products</a>
         </div>
       {%- else -%}
         <ul id="product-grid" class="grid grid--2-col grid--3-col-tablet grid--4-col-desktop">

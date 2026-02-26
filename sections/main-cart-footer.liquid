@@ -4,10 +4,71 @@
 
 <div class="cart-footer" data-section="{{ section.id }}">
   <div class="cart-footer__inner">
+    {%- if section.settings.show_free_shipping_progress and section.settings.free_shipping_threshold > 0 -%}
+      {%- assign free_shipping_threshold_cents = section.settings.free_shipping_threshold | times: 100 -%}
+      {%- assign free_shipping_progress = cart.total_price | times: 100 | divided_by: free_shipping_threshold_cents -%}
+      {%- if free_shipping_progress > 100 -%}
+        {%- assign free_shipping_progress = 100 -%}
+      {%- endif -%}
+      {%- assign free_shipping_remaining = free_shipping_threshold_cents | minus: cart.total_price -%}
+
+      <div class="cart-free-shipping" role="status" aria-live="polite">
+        <div class="cart-free-shipping__text">
+          {%- if free_shipping_remaining > 0 -%}
+            Add <strong>{{ free_shipping_remaining | money }}</strong> more for free shipping
+          {%- else -%}
+            🎉 You have unlocked free shipping!
+          {%- endif -%}
+        </div>
+        <div class="cart-free-shipping__track" aria-hidden="true">
+          <span class="cart-free-shipping__bar" style="width: {{ free_shipping_progress }}%"></span>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_cart_recommendations and section.settings.cart_recommendation_collection != blank -%}
+      {%- assign cart_product_ids = ',' -%}
+      {%- for cart_item in cart.items -%}
+        {%- assign cart_product_ids = cart_product_ids | append: cart_item.product_id | append: ',' -%}
+      {%- endfor -%}
+      {%- assign shown_recommendations = 0 -%}
+
+      <div class="cart-upsell">
+        {%- if section.settings.cart_recommendation_heading != blank -%}
+          <h3 class="cart-upsell__heading">{{ section.settings.cart_recommendation_heading }}</h3>
+        {%- endif -%}
+        <div class="cart-upsell__list">
+          {%- for product in section.settings.cart_recommendation_collection.products -%}
+            {%- assign current_product_key = ',' | append: product.id | append: ',' -%}
+            {%- unless cart_product_ids contains current_product_key -%}
+              {%- if shown_recommendations < section.settings.cart_recommendation_limit -%}
+                <article class="cart-upsell__item">
+                  <a href="{{ product.url }}" class="cart-upsell__image-link" aria-label="{{ product.title | escape }}">
+                    {%- if product.featured_image -%}
+                      {{ product.featured_image | image_url: width: 220 | image_tag: loading: 'lazy', class: 'cart-upsell__image', alt: product.title }}
+                    {%- endif -%}
+                  </a>
+                  <div class="cart-upsell__content">
+                    <a href="{{ product.url }}" class="cart-upsell__title">{{ product.title }}</a>
+                    <div class="cart-upsell__price">{{ product.price | money }}</div>
+                  </div>
+                </article>
+                {%- assign shown_recommendations = shown_recommendations | plus: 1 -%}
+              {%- endif -%}
+            {%- endunless -%}
+          {%- endfor -%}
+
+          {%- if shown_recommendations == 0 -%}
+            <p class="cart-upsell__empty">No extra recommendations right now — you already picked the best ones.</p>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
     {%- if section.settings.show_cart_note -%}
       <div class="cart-note">
         <label for="cart-note">{{ 'sections.cart.note' | t }}</label>
-        <textarea id="cart-note" name="note" placeholder="{{ 'sections.cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
+        <textarea id="cart-note" name="note" form="cart-form" placeholder="{{ 'sections.cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
       </div>
     {%- endif -%}
 
@@ -45,6 +106,52 @@
   "name": "Cart Footer",
   "class": "section-cart-footer",
   "settings": [
+    {
+      "type": "header",
+      "content": "Conversion"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_free_shipping_progress",
+      "label": "Show free shipping progress",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping threshold",
+      "default": 299
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_recommendations",
+      "label": "Show cart recommendations",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_recommendation_heading",
+      "label": "Recommendations heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "collection",
+      "id": "cart_recommendation_collection",
+      "label": "Recommendations collection"
+    },
+    {
+      "type": "range",
+      "id": "cart_recommendation_limit",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Recommendations count",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Cart note"
+    },
     {
       "type": "checkbox",
       "id": "show_cart_note",

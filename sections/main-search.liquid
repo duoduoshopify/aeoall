@@ -4,18 +4,36 @@
 
 {%- style -%}
   .template-search__header {
-    margin-bottom: 5rem;
+    margin-bottom: clamp(3rem, 5vw, 5rem);
   }
 
   .template-search__title {
     margin: 0 0 1.5rem;
-    font-size: calc(var(--font-heading-scale) * 3.2rem);
+    font-size: clamp(2.6rem, 2.1rem + 1vw, calc(var(--font-heading-scale) * 3.2rem));
   }
 
   .template-search__status {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
     opacity: 0.6;
     letter-spacing: 0.5px;
+  }
+
+  .search-empty {
+    text-align: center;
+    padding: clamp(5rem, 10vw, 8rem) 0;
+  }
+
+  .search-empty__text {
+    font-size: clamp(1.45rem, 1.3rem + 0.2vw, 1.6rem);
+    margin-bottom: 2.4rem;
+    color: rgba(var(--color-text), 0.72);
+  }
+
+  .search-empty .atc-btn {
+    width: auto;
+    padding: 0 3.4rem;
+    min-height: 4.8rem;
+    text-decoration: none;
   }
 {%- endstyle -%}
 
@@ -45,9 +63,9 @@
         
         {%- if search.results_count == 0 -%}
           {%- comment -%} 搜索无结果时的空状态 {%- endcomment -%}
-          <div class="text-center" style="padding: 6rem 0;">
-            <p style="font-size: 1.6rem; margin-bottom: 3rem;">Try checking your spelling or use more general terms.</p>
-            <a href="{{ routes.all_products_collection_url }}" class="atc-btn" style="width: auto; padding: 1.5rem 5rem;">
+          <div class="search-empty">
+            <p class="search-empty__text">Try checking your spelling, using fewer words, or browsing all products.</p>
+            <a href="{{ routes.all_products_collection_url }}" class="atc-btn">
               CONTINUE SHOPPING
             </a>
           </div>

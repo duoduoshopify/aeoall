@@ -1,11 +1,38 @@
-{{ 'header-desktop.css' | asset_url | stylesheet_tag }}
-{{ 'header-mobile.css' | asset_url | stylesheet_tag }}
+{{ 'component-header.css' | asset_url | stylesheet_tag }}
 
-<div class="announcement-bar">
-  {{ section.settings.announcement_text }}
-</div>
+{%- liquid
+  assign sticky_mode = section.settings.sticky_mode | default: 'always'
+  assign cart_click_behavior = settings.cart_behavior_mode | default: section.settings.cart_click_behavior | default: 'drawer'
+  assign has_mega_menu = false
+  assign load_mega_js = false
 
-<header class="header-main">
+  for block in section.blocks
+    if block.type == 'mega_menu'
+      assign has_mega_menu = true
+      if block.settings.enable_promo_slider and block.settings.promo_image != blank and (block.settings.promo_image_2 != blank or block.settings.promo_image_3 != blank)
+        assign load_mega_js = true
+      endif
+    endif
+  endfor
+-%}
+
+{%- if has_mega_menu -%}
+  {{ 'component-header-mega.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- if load_mega_js -%}
+  <script src="{{ 'mega-menu.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+<div class="header-sticky-sentinel" data-header-sentinel="{{ section.id }}" aria-hidden="true"></div>
+
+<header
+  class="header-main"
+  data-header-section="{{ section.id }}"
+  data-sticky-mode="{{ sticky_mode }}"
+  data-cart-behavior="{{ cart_click_behavior }}"
+  style="--header-sticky-top-mobile: {{ section.settings.sticky_top_mobile | default: 0 }}px; --header-sticky-top-tablet: {{ section.settings.sticky_top_tablet | default: 0 }}px; --header-sticky-top-desktop: {{ section.settings.sticky_top_desktop | default: 0 }}px;"
+>
   <div class="page-width header-wrap">
     
     <!-- 1. 移动端触发器 -->
@@ -13,7 +40,7 @@
 
     <!-- 2. Logo -->
     <div class="header-logo">
-      <a href="{{ routes.root_url }}" class="logo">
+      <a href="{{ routes.root_url }}" class="logo" aria-label="{{ shop.name | escape }}">
         {%- if section.settings.logo != blank -%}
           {{ section.settings.logo | image_url: width: 200 | image_tag: loading: 'eager' }}
         {%- else -%}
@@ -45,8 +72,8 @@
               placeholder="{{ 'general.search.placeholder' | t }}"
               role="combobox"
               aria-expanded="false"
-              aria-owns="predictive-search-results"
-              aria-controls="predictive-search-results"
+              aria-owns="predictive-search-{{ section.id }}"
+              aria-controls="predictive-search-{{ section.id }}"
               aria-haspopup="listbox"
               aria-autocomplete="list"
               aria-label="{{ 'general.search.search' | t }}"
@@ -63,18 +90,41 @@
           </div>
 
           <!-- 关键：结果容器必须在这里，相对于 search-container 定位 -->
-          <div id="predictive-search" tabindex="-1" class="predictive-search-dropdown"></div>
+          <div id="predictive-search-{{ section.id }}" tabindex="-1" class="predictive-search-dropdown"></div>
         </form>
       </predictive-search>
 
       <!-- 购物车 -->
-      <a href="{{ routes.cart_url }}" class="tool-icon-link" id="cart-icon-bubble">
+      <a
+        href="{{ routes.cart_url }}"
+        class="tool-icon-link"
+        id="cart-icon-bubble"
+        aria-label="{{ 'templates.cart.cart' | t }}"
+        data-cart-behavior="{{ cart_click_behavior }}"
+      >
         {% render 'icon-cart' %}
         <span class="cart-count-badge" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
       </a>
+
+      {%- if cart_click_behavior == 'popover' -%}
+        <div class="header-cart-popover" id="HeaderCartPopover" hidden>
+          <p class="header-cart-popover__title">Quick cart</p>
+          <p class="header-cart-popover__meta">
+            {{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}
+          </p>
+          <div class="header-cart-popover__actions">
+            <a href="{{ routes.cart_url }}" class="header-cart-popover__link">View cart</a>
+            <form action="{{ routes.cart_url }}" method="post">
+              <button type="submit" name="checkout" class="header-cart-popover__checkout">Checkout</button>
+            </form>
+          </div>
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </header>
+
+<div class="header-pin-spacer" data-header-spacer="{{ section.id }}" aria-hidden="true"></div>
 
 {% render 'header-mobile-drawer', menu: section.settings.menu %}
 
@@ -84,17 +134,103 @@
   "settings": [
     { "type": "image_picker", "id": "logo", "label": "Logo" },
     { "type": "link_list", "id": "menu", "label": "Main Menu", "default": "main-menu" },
-    { "type": "text", "id": "announcement_text", "label": "Announcement", "default": "Free Worldwide Shipping Today" }
+    {
+      "type": "select",
+      "id": "sticky_mode",
+      "label": "Header sticky mode",
+      "default": "on_scroll",
+      "options": [
+        { "value": "always", "label": "Always sticky (always pinned)" },
+        { "value": "on_scroll", "label": "Scroll-triggered sticky (affix)" },
+        { "value": "hide_on_scroll", "label": "Always sticky, hide on scroll down" },
+        { "value": "none", "label": "Not sticky" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_mobile",
+      "label": "Sticky top offset (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_tablet",
+      "label": "Sticky top offset (tablet)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "sticky_top_desktop",
+      "label": "Sticky top offset (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "cart_click_behavior",
+      "label": "Cart icon action",
+      "default": "drawer",
+      "options": [
+        { "value": "drawer", "label": "Open cart drawer" },
+        { "value": "redirect", "label": "Go to cart page" },
+        { "value": "popover", "label": "Show quick cart popover" }
+      ]
+    }
   ],
   "blocks": [
     {
       "type": "mega_menu",
       "name": "Mega Menu",
       "settings": [
+        { "type": "header", "content": "使用说明" },
+        { "type": "paragraph", "content": "1) Menu Item Title 必须与导航一级菜单标题完全一致。2) 03/05/07 样式建议配置 1-3 张 Promo 图。3) Promo image fit 选 contain 可避免图片被裁切变形。" },
         { "type": "text", "id": "trigger_link", "label": "Menu Item Title" },
+        {
+          "type": "select",
+          "id": "mega_style",
+          "label": "Mega menu style",
+          "default": "columns",
+          "options": [
+            { "value": "columns", "label": "01 - Classic Columns" },
+            { "value": "cards", "label": "02 - Category Cards" },
+            { "value": "promo_split", "label": "03 - Links + Promo" },
+            { "value": "featured_products", "label": "04 - Featured Products" },
+            { "value": "editorial", "label": "05 - Editorial Grid" },
+            { "value": "tabs", "label": "06 - Tabbed Layout" },
+            { "value": "visual", "label": "07 - Full Visual" },
+            { "value": "minimal", "label": "08 - Minimal List" },
+            { "value": "image_title_cards", "label": "09 - Image + Title Cards" },
+            { "value": "circle_categories", "label": "10 - Circle Categories" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "promo_image_fit",
+          "label": "Promo image fit",
+          "default": "cover",
+          "options": [
+            { "value": "cover", "label": "Cover (fill frame)" },
+            { "value": "contain", "label": "Contain (no crop)" }
+          ]
+        },
+        { "type": "checkbox", "id": "enable_promo_slider", "label": "Enable left/right switch for multi-image promo", "default": true },
         { "type": "image_picker", "id": "promo_image", "label": "Promo Image" },
+        { "type": "image_picker", "id": "promo_image_2", "label": "Promo Image 2" },
+        { "type": "image_picker", "id": "promo_image_3", "label": "Promo Image 3" },
         { "type": "text", "id": "promo_heading", "label": "Promo Title", "default": "New Arrivals" },
-        { "type": "url", "id": "promo_url", "label": "Promo Link" }
+        { "type": "url", "id": "promo_url", "label": "Promo Link" },
+        { "type": "collection", "id": "featured_collection", "label": "Featured collection (for style 04)" }
       ]
     }
   ]

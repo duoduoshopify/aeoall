@@ -1,0 +1,36 @@
+<div class="mega-image-title-grid" role="list">
+  {%- for childlink in link.links -%}
+    {%- liquid
+      assign mega_item_image = blank
+      if childlink.type == 'collection_link' and childlink.object != blank and childlink.object.image != blank
+        assign mega_item_image = childlink.object.image
+      elsif childlink.type == 'product_link' and childlink.object != blank and childlink.object.featured_image != blank
+        assign mega_item_image = childlink.object.featured_image
+      endif
+    -%}
+    <a href="{{ childlink.url }}" class="mega-image-title-card" role="listitem"{% if childlink.current %} aria-current="page"{% endif %}>
+      <div class="mega-image-title-card__media">
+        {%- if mega_item_image != blank -%}
+          {{
+            mega_item_image
+            | image_url: width: 640
+            | image_tag:
+              loading: 'lazy',
+              class: 'mega-image-title-card__image',
+              widths: '220,320,480,640',
+              sizes: '(min-width: 1200px) 240px, 33vw',
+              alt: childlink.title
+          }}
+        {%- else -%}
+          <span class="mega-image-title-card__placeholder" aria-hidden="true"></span>
+        {%- endif -%}
+      </div>
+      <div class="mega-image-title-card__content">
+        <p class="mega-image-title-card__title">{{ childlink.title }}</p>
+        {%- if childlink.links != blank -%}
+          <p class="mega-image-title-card__meta">{{ childlink.links.size }} links</p>
+        {%- endif -%}
+      </div>
+    </a>
+  {%- endfor -%}
+</div>
