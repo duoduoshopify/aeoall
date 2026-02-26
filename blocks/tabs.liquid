@@ -1,0 +1,237 @@
+{% comment %}
+  Tabs Block - 标签页
+{% endcomment %}
+
+{%- liquid
+  assign tab_1_title = block.settings.tab_1_title
+  assign tab_1_content = block.settings.tab_1_content
+  assign tab_2_title = block.settings.tab_2_title
+  assign tab_2_content = block.settings.tab_2_content
+  assign tab_3_title = block.settings.tab_3_title
+  assign tab_3_content = block.settings.tab_3_content
+-%}
+
+<div class="tabs" {{ block.shopify_attributes }}>
+  <div class="tabs__nav">
+    {%- if tab_1_title != blank -%}
+      <button class="tabs__button active" data-tab="tab-1">{{ tab_1_title }}</button>
+    {%- endif -%}
+    {%- if tab_2_title != blank -%}
+      <button class="tabs__button" data-tab="tab-2">{{ tab_2_title }}</button>
+    {%- endif -%}
+    {%- if tab_3_title != blank -%}
+      <button class="tabs__button" data-tab="tab-3">{{ tab_3_title }}</button>
+    {%- endif -%}
+  </div>
+
+  <div class="tabs__content">
+    {%- if tab_1_content != blank -%}
+      <div class="tabs__panel active" id="tab-1">
+        <div class="rte">{{ tab_1_content }}</div>
+      </div>
+    {%- endif -%}
+    {%- if tab_2_content != blank -%}
+      <div class="tabs__panel" id="tab-2">
+        <div class="rte">{{ tab_2_content }}</div>
+      </div>
+    {%- endif -%}
+    {%- if tab_3_content != blank -%}
+      <div class="tabs__panel" id="tab-3">
+        <div class="rte">{{ tab_3_content }}</div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  if (!customElements.get('tabs-component')) {
+    class TabsComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.buttons = this.querySelectorAll('.tabs__button');
+        this.panels = this.querySelectorAll('.tabs__panel');
+        this.init();
+      }
+
+      init() {
+        this.buttons.forEach(button => {
+          button.addEventListener('click', () => this.switchTab(button));
+        });
+      }
+
+      switchTab(clickedButton) {
+        const targetTab = clickedButton.dataset.tab;
+
+        // 移除所有 active 状态
+        this.buttons.forEach(btn => btn.classList.remove('active'));
+        this.panels.forEach(panel => panel.classList.remove('active'));
+
+        // 添加 active 到点击的按钮和对应的面板
+        clickedButton.classList.add('active');
+        const targetPanel = this.querySelector(`#${targetTab}`);
+        if (targetPanel) {
+          targetPanel.classList.add('active');
+        }
+      }
+    }
+
+    customElements.define('tabs-component', TabsComponent);
+  }
+
+  // 将 .tabs 转换为 Web Component
+  document.querySelectorAll('.tabs').forEach(tabs => {
+    if (tabs.tagName !== 'TABS-COMPONENT') {
+      const wrapper = document.createElement('tabs-component');
+      tabs.parentNode.insertBefore(wrapper, tabs);
+      wrapper.appendChild(tabs);
+    }
+  });
+</script>
+
+<style>
+  .tabs {
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .tabs__nav {
+    display: flex;
+    border-bottom: 1px solid rgb(var(--color-border));
+    background: rgb(var(--color-background-secondary));
+  }
+
+  .tabs__button {
+    flex: 1;
+    padding: 1.5rem 2rem;
+    border: none;
+    background: none;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .tabs__button:hover {
+    background: rgb(var(--color-background));
+  }
+
+  .tabs__button.active {
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-accent));
+  }
+
+  .tabs__button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgb(var(--color-accent));
+  }
+
+  .tabs__content {
+    padding: 2rem;
+  }
+
+  .tabs__panel {
+    display: none;
+    animation: tab-fade-in 0.3s ease;
+  }
+
+  .tabs__panel.active {
+    display: block;
+  }
+
+  @keyframes tab-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .tabs__nav {
+      flex-direction: column;
+    }
+
+    .tabs__button {
+      text-align: left;
+      border-bottom: 1px solid rgb(var(--color-border));
+    }
+
+    .tabs__button:last-child {
+      border-bottom: none;
+    }
+
+    .tabs__button.active::after {
+      left: 0;
+      right: auto;
+      width: 3px;
+      height: 100%;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Tabs",
+  "class": "tabs-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Tab 1"
+    },
+    {
+      "type": "text",
+      "id": "tab_1_title",
+      "label": "Tab 1 Title",
+      "default": "Tab 1"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_1_content",
+      "label": "Tab 1 Content",
+      "default": "<p>Content for tab 1</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tab 2"
+    },
+    {
+      "type": "text",
+      "id": "tab_2_title",
+      "label": "Tab 2 Title",
+      "default": "Tab 2"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_2_content",
+      "label": "Tab 2 Content",
+      "default": "<p>Content for tab 2</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tab 3"
+    },
+    {
+      "type": "text",
+      "id": "tab_3_title",
+      "label": "Tab 3 Title",
+      "default": "Tab 3"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_3_content",
+      "label": "Tab 3 Content",
+      "default": "<p>Content for tab 3</p>"
+    }
+  ]
+}
+{% endschema %}

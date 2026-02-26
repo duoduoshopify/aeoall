@@ -1,0 +1,106 @@
+{% comment %}
+  Article Card Block - 可在任何地方使用的文章卡片
+{% endcomment %}
+
+{%- liquid
+  assign article_handle = block.settings.article
+  assign show_image = block.settings.show_image
+  assign show_date = block.settings.show_date
+  assign show_author = block.settings.show_author
+  assign show_excerpt = block.settings.show_excerpt
+  assign show_reading_time = block.settings.show_reading_time
+  assign show_tags = block.settings.show_tags
+  
+  # 获取文章
+  if article_handle != blank
+    assign selected_article = blogs[blog.handle].articles[article_handle]
+  endif
+-%}
+
+{%- if selected_article -%}
+  <div class="article-card-block" {{ block.shopify_attributes }}>
+    {% render 'article-card',
+      article: selected_article,
+      show_image: show_image,
+      show_date: show_date,
+      show_author: show_author,
+      show_excerpt: show_excerpt,
+      show_reading_time: show_reading_time,
+      show_tags: show_tags,
+      layout: 'grid'
+    %}
+  </div>
+{%- else -%}
+  <div class="article-card-block article-card-block--placeholder" {{ block.shopify_attributes }}>
+    <p>{{ 'blocks.article_card.select_article' | t }}</p>
+  </div>
+{%- endif -%}
+
+<style>
+  .article-card-block {
+    margin: 2rem 0;
+  }
+
+  .article-card-block--placeholder {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: rgb(var(--color-background-secondary));
+    border: 2px dashed rgb(var(--color-border));
+    border-radius: 8px;
+    color: rgb(var(--color-text) / 0.6);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Article Card",
+  "class": "article-card-block",
+  "settings": [
+    {
+      "type": "article",
+      "id": "article",
+      "label": "Article"
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reading_time",
+      "label": "Show reading time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

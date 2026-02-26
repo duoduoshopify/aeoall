@@ -1,0 +1,167 @@
+{% comment %}
+  Image Block - 独立图片块
+{% endcomment %}
+
+{%- liquid
+  assign image = block.settings.image
+  assign image_width = block.settings.image_width
+  assign image_alignment = block.settings.image_alignment
+  assign link = block.settings.link
+  assign caption = block.settings.caption
+-%}
+
+<div class="image-block image-block--{{ image_alignment }}" {{ block.shopify_attributes }}>
+  <div class="image-block__wrapper" style="max-width: {{ image_width }}px;">
+    {%- if image != blank -%}
+      {%- if link != blank -%}
+        <a href="{{ link }}" class="image-block__link">
+      {%- endif -%}
+
+      <div class="image-block__image">
+        <img
+          srcset="
+            {%- if image.width >= 165 -%}{{ image | image_url: width: 165 }} 165w,{%- endif -%}
+            {%- if image.width >= 360 -%}{{ image | image_url: width: 360 }} 360w,{%- endif -%}
+            {%- if image.width >= 535 -%}{{ image | image_url: width: 535 }} 535w,{%- endif -%}
+            {%- if image.width >= 750 -%}{{ image | image_url: width: 750 }} 750w,{%- endif -%}
+            {%- if image.width >= 1070 -%}{{ image | image_url: width: 1070 }} 1070w,{%- endif -%}
+            {%- if image.width >= 1500 -%}{{ image | image_url: width: 1500 }} 1500w,{%- endif -%}
+            {{ image | image_url }} {{ image.width }}w
+          "
+          src="{{ image | image_url: width: 750 }}"
+          sizes="(min-width: 750px) {{ image_width }}px, 100vw"
+          alt="{{ image.alt | escape }}"
+          loading="lazy"
+          width="{{ image.width }}"
+          height="{{ image.height }}"
+        >
+      </div>
+
+      {%- if link != blank -%}
+        </a>
+      {%- endif -%}
+
+      {%- if caption != blank -%}
+        <div class="image-block__caption">
+          {{ caption }}
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="image-block__placeholder">
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .image-block {
+    margin: 2rem 0;
+  }
+
+  .image-block--left .image-block__wrapper {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .image-block--center .image-block__wrapper {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .image-block--right .image-block__wrapper {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .image-block__image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .image-block__image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s;
+  }
+
+  .image-block__link:hover .image-block__image img {
+    transform: scale(1.05);
+  }
+
+  .image-block__caption {
+    margin-top: 1rem;
+    font-size: 1.4rem;
+    color: rgb(var(--color-text) / 0.7);
+    text-align: center;
+    font-style: italic;
+  }
+
+  .image-block__placeholder {
+    background: rgb(var(--color-background-secondary));
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .placeholder-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Image",
+  "class": "image-block",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 200,
+      "max": 1500,
+      "step": 50,
+      "unit": "px",
+      "label": "Image width",
+      "default": 750
+    },
+    {
+      "type": "select",
+      "id": "image_alignment",
+      "label": "Image alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption"
+    }
+  ]
+}
+{% endschema %}

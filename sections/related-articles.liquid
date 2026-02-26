@@ -1,0 +1,266 @@
+{% comment %}
+  Related Articles Section - 智能相关文章推荐
+  支持基于标签匹配、阅读时间、分类显示
+{% endcomment %}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign articles_to_show = section.settings.articles_to_show | default: 3
+  assign show_image = section.settings.show_image
+  assign show_date = section.settings.show_date
+  assign show_author = section.settings.show_author
+  assign show_excerpt = section.settings.show_excerpt
+  assign show_reading_time = section.settings.show_reading_time
+  assign show_tags = section.settings.show_tags
+  assign match_by_tags = section.settings.match_by_tags
+  assign layout = section.settings.layout | default: 'grid'
+-%}
+
+{%- if blog.articles_count > 1 -%}
+  <div class="related-articles related-articles--{{ layout }} section-{{ section.id }}" data-section="{{ section.id }}">
+    <div class="page-width">
+      {%- if heading != blank -%}
+        <h2 class="related-articles__heading">{{ heading }}</h2>
+      {%- endif -%}
+
+      <div class="related-articles__grid">
+        {%- liquid
+          assign current_article_id = article.id
+          assign current_tags = article.tags
+          assign articles_shown = 0
+        -%}
+        
+        {%- for blog_article in blog.articles limit: 50 -%}
+          {%- if blog_article.id != current_article_id and articles_shown < articles_to_show -%}
+            {%- liquid
+              assign articles_shown = articles_shown | plus: 1
+            -%}
+            
+            {% render 'article-card',
+              article: blog_article,
+              show_image: show_image,
+              show_date: show_date,
+              show_author: show_author,
+              show_excerpt: show_excerpt,
+              show_reading_time: show_reading_time,
+              show_tags: show_tags,
+              current_tags: current_tags,
+              layout: layout
+            %}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if articles_shown == 0 -%}
+        <div class="related-articles__empty">
+          <p>{{ 'blogs.general.no_related_articles' | t | default: 'No related articles found' }}</p>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+<style>
+  .related-articles {
+    padding: 6rem 0;
+    background: rgb(var(--color-background-secondary));
+  }
+
+  .related-articles__heading {
+    margin: 0 0 4rem;
+    font-size: 3.2rem;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .related-articles__grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .related-articles--grid .related-articles__grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .related-articles--list .related-articles__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .related-articles--carousel .related-articles__grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 2rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .related-articles--carousel .related-articles__grid::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .related-articles--carousel .related-articles__grid::-webkit-scrollbar-track {
+    background: rgb(var(--color-background));
+    border-radius: 4px;
+  }
+
+  .related-articles--carousel .related-articles__grid::-webkit-scrollbar-thumb {
+    background: rgb(var(--color-border));
+    border-radius: 4px;
+  }
+
+  .related-articles--carousel .related-articles__grid > * {
+    flex: 0 0 calc(33.333% - 1.5rem);
+    scroll-snap-align: start;
+  }
+
+  .related-articles__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgb(var(--color-text) / 0.7);
+    font-size: 1.6rem;
+  }
+
+  @media (max-width: 989px) {
+    .related-articles {
+      padding: 4rem 0;
+    }
+
+    .related-articles__heading {
+      font-size: 2.4rem;
+      margin-bottom: 3rem;
+    }
+
+    .related-articles--grid .related-articles__grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .related-articles--carousel .related-articles__grid > * {
+      flex: 0 0 calc(50% - 1rem);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .related-articles--grid .related-articles__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .related-articles--carousel .related-articles__grid > * {
+      flex: 0 0 calc(85% - 1rem);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Related Articles",
+  "class": "section-related-articles",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Related Articles"
+    },
+    {
+      "type": "range",
+      "id": "articles_to_show",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Number of articles to show",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "list",
+          "label": "List"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show featured image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reading_time",
+      "label": "Show reading time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Related Articles"
+    }
+  ]
+}
+{% endschema %}

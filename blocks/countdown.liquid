@@ -1,0 +1,256 @@
+{% comment %}
+  Countdown Block - 倒计时器
+{% endcomment %}
+
+{%- liquid
+  assign heading = block.settings.heading
+  assign end_date = block.settings.end_date
+  assign end_time = block.settings.end_time
+  assign show_days = block.settings.show_days
+  assign show_hours = block.settings.show_hours
+  assign show_minutes = block.settings.show_minutes
+  assign show_seconds = block.settings.show_seconds
+-%}
+
+<div class="countdown" {{ block.shopify_attributes }}>
+  {%- if heading != blank -%}
+    <h3 class="countdown__heading">{{ heading }}</h3>
+  {%- endif -%}
+
+  <countdown-timer 
+    class="countdown__timer"
+    data-end-date="{{ end_date }}"
+    data-end-time="{{ end_time }}"
+    data-show-days="{{ show_days }}"
+    data-show-hours="{{ show_hours }}"
+    data-show-minutes="{{ show_minutes }}"
+    data-show-seconds="{{ show_seconds }}"
+  >
+    {%- if show_days -%}
+      <div class="countdown__unit">
+        <span class="countdown__value" data-days>00</span>
+        <span class="countdown__label">{{ 'general.countdown.days' | t }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if show_hours -%}
+      <div class="countdown__unit">
+        <span class="countdown__value" data-hours>00</span>
+        <span class="countdown__label">{{ 'general.countdown.hours' | t }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if show_minutes -%}
+      <div class="countdown__unit">
+        <span class="countdown__value" data-minutes>00</span>
+        <span class="countdown__label">{{ 'general.countdown.minutes' | t }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if show_seconds -%}
+      <div class="countdown__unit">
+        <span class="countdown__value" data-seconds>00</span>
+        <span class="countdown__label">{{ 'general.countdown.seconds' | t }}</span>
+      </div>
+    {%- endif -%}
+  </countdown-timer>
+</div>
+
+<script>
+  if (!customElements.get('countdown-timer')) {
+    class CountdownTimer extends HTMLElement {
+      constructor() {
+        super();
+        this.endDate = this.dataset.endDate;
+        this.endTime = this.dataset.endTime || '23:59:59';
+        this.showDays = this.dataset.showDays === 'true';
+        this.showHours = this.dataset.showHours === 'true';
+        this.showMinutes = this.dataset.showMinutes === 'true';
+        this.showSeconds = this.dataset.showSeconds === 'true';
+        
+        this.daysEl = this.querySelector('[data-days]');
+        this.hoursEl = this.querySelector('[data-hours]');
+        this.minutesEl = this.querySelector('[data-minutes]');
+        this.secondsEl = this.querySelector('[data-seconds]');
+        
+        this.init();
+      }
+
+      init() {
+        if (!this.endDate) {
+          console.warn('Countdown: No end date specified');
+          return;
+        }
+
+        this.targetDate = new Date(`${this.endDate}T${this.endTime}`).getTime();
+        this.updateCountdown();
+        this.interval = setInterval(() => this.updateCountdown(), 1000);
+      }
+
+      updateCountdown() {
+        const now = new Date().getTime();
+        const distance = this.targetDate - now;
+
+        if (distance < 0) {
+          clearInterval(this.interval);
+          this.handleExpired();
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (this.daysEl) this.daysEl.textContent = this.pad(days);
+        if (this.hoursEl) this.hoursEl.textContent = this.pad(hours);
+        if (this.minutesEl) this.minutesEl.textContent = this.pad(minutes);
+        if (this.secondsEl) this.secondsEl.textContent = this.pad(seconds);
+      }
+
+      pad(num) {
+        return num.toString().padStart(2, '0');
+      }
+
+      handleExpired() {
+        this.classList.add('countdown--expired');
+        this.dispatchEvent(new CustomEvent('countdown:expired'));
+      }
+
+      disconnectedCallback() {
+        if (this.interval) {
+          clearInterval(this.interval);
+        }
+      }
+    }
+
+    customElements.define('countdown-timer', CountdownTimer);
+  }
+</script>
+
+<style>
+  .countdown {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .countdown__heading {
+    margin: 0 0 2rem;
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+
+  .countdown__timer {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .countdown__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    padding: 1.5rem;
+    background: rgb(var(--color-background-secondary));
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .countdown__value {
+    font-size: 3.6rem;
+    font-weight: 800;
+    line-height: 1;
+    color: rgb(var(--color-accent));
+    font-variant-numeric: tabular-nums;
+  }
+
+  .countdown__label {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgb(var(--color-text) / 0.7);
+  }
+
+  .countdown--expired .countdown__value {
+    color: rgb(var(--color-text) / 0.3);
+  }
+
+  @media (max-width: 749px) {
+    .countdown__timer {
+      gap: 1rem;
+    }
+
+    .countdown__unit {
+      min-width: 60px;
+      padding: 1rem;
+    }
+
+    .countdown__value {
+      font-size: 2.8rem;
+    }
+
+    .countdown__label {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Countdown",
+  "class": "countdown-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited Time Offer"
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End Date",
+      "info": "Format: YYYY-MM-DD (e.g., 2026-12-31)",
+      "default": "2026-12-31"
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "End Time",
+      "info": "Format: HH:MM:SS (e.g., 23:59:59)",
+      "default": "23:59:59"
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_days",
+      "label": "Show days",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hours",
+      "label": "Show hours",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_minutes",
+      "label": "Show minutes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_seconds",
+      "label": "Show seconds",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+{
+    "sections": {
+      "blog-banner": {
+        "type": "main-blog-banner",
+        "settings": {
+          "show_blog_image": true,
+          "show_blog_description": true
+        }
+      },
+      "main": {
+        "type": "main-blog",
+        "settings": {
+          "layout": "grid",
+          "blog_show_author": true,
+          "blog_show_date": true,
+          "blog_show_excerpt": true,
+          "posts_per_page": 12,
+          "show_featured_image": true,
+          "image_ratio": "portrait"
+        }
+      }
+    },
+    "order": ["blog-banner", "main"]
+  }
+  

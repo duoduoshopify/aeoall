@@ -1,0 +1,63 @@
+{% comment %}
+  Blog Banner Section - 博客横幅
+{% endcomment %}
+
+<div class="blog-banner section-{{ section.id }}">
+  <div class="page-width">
+    <div class="blog-banner__content">
+      <h1 class="blog-banner__title">{{ blog.title }}</h1>
+      
+      {%- if section.settings.show_blog_description and blog.description != blank -%}
+        <div class="blog-banner__description rte">
+          {{ blog.description }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .blog-banner {
+    padding: 6rem 0 4rem;
+    text-align: center;
+    background: rgb(var(--color-background-secondary));
+  }
+
+  .blog-banner__title {
+    margin: 0 0 1rem;
+    font-size: 4rem;
+    font-weight: 800;
+  }
+
+  .blog-banner__description {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.6rem;
+    color: rgb(var(--color-text) / 0.8);
+  }
+
+  @media (max-width: 749px) {
+    .blog-banner {
+      padding: 4rem 0 3rem;
+    }
+
+    .blog-banner__title {
+      font-size: 3rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Blog Banner",
+  "class": "section-blog-banner",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_blog_description",
+      "label": "Show blog description",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
