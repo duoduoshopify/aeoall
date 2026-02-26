@@ -23,13 +23,13 @@
           <div class="card__inner" style="border-radius: var(--radius-md); overflow: hidden; background: #f5f5f7;">
             <div class="media media--transparent" style="padding-bottom: 100%;">
               {%- if collection.featured_image != blank -%}
-                <img src="{{ collection.featured_image | image_url: width: 533 }}" alt="{{ collection.title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                <img src="{{ collection.featured_image | image_url: width: 533 }}" alt="{{ collection.title }}" loading="lazy" width="533" height="533" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
               {%- else -%}
                 {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
               {%- endif -%}
             </div>
             <div class="card__content" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); color: #fff;">
-              <h3 class="card__heading h3" style="color: #fff; margin: 0;">{{ collection.title }} {% render 'icon-arrow' %}</h3>
+              <h3 class="card__heading h3" style="color: #fff; margin: 0;">{{ collection.title }} {% render 'icon-arrow-right' %}</h3>
               <p style="font-size: 1.2rem; opacity: 0.8; margin-top: 5px;">{{ collection.all_products_count }} Products</p>
             </div>
           </div>

@@ -35,17 +35,21 @@
 <div class="section-{{ section.id }}-padding page-width">
   {%- comment -%} 1. 分类头部排版优化 {%- endcomment -%}
   <div class="collection-header text-center">
-    <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
-    {%- if collection.description != blank -%}
+    {%- if section.settings.show_title -%}
+      <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
+    {%- endif -%}
+    
+    {%- if section.settings.show_description and collection.description != blank -%}
       <div class="collection-description rte">
         {{ collection.description }}
       </div>
     {%- endif -%}
     
-    {%- comment -%} 统计信息提示 {%- endcomment -%}
-    <p style="font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 2rem; opacity: 0.5;">
-      {{ collection.products_count }} Products
-    </p>
+    {%- if section.settings.show_product_count -%}
+      <p style="font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 2rem; opacity: 0.5;">
+        {{ collection.products_count }} Products
+      </p>
+    {%- endif -%}
   </div>
 
   {%- comment -%} 2. 产品网格区域 {%- endcomment -%}
@@ -80,6 +84,32 @@
 {
   "name": "Product Grid",
   "settings": [
+    {
+      "type": "header",
+      "content": "Collection Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "default": true,
+      "label": "Show Collection Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": true,
+      "label": "Show Collection Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "default": true,
+      "label": "Show Product Count"
+    },
+    {
+      "type": "header",
+      "content": "Product Grid"
+    },
     {
       "type": "range",
       "id": "products_per_page",
