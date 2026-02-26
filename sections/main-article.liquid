@@ -3,7 +3,7 @@
 {% endcomment %}
 
 <article class="article section-{{ section.id }}" data-section="{{ section.id }}">
-  <div class="article-wrapper">
+  <div class="article-layout">
     {%- for block in section.blocks -%}
       {%- case block.type -%}
         {%- when 'featured_image' -%}
@@ -73,26 +73,36 @@
           </div>
 
         {%- when 'content' -%}
-          <div class="article__content-wrapper">
-            <div class="article__content rte" {{ block.shopify_attributes }}>
-              {{ article.content }}
-            </div>
-          </div>
-
-        {%- when 'share' -%}
-          <div class="article__share" {{ block.shopify_attributes }}>
-            <div class="article-container">
-              {%- if block.settings.share_label != blank -%}
-                <span class="article__share-label">{{ block.settings.share_label }}</span>
+          <div class="article__main">
+            <aside class="article__sidebar-left">
+              {%- if block.settings.show_toc -%}
+                <nav class="article-toc">
+                  <h4>Contents</h4>
+                  <ul class="toc-list">
+                    <li><a href="#">Overview</a></li>
+                    <li><a href="#">Details</a></li>
+                    <li><a href="#">Related</a></li>
+                  </ul>
+                </nav>
               {%- endif -%}
-              {% render 'social-icons', share_url: article.url, share_title: article.title %}
+            </aside>
+            <div class="article__content-wrapper">
+              <div class="article__content rte" {{ block.shopify_attributes }}>
+                {{ article.content }}
+              </div>
             </div>
+            <aside class="article__sidebar-right">
+              <div class="sidebar-widget">
+                <h4>Share</h4>
+                {% render 'social-icons', share_url: article.url, share_title: article.title %}
+              </div>
+            </aside>
           </div>
 
       {%- endcase -%}
     {%- endfor -%}
 
-    <div class="article-container">
+    <div class="article-container article-comments-wrapper">
       {%- if section.settings.show_comments and blog.comments_enabled? -%}
         <div class="article__comments">
         <div class="comments-section-header">
@@ -180,9 +190,9 @@
   }
 
   .article-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 3rem;
   }
 
   .article__featured-image {
@@ -194,7 +204,7 @@
     width: 100%;
     height: auto;
     display: block;
-    max-height: 600px;
+    max-height: 650px;
     object-fit: cover;
   }
 
@@ -205,9 +215,9 @@
 
   .article__title {
     margin: 0;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: -0.02em;
   }
 
@@ -217,6 +227,107 @@
     background: linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-foreground)));
     margin: 1.5rem auto 0;
     border-radius: 2px;
+  }
+
+  .article__main {
+    display: grid;
+    grid-template-columns: 220px 1fr 240px;
+    gap: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    align-items: start;
+  }
+
+  .article__sidebar-left {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .article-toc {
+    padding: 1.5rem;
+    background: rgb(var(--color-background-secondary));
+    border-radius: 12px;
+  }
+
+  .article-toc h4 {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(var(--color-text) / 0.6);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-list li {
+    margin-bottom: 0.75rem;
+  }
+
+  .toc-list a {
+    color: rgb(var(--color-text) / 0.8);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+
+  .toc-list a:hover {
+    color: rgb(var(--color-accent));
+  }
+
+  .article__content-wrapper {
+    min-width: 0;
+  }
+
+  .article__sidebar-right {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .sidebar-widget {
+    padding: 1.5rem;
+    background: rgb(var(--color-background-secondary));
+    border-radius: 12px;
+  }
+
+  .sidebar-widget h4 {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(var(--color-text) / 0.6);
+  }
+
+  .sidebar-widget .social-icons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-widget .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-text));
+    transition: all 0.2s;
+  }
+
+  .sidebar-widget .social-icons a:hover {
+    background: rgb(var(--color-accent));
+    color: white;
+  }
+    letter-spacing: 0.1em;
+    color: rgb(var(--color-text) / 0.6);
   }
 
   .article__meta {
@@ -239,15 +350,9 @@
     opacity: 0.6;
   }
 
-  .article__content-wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
   .article__content {
-    font-size: 1.25rem;
-    line-height: 1.9;
+    font-size: 1.35rem;
+    line-height: 1.85;
     color: rgb(var(--color-text) / 0.9);
   }
 
@@ -467,13 +572,21 @@
     box-shadow: 0 4px 12px rgba(var(--color-accent), 0.3);
   }
 
-  @media (max-width: 749px) {
-    .article-container {
-      padding: 0 1.25rem;
+  @media (max-width: 1100px) {
+    .article__main {
+      grid-template-columns: 1fr;
+      gap: 2rem;
     }
 
-    .article__content-wrapper {
-      padding: 0 1.25rem;
+    .article__sidebar-left,
+    .article__sidebar-right {
+      display: none;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .article-container {
+      padding: 0 1.5rem;
     }
 
     .article__featured-image {
@@ -481,7 +594,7 @@
     }
 
     .article__title {
-      font-size: 2rem;
+      font-size: 2.25rem;
     }
 
     .article__meta {
@@ -493,11 +606,11 @@
     }
 
     .article__content h2 {
-      font-size: 1.5rem;
+      font-size: 1.625rem;
     }
 
     .article__content h3 {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
     }
 
     .form-grid {
@@ -547,7 +660,15 @@
     {
       "type": "content",
       "name": "Content",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_toc",
+          "default": true,
+          "label": "Show table of contents"
+        }
+      ]
     },
     {
       "type": "share",
