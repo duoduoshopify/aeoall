@@ -1,6 +1,6 @@
 <div class="product-vendor" {{ block.shopify_attributes }}>
   <a href="{{ product.vendor | url_for_vendor }}" class="product-vendor__link">
-    Brand: {{ product.vendor }}
+    {{ 'products.product.brand' | t }}: {{ product.vendor }}
   </a>
 </div>
 

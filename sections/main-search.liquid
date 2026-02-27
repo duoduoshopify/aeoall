@@ -37,23 +37,23 @@
   }
 {%- endstyle -%}
 
-<div class="template-search page-width section-{{ section.id }}-padding" style="padding-top: 60px; padding-bottom: 80px;">
+<div class="template-search page-width section-{{ section.id }}-padding" data-section-hydrate data-section-id="{{ section.id }}" data-section-type="main-search" style="padding-top: 60px; padding-bottom: 80px;">
   
   {%- comment -%} 1. 搜索头部状态区 {%- endcomment -%}
   <div class="template-search__header text-center">
     {%- if search.performed -%}
       <h1 class="template-search__title">
         {%- if search.results_count == 0 -%}
-          No results found
+          {{ 'templates.search.no_results' | t: terms: search.terms }}
         {%- else -%}
-          Search Results
+          {{ 'templates.search.title' | t }}
         {%- endif -%}
       </h1>
       <p class="template-search__status">
-        {{ search.results_count }} results found for "<strong>{{ search.terms }}</strong>"
+        {{ 'templates.search.results_with_count_and_term' | t: count: search.results_count, terms: search.terms }}
       </p>
     {%- else -%}
-      <h1 class="template-search__title">Search our store</h1>
+      <h1 class="template-search__title">{{ 'templates.search.title' | t }}</h1>
     {%- endif -%}
   </div>
 
@@ -64,9 +64,9 @@
         {%- if search.results_count == 0 -%}
           {%- comment -%} 搜索无结果时的空状态 {%- endcomment -%}
           <div class="search-empty">
-            <p class="search-empty__text">Try checking your spelling, using fewer words, or browsing all products.</p>
+            <p class="search-empty__text">{{ 'templates.search.no_results' | t: terms: search.terms }}</p>
             <a href="{{ routes.all_products_collection_url }}" class="atc-btn">
-              CONTINUE SHOPPING
+              {{ 'general.continue_shopping' | t }}
             </a>
           </div>
         {%- else -%}
@@ -75,11 +75,21 @@
           <ul class="grid grid--2-col grid--3-col-tablet grid--4-col-desktop" role="list" style="list-style: none; padding: 0;">
             {%- for item in search.results -%}
               {%- if item.object_type == 'product' -%}
+                {%- liquid
+                  assign card_image_loading = 'lazy'
+                  assign card_image_fetchpriority = 'auto'
+                  if forloop.index <= 4
+                    assign card_image_loading = 'eager'
+                    assign card_image_fetchpriority = 'high'
+                  endif
+                -%}
                 <li class="grid__item">
                   {% render 'card-product', 
                     card_product: item, 
                     show_vendor: section.settings.show_vendor,
-                    media_aspect_ratio: section.settings.image_ratio 
+                    media_aspect_ratio: section.settings.image_ratio,
+                    image_loading: card_image_loading,
+                    image_fetchpriority: card_image_fetchpriority
                   %}
                 </li>
               {%- endif -%}

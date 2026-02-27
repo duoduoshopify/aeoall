@@ -17,6 +17,7 @@
         { "type": "header", "content": "主按钮 (CTA)" },
         { "type": "color", "id": "colors_button", "label": "按钮背景", "default": "#000000" },
         { "type": "color", "id": "colors_button_text", "label": "按钮文本", "default": "#ffffff" },
+        { "type": "color", "id": "colors_solid_button_labels", "label": "实心按钮标签色（兼容旧预设）", "default": "#ffffff" },
         { "type": "header", "content": "高转化强调感" },
         { "type": "color", "id": "colors_accent", "label": "强调色 (蓝色/选中态)", "default": "#2563eb" },
         { "type": "color", "id": "colors_accent_soft", "label": "强调色浅背景", "default": "#eff6ff" },

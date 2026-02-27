@@ -185,6 +185,8 @@
       "include_taxes": "Tax included.",
       "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
       "sku": "SKU",
+      "brand": "Brand",
+      "not_available": "N/A",
       "inventory_low_stock_html": "Only {{ count }} left in stock",
       "inventory_in_stock": "In stock",
       "inventory_out_of_stock": "Out of stock"
@@ -463,6 +465,10 @@
   "blocks": {
     "article_card": {
       "select_article": "Select an article to display"
+    },
+    "video": {
+      "browser_not_supported": "Your browser does not support the video tag.",
+      "add_video_source": "Add a video URL or upload a video file"
     }
   },
   "gift_cards": {

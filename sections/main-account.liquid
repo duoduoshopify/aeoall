@@ -1,0 +1,39 @@
+<div class="customer account-page page-width">
+  <h1>{{ 'customer.account.title' | t | default: 'My account' }}</h1>
+
+  <p>
+    {{ 'customer.account.welcome' | t | default: 'Welcome,' }}
+    <strong>{{ customer.name | default: customer.email }}</strong>
+  </p>
+
+  <p>
+    <a href="{{ routes.account_addresses_url }}">{{ 'customer.account.view_addresses' | t | default: 'Manage addresses' }}</a>
+    ·
+    <a href="{{ routes.account_logout_url }}">{{ 'customer.log_out' | t | default: 'Log out' }}</a>
+  </p>
+
+  <h2>{{ 'customer.orders.title' | t | default: 'Order history' }}</h2>
+
+  {%- if customer.orders_count > 0 -%}
+    <ul>
+      {%- for order in customer.orders -%}
+        <li>
+          <a href="{{ order.customer_url }}">{{ order.name }}</a>
+          — {{ order.created_at | date: format: 'date' }}
+          — {{ order.financial_status_label }}
+          — {{ order.fulfillment_status_label }}
+          — {{ order.total_price | money }}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <p>{{ 'customer.orders.none' | t | default: 'You have not placed any orders yet.' }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Main account",
+  "settings": []
+}
+{% endschema %}

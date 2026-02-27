@@ -1,6 +1,7 @@
 <div class="product-sku" id="sku-{{ section.id }}" {{ block.shopify_attributes }}>
-  <span class="sku-label">SKU:</span>
-  <span class="sku-value">{{ product.selected_or_first_available_variant.sku | default: 'N/A' }}</span>
+  <span class="sku-label">{{ 'products.product.sku' | t }}:</span>
+  {%- assign current_sku = product.selected_or_first_available_variant.sku -%}
+  <span class="sku-value">{{ current_sku | default: 'products.product.not_available' | t }}</span>
 </div>
 
 {% schema %}

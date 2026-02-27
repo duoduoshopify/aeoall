@@ -21,6 +21,30 @@ function debounce(fn, wait) {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: eventName, ...payload });
   }
+
+  function runOnFirstInteraction(callback) {
+    if (typeof callback !== 'function') return;
+
+    const events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    let done = false;
+
+    const cleanup = () => {
+      events.forEach((eventName) => {
+        window.removeEventListener(eventName, onFirstInteraction, { passive: true });
+      });
+    };
+
+    const onFirstInteraction = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      callback();
+    };
+
+    events.forEach((eventName) => {
+      window.addEventListener(eventName, onFirstInteraction, { passive: true, once: true });
+    });
+  }
   
   // 货币格式化 (Shopify 标准货币转换工具)
   function formatMoney(cents, format) {
@@ -66,7 +90,9 @@ function debounce(fn, wait) {
 
     // Header sticky behavior
     if (headerMain) {
-      const stickyMode = headerMain.dataset.stickyMode || 'always';
+      const stickyModeRaw = headerMain.dataset.stickyMode || 'on_scroll';
+      // 已移除 always 模式：为兼容历史配置，自动降级为 on_scroll
+      const stickyMode = stickyModeRaw === 'always' ? 'on_scroll' : stickyModeRaw;
       const cartBehavior = globalCartBehavior || headerMain.dataset.cartBehavior || cartIcon?.dataset.cartBehavior || 'drawer';
       const headerSectionId = headerMain.dataset.headerSection || '';
       const stickySentinel = headerSectionId
@@ -80,15 +106,14 @@ function debounce(fn, wait) {
       let isHeaderPinned = false;
       let stickyObserver = null;
 
-      const getCurrentStickyTop = () => {
-        const computed = window.getComputedStyle(headerMain);
-        if (window.matchMedia('(min-width: 990px)').matches) {
-          return parseFloat(computed.getPropertyValue('--header-sticky-top-desktop')) || 0;
-        }
-        if (window.matchMedia('(min-width: 750px)').matches) {
-          return parseFloat(computed.getPropertyValue('--header-sticky-top-tablet')) || 0;
-        }
-        return parseFloat(computed.getPropertyValue('--header-sticky-top-mobile')) || 0;
+      const syncHeaderSpacer = (pinned = false) => {
+        if (!headerSpacer) return;
+
+        const measuredHeight = Math.round(headerMain.getBoundingClientRect().height || headerMain.offsetHeight || 0);
+        // 防止异常情况下 spacer 被撑得过高，导致中间出现大空白
+        const safeHeight = Math.max(0, Math.min(measuredHeight, 160));
+
+        headerSpacer.style.height = pinned ? `${safeHeight}px` : '0px';
       };
 
       const setupStickyObserver = () => {
@@ -97,13 +122,11 @@ function debounce(fn, wait) {
           stickyObserver = null;
         }
 
-        if (stickyMode === 'always' || stickyMode === 'hide_on_scroll') {
+        if (stickyMode === 'hide_on_scroll') {
           isHeaderPinned = true;
           headerMain.classList.add('is-pinned');
           headerMain.classList.add('is-stuck');
-          if (headerSpacer) {
-            headerSpacer.style.height = `${Math.round(headerMain.getBoundingClientRect().height)}px`;
-          }
+          syncHeaderSpacer(true);
           return;
         }
 
@@ -112,11 +135,10 @@ function debounce(fn, wait) {
           headerMain.classList.remove('is-pinned');
           headerMain.classList.remove('is-stuck');
           headerMain.classList.remove('is-hidden');
-          if (headerSpacer) headerSpacer.style.height = '0px';
+          syncHeaderSpacer(false);
           return;
         }
 
-        const topOffset = Math.max(0, Math.round(getCurrentStickyTop()));
         stickyObserver = new IntersectionObserver(
           (entries) => {
             const entry = entries[0];
@@ -128,9 +150,7 @@ function debounce(fn, wait) {
             headerMain.classList.toggle('is-pinned', nextPinned);
             headerMain.classList.toggle('is-stuck', nextPinned);
 
-            if (headerSpacer) {
-              headerSpacer.style.height = nextPinned ? `${Math.round(headerMain.getBoundingClientRect().height)}px` : '0px';
-            }
+            syncHeaderSpacer(nextPinned);
 
             if (!nextPinned) {
               headerMain.classList.remove('is-hidden');
@@ -138,7 +158,7 @@ function debounce(fn, wait) {
           },
           {
             threshold: [0, 1],
-            rootMargin: `-${topOffset}px 0px 0px 0px`
+            rootMargin: '0px 0px 0px 0px'
           }
         );
 
@@ -146,15 +166,14 @@ function debounce(fn, wait) {
       };
 
       const applyHeaderOffset = () => {
-        if (stickyMode === 'always' || stickyMode === 'hide_on_scroll' || stickyMode === 'on_scroll') {
+        if (stickyMode === 'hide_on_scroll' || stickyMode === 'on_scroll') {
           document.body.classList.add('has-sticky-header');
           setupStickyObserver();
-          if (headerMain.classList.contains('is-pinned') && headerSpacer) {
-            headerSpacer.style.height = `${Math.round(headerMain.getBoundingClientRect().height)}px`;
-          }
+          syncHeaderSpacer(headerMain.classList.contains('is-pinned'));
         } else {
           document.body.classList.remove('has-sticky-header');
           setupStickyObserver();
+          syncHeaderSpacer(false);
         }
       };
 
@@ -181,31 +200,6 @@ function debounce(fn, wait) {
       window.addEventListener('resize', debounce(applyHeaderOffset, 100));
     }
 
-    // Cart icon behavior: drawer / redirect / popover
-    if (cartIcon) {
-      const cartBehavior = window.themeCartBehavior || globalCartBehavior || headerMain?.dataset.cartBehavior || cartIcon.dataset.cartBehavior || 'drawer';
-      cartIcon.dataset.cartBehavior = cartBehavior;
-
-      if (cartBehavior === 'popover' && cartPopover) {
-        cartIcon.addEventListener('click', (event) => {
-          event.preventDefault();
-          const isHidden = cartPopover.hasAttribute('hidden');
-          if (isHidden) {
-            cartPopover.removeAttribute('hidden');
-          } else {
-            cartPopover.setAttribute('hidden', 'hidden');
-          }
-        });
-
-        document.addEventListener('click', (event) => {
-          if (!cartPopover.hasAttribute('hidden') && !cartPopover.contains(event.target) && !cartIcon.contains(event.target)) {
-            cartPopover.setAttribute('hidden', 'hidden');
-          }
-        });
-      }
-      // redirect 模式无需 JS；drawer 模式由 cart-drawer.js 接管
-    }
-
     const closeMobileDrawer = () => {
       if (!burgerBtn || !mobileDrawer) return;
       burgerBtn.classList.remove('active');
@@ -224,62 +218,98 @@ function debounce(fn, wait) {
       body.style.overflow = 'hidden';
     };
   
-    // A. 移动端抽屉菜单开启/关闭逻辑
-    if (burgerBtn && mobileDrawer) {
-      burgerBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isActive = burgerBtn.classList.contains('active');
+    runOnFirstInteraction(() => {
+      // Cart icon behavior: drawer / redirect / popover
+      if (cartIcon) {
+        const cartBehavior = window.themeCartBehavior || globalCartBehavior || headerMain?.dataset.cartBehavior || cartIcon.dataset.cartBehavior || 'drawer';
+        cartIcon.dataset.cartBehavior = cartBehavior;
 
-        if (isActive) {
-          closeMobileDrawer();
-        } else {
-          openMobileDrawer();
+        if (cartBehavior === 'popover' && cartPopover) {
+          cartIcon.addEventListener('click', (event) => {
+            event.preventDefault();
+            const isHidden = cartPopover.hasAttribute('hidden');
+            if (isHidden) {
+              cartPopover.removeAttribute('hidden');
+            } else {
+              cartPopover.setAttribute('hidden', 'hidden');
+            }
+          });
+
+          document.addEventListener('click', (event) => {
+            if (!cartPopover.hasAttribute('hidden') && !cartPopover.contains(event.target) && !cartIcon.contains(event.target)) {
+              cartPopover.setAttribute('hidden', 'hidden');
+            }
+          });
         }
-      });
-
-      // 点击遮罩关闭
-      if (mobileOverlay) {
-        mobileOverlay.addEventListener('click', closeMobileDrawer);
+        // redirect 模式无需 JS；drawer 模式由 cart-drawer.js 接管
       }
 
-      // ESC 关闭
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && mobileDrawer.classList.contains('active')) {
-          closeMobileDrawer();
-        }
-      });
-    }
-  
-    // B. 移动端抽屉内部的多级折叠 (Accordion) - 支持三级导航
-    const mobileToggles = document.querySelectorAll('.mobile-toggle');
-    mobileToggles.forEach(toggle => {
-      toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const parentItem = toggle.closest('.mobile-item');
-        if (!parentItem) return;
-        
-        // 切换展开状态
-        parentItem.classList.toggle('is-open');
-        
-        // 更新无障碍属性
-        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', !isExpanded);
-        
-        // 关闭同级其他展开的菜单
-        const siblings = parentItem.parentElement
-          ? Array.from(parentItem.parentElement.children).filter((el) => el.classList && el.classList.contains('mobile-item') && el.classList.contains('is-open'))
-          : [];
-        siblings.forEach(sibling => {
-          if (sibling !== parentItem) {
-            sibling.classList.remove('is-open');
-            const siblingToggle = sibling.querySelector(':scope > .mobile-link-row .mobile-toggle');
-            if (siblingToggle) {
-              siblingToggle.setAttribute('aria-expanded', 'false');
-            }
+      // A. 移动端抽屉菜单开启/关闭逻辑
+      if (burgerBtn && mobileDrawer) {
+        burgerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isActive = burgerBtn.classList.contains('active');
+
+          if (isActive) {
+            closeMobileDrawer();
+          } else {
+            openMobileDrawer();
           }
         });
+
+        // 点击遮罩关闭
+        if (mobileOverlay) {
+          mobileOverlay.addEventListener('click', closeMobileDrawer);
+        }
+
+        // ESC 关闭
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && mobileDrawer.classList.contains('active')) {
+            closeMobileDrawer();
+          }
+        });
+      }
+
+      // B. 移动端抽屉内部的多级折叠 (Accordion) - 支持三级导航
+      const mobileToggles = document.querySelectorAll('.mobile-toggle');
+      mobileToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const parentItem = toggle.closest('.mobile-item');
+          if (!parentItem) return;
+
+          // 切换展开状态
+          parentItem.classList.toggle('is-open');
+
+          // 更新无障碍属性
+          const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', !isExpanded);
+
+          // 关闭同级其他展开的菜单
+          const siblings = parentItem.parentElement
+            ? Array.from(parentItem.parentElement.children).filter((el) => el.classList && el.classList.contains('mobile-item') && el.classList.contains('is-open'))
+            : [];
+          siblings.forEach(sibling => {
+            if (sibling !== parentItem) {
+              sibling.classList.remove('is-open');
+              const siblingToggle = sibling.querySelector(':scope > .mobile-link-row .mobile-toggle');
+              if (siblingToggle) {
+                siblingToggle.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
+        });
       });
+
+      const sortSelect = document.getElementById('SortBy');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', function(e) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('sort_by', e.target.value);
+          window.location.href = url.toString();
+        });
+      }
     });
 
     const productAnalyticsNode = document.querySelector('[data-product-analytics]');
@@ -299,14 +329,35 @@ function debounce(fn, wait) {
       });
     }
 
-    const checkoutButton = document.querySelector('button[name="checkout"]');
-    if (checkoutButton) {
-      checkoutButton.addEventListener('click', () => {
-        pushAnalyticsEvent('begin_checkout', {
-          source: 'cart'
+    runOnFirstInteraction(() => {
+      const checkoutButton = document.querySelector('button[name="checkout"]');
+      if (checkoutButton) {
+        checkoutButton.addEventListener('click', () => {
+          pushAnalyticsEvent('begin_checkout', {
+            source: 'cart'
+          });
+        });
+      }
+
+      document.addEventListener('click', (event) => {
+        const removeButton = event.target.closest('[data-remove-cart-item]');
+        if (!removeButton) return;
+
+        pushAnalyticsEvent('remove_from_cart', {
+          ecommerce: {
+            items: [
+              {
+                item_id: removeButton.dataset.variantId || removeButton.dataset.productId || '',
+                item_name: removeButton.dataset.productTitle || '',
+                item_brand: removeButton.dataset.productVendor || '',
+                quantity: Number(removeButton.dataset.quantity || 1),
+                price: Number(removeButton.dataset.price || 0) / 100
+              }
+            ]
+          }
         });
       });
-    }
+    });
 
     const cartAnalyticsNode = document.querySelector('[data-cart-analytics]');
     if (cartAnalyticsNode) {
@@ -326,25 +377,6 @@ function debounce(fn, wait) {
         }
       });
     }
-
-    document.addEventListener('click', (event) => {
-      const removeButton = event.target.closest('[data-remove-cart-item]');
-      if (!removeButton) return;
-
-      pushAnalyticsEvent('remove_from_cart', {
-        ecommerce: {
-          items: [
-            {
-              item_id: removeButton.dataset.variantId || removeButton.dataset.productId || '',
-              item_name: removeButton.dataset.productTitle || '',
-              item_brand: removeButton.dataset.productVendor || '',
-              quantity: Number(removeButton.dataset.quantity || 1),
-              price: Number(removeButton.dataset.price || 0) / 100
-            }
-          ]
-        }
-      });
-    });
 
     if (window.Shopify && window.Shopify.checkout && window.Shopify.checkout.order_id) {
       const checkout = window.Shopify.checkout;

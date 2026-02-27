@@ -1,0 +1,24 @@
+<div class="customer order-page page-width">
+  <p><a href="{{ routes.account_url }}">{{ 'customer.account.return' | t | default: 'Return to account' }}</a></p>
+
+  <h1>{{ 'customer.order.title' | t: name: order.name | default: order.name }}</h1>
+  <p>{{ 'customer.order.date_html' | t: date: order.created_at | default: order.created_at | date: format: 'date' }}</p>
+
+  <h2>{{ 'customer.order.products' | t | default: 'Products' }}</h2>
+  <ul>
+    {%- for line_item in order.line_items -%}
+      <li>
+        {{ line_item.title }} × {{ line_item.quantity }} — {{ line_item.final_line_price | money }}
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  <p><strong>{{ 'customer.order.total' | t | default: 'Total' }}:</strong> {{ order.total_price | money }}</p>
+</div>
+
+{% schema %}
+{
+  "name": "Main order",
+  "settings": []
+}
+{% endschema %}

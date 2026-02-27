@@ -48,11 +48,16 @@
   transition: height var(--transition-slow), box-shadow var(--transition-base);
 }
 
-.header-main[data-sticky-mode="always"],
 .header-main[data-sticky-mode="on_scroll"],
 .header-main[data-sticky-mode="hide_on_scroll"] {
   position: relative;
   top: auto;
+  width: 100%;
+}
+
+.header-main[data-sticky-mode="always"] {
+  position: sticky;
+  top: 0;
   width: 100%;
 }
 
@@ -61,19 +66,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  top: var(--header-sticky-top-mobile, 0px);
-}
-
-@media screen and (min-width: 750px) {
-  .header-main.is-pinned {
-    top: var(--header-sticky-top-tablet, var(--header-sticky-top-mobile, 0px));
-  }
-}
-
-@media screen and (min-width: 990px) {
-  .header-main.is-pinned {
-    top: var(--header-sticky-top-desktop, var(--header-sticky-top-tablet, 0px));
-  }
+  top: 0;
 }
 
 @media screen and (min-width: 990px) {

@@ -52,11 +52,11 @@
           playsinline
         >
           <source src="{{ video_file }}" type="video/mp4">
-          Your browser does not support the video tag.
+          {{ 'blocks.video.browser_not_supported' | t }}
         </video>
         
         {%- unless controls -%}
-          <button class="video-block__play-button" aria-label="Play video">
+          <button class="video-block__play-button" aria-label="{{ 'products.product.media.play_video' | t }}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
@@ -66,7 +66,7 @@
     {%- else -%}
       <div class="video-block__placeholder">
         {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
-        <p>Add a video URL or upload a video file</p>
+        <p>{{ 'blocks.video.add_video_source' | t }}</p>
       </div>
     {%- endif -%}
   </div>

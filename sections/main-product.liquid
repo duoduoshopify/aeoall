@@ -2,6 +2,10 @@
 
 <section
   class="page-width section-{{ section.id }}-padding"
+  data-section-hydrate
+  data-section-id="{{ section.id }}"
+  data-section-type="main-product"
+  data-section-scripts="{{ 'variant-selects.js' | asset_url }},{{ 'product-form.js' | asset_url }},{{ 'mobile-sticky-cta.js' | asset_url }}"
   data-product-analytics
   data-product-id="{{ product.id }}"
   data-product-title="{{ product.title | escape }}"
@@ -15,8 +19,16 @@
     <div class="product__media-wrapper">
       <div class="pdp-gallery">
         {%- for media in product.media -%}
+          {%- liquid
+            assign media_loading = 'lazy'
+            assign media_fetchpriority = 'auto'
+            if forloop.first
+              assign media_loading = 'eager'
+              assign media_fetchpriority = 'high'
+            endif
+          -%}
           <div class="gallery-item" id="{{ section.id }}-{{ media.id }}">
-            {{ media.preview_image | image_url: width: 1200 | image_tag: loading: 'eager', class: 'responsive-img' }}
+            {{ media.preview_image | image_url: width: 1200 | image_tag: loading: media_loading, fetchpriority: media_fetchpriority, class: 'responsive-img' }}
           </div>
         {%- endfor -%}
       </div>

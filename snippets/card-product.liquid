@@ -3,6 +3,11 @@
   解决了链接无法点击和全卡片覆盖的问题
 {% endcomment %}
 
+{%- liquid
+  assign card_loading = image_loading | default: 'lazy'
+  assign card_fetchpriority = image_fetchpriority | default: 'auto'
+-%}
+
 <div class="card-wrapper">
   <div class="card card--product">
     
@@ -16,14 +21,14 @@
             src="{{ card_product.featured_media | image_url: width: 533 }}"
             sizes="(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw"
             alt="{{ card_product.featured_media.alt | escape }}"
-            loading="lazy" class="motion-reduce" 
+            loading="{{ card_loading }}" fetchpriority="{{ card_fetchpriority }}" class="motion-reduce" 
             width="{{ card_product.featured_media.width }}" 
             height="{{ card_product.featured_media.height }}">
 
           {%- if card_product.media[1] != nil -%}
             <img src="{{ card_product.media[1] | image_url: width: 533 }}" 
                  alt="{{ card_product.media[1].alt | escape }}" 
-                 loading="lazy" class="motion-reduce card__media-hover"
+                 loading="{{ card_loading }}" fetchpriority="{{ card_fetchpriority }}" class="motion-reduce card__media-hover"
                  width="{{ card_product.media[1].width }}"
                  height="{{ card_product.media[1].height }}">
           {%- endif -%}

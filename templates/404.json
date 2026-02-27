@@ -8,49 +8,39 @@
  * ------------------------------------------------------------
  */
 {
-    "sections": {
-      "main": {
-        "type": "dynamic-group",
-        "blocks": {
-          "heading": {
-            "type": "heading",
-            "settings": {
-              "heading": "404 · Page not found",
-              "size": "h1",
-              "tag": "h1"
-            }
-          },
-          "text": {
-            "type": "text",
-            "settings": {
-              "text": "<p>The page you are looking for doesn\u2019t exist or has moved. Try heading back to the homepage.</p>",
-              "style": "body"
-            }
-          },
-          "button": {
-            "type": "button",
-            "settings": {
-              "button_label": "Back to Home",
-              "button_link": "/",
-              "button_style": "primary"
-            }
+  "sections": {
+    "main": {
+      "type": "dynamic-group",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "tag": "h1",
+            "size": "h1"
           }
         },
-        "block_order": [
-          "heading",
-          "text",
-          "button"
-        ],
-        "settings": {
-          "alignment": "center",
-          "content_width": 60,
-          "padding_top": 120,
-          "padding_bottom": 120,
-          "visual_vibe": "soft-shadow"
+        "text": {
+          "type": "text",
+          "settings": {}
+        },
+        "button": {
+          "type": "button",
+          "settings": {}
         }
+      },
+      "block_order": [
+        "heading",
+        "text",
+        "button"
+      ],
+      "settings": {
+        "visual_vibe": "soft-shadow",
+        "padding_top": 120,
+        "padding_bottom": 120
       }
-    },
-    "order": [
-      "main"
-    ]
-  }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

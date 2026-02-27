@@ -39,38 +39,58 @@
     
     {%- comment -%} 2. 基础样式库加载 {%- endcomment -%}
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+    {%- if settings.cart_behavior_mode == 'drawer' -%}
+      {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
 
-    {%- comment -%} 3. 全局 JavaScript 路由与字符串 (修复 JS 报错) {%- endcomment -%}
-    <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
-      
-      window.routes = {
-        cart_add_url: '{{ routes.cart_add_url }}',
-        cart_change_url: '{{ routes.cart_change_url }}',
-        cart_update_url: '{{ routes.cart_update_url }}',
-        cart_url: '{{ routes.cart_url }}',
-        predictive_search_url: '{{ routes.predictive_search_url }}',
-        money_format: {{ shop.money_format | json }}
-      };
-
-      window.cartStrings = {
-        error: `{{ 'sections.cart.cart_error' | t }}`,
-        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`
-      };
-
-      window.variantStrings = {
-        addToCart: `{{ 'products.product.add_to_cart' | t }}`,
-        soldOut: `{{ 'products.product.sold_out' | t }}`,
-        unavailable: `{{ 'products.product.unavailable' | t }}`
-      };
-
-      window.themeSettings = {
-        cartBehaviorMode: {{ settings.cart_behavior_mode | default: 'drawer' | json }}
-      };
+    {%- comment -%} 3. 主题运行时数据：JSON + 轻量引导（降低内联脚本耦合） {%- endcomment -%}
+    <script id="theme-data" type="application/json">
+      {
+        "routes": {
+          "cart_add_url": {{ routes.cart_add_url | json }},
+          "cart_change_url": {{ routes.cart_change_url | json }},
+          "cart_update_url": {{ routes.cart_update_url | json }},
+          "cart_url": {{ routes.cart_url | json }},
+          "predictive_search_url": {{ routes.predictive_search_url | json }},
+          "money_format": {{ shop.money_format | json }}
+        },
+        "cartStrings": {
+          "error": {{ 'sections.cart.cart_error' | t | json }},
+          "quantityError": {{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' | json }}
+        },
+        "variantStrings": {
+          "addToCart": {{ 'products.product.add_to_cart' | t | json }},
+          "soldOut": {{ 'products.product.sold_out' | t | json }},
+          "unavailable": {{ 'products.product.unavailable' | t | json }}
+        },
+        "themeSettings": {
+          "cartBehaviorMode": {{ settings.cart_behavior_mode | default: 'drawer' | json }}
+        },
+        "shopUrl": {{ request.origin | json }}
+      }
     </script>
-    <!-- 性能监控 -->
-<script src="{{ 'performance.js' | asset_url }}" defer></script>
+    <script>
+      (function() {
+        try {
+          var themeDataNode = document.getElementById('theme-data');
+          if (!themeDataNode) return;
+
+          var parsed = JSON.parse(themeDataNode.textContent || '{}');
+          window.themeData = parsed;
+          window.routes = Object.assign({}, window.routes || {}, parsed.routes || {});
+          window.cartStrings = Object.assign({}, window.cartStrings || {}, parsed.cartStrings || {});
+          window.variantStrings = Object.assign({}, window.variantStrings || {}, parsed.variantStrings || {});
+          window.themeSettings = Object.assign({}, window.themeSettings || {}, parsed.themeSettings || {});
+          window.shopUrl = parsed.shopUrl || window.shopUrl || '';
+        } catch (error) {
+          console.warn('[Theme] Failed to parse #theme-data JSON', error);
+        }
+      })();
+    </script>
+    <!-- 性能监控（仅主题编辑器/设计模式启用，避免线上额外开销） -->
+    {%- if request.design_mode -%}
+      <script src="{{ 'performance.js' | asset_url }}" defer></script>
+    {%- endif -%}
 
 <!-- 对话框组件 -->
 <script src="{{ 'dialog.js' | asset_url }}" defer></script>
@@ -108,7 +128,9 @@
     {%- comment -%} 7. 全局高转化组件 {%- endcomment -%}
     
     {%- comment -%} AJAX 购物车抽屉 {%- endcomment -%}
-    {% section 'cart-drawer' %}
+    {%- if settings.cart_behavior_mode == 'drawer' -%}
+      {% section 'cart-drawer' %}
+    {%- endif -%}
 
     {%- comment -%} 退出意图折扣弹窗 {%- endcomment -%}
     {% render 'exit-intent' %}
@@ -126,12 +148,10 @@
 
     {%- comment -%} 9. 非阻塞 JavaScript 加载 {%- endcomment -%}
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
 
-    <script>
-      window.shopUrl = '{{ request.origin }}';
-    </script>
+    {%- if settings.cart_behavior_mode == 'drawer' -%}
+      <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
   </body>
 </html>

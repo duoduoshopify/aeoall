@@ -1,7 +1,10 @@
 {{ 'component-header.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign sticky_mode = section.settings.sticky_mode | default: 'always'
+  assign sticky_mode = section.settings.sticky_mode | default: 'on_scroll'
+  if sticky_mode == 'always'
+    assign sticky_mode = 'on_scroll'
+  endif
   assign cart_click_behavior = settings.cart_behavior_mode | default: section.settings.cart_click_behavior | default: 'drawer'
   assign has_mega_menu = false
   assign load_mega_js = false
@@ -9,7 +12,7 @@
   for block in section.blocks
     if block.type == 'mega_menu'
       assign has_mega_menu = true
-      if block.settings.enable_promo_slider and block.settings.promo_image != blank and (block.settings.promo_image_2 != blank or block.settings.promo_image_3 != blank)
+      if block.settings.enable_promo_slider and block.settings.promo_image_2 != blank
         assign load_mega_js = true
       endif
     endif
@@ -17,21 +20,21 @@
 -%}
 
 {%- if has_mega_menu -%}
-  {{ 'component-header-mega.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
-
-{%- if load_mega_js -%}
-  <script src="{{ 'mega-menu.js' | asset_url }}" defer="defer"></script>
+  <link rel="preload" href="{{ 'component-header-mega.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>{{ 'component-header-mega.css' | asset_url | stylesheet_tag }}</noscript>
 {%- endif -%}
 
 <div class="header-sticky-sentinel" data-header-sentinel="{{ section.id }}" aria-hidden="true"></div>
 
 <header
   class="header-main"
+  data-section-hydrate
+  data-section-id="{{ section.id }}"
+  data-section-type="header"
+  data-section-scripts="{%- if load_mega_js -%}{{ 'mega-menu.js' | asset_url }},{%- endif -%}{{ 'predictive-search.js' | asset_url }}"
   data-header-section="{{ section.id }}"
   data-sticky-mode="{{ sticky_mode }}"
   data-cart-behavior="{{ cart_click_behavior }}"
-  style="--header-sticky-top-mobile: {{ section.settings.sticky_top_mobile | default: 0 }}px; --header-sticky-top-tablet: {{ section.settings.sticky_top_tablet | default: 0 }}px; --header-sticky-top-desktop: {{ section.settings.sticky_top_desktop | default: 0 }}px;"
 >
   <div class="page-width header-wrap">
     
@@ -140,41 +143,10 @@
       "label": "Header sticky mode",
       "default": "on_scroll",
       "options": [
-        { "value": "always", "label": "Always sticky (always pinned)" },
         { "value": "on_scroll", "label": "Scroll-triggered sticky (affix)" },
         { "value": "hide_on_scroll", "label": "Always sticky, hide on scroll down" },
         { "value": "none", "label": "Not sticky" }
       ]
-    },
-    {
-      "type": "range",
-      "id": "sticky_top_mobile",
-      "label": "Sticky top offset (mobile)",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "sticky_top_tablet",
-      "label": "Sticky top offset (tablet)",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "sticky_top_desktop",
-      "label": "Sticky top offset (desktop)",
-      "min": 0,
-      "max": 160,
-      "step": 4,
-      "unit": "px",
-      "default": 0
     },
     {
       "type": "select",

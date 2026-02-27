@@ -51,6 +51,24 @@
     animation: backdrop-fade-in 0.2s ease;
   }
 
+  /* 旧浏览器降级：dialog.js 会添加 .dialog--fallback + 自定义 backdrop */
+  .dialog--fallback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    z-index: 1001;
+  }
+
+  .dialog-fallback-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+  }
+
   @keyframes backdrop-fade-in {
     from { opacity: 0; }
     to { opacity: 1; }

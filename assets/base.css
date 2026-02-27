@@ -547,3 +547,70 @@ button.button:active {
     height: 3.6rem;
   }
 }
+
+/* --- Section Hydration 状态样式 --- */
+.section-hydrating {
+  position: relative;
+  min-height: 200px;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.section-hydrating::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: section-skeleton-loading 1.5s infinite;
+}
+
+@keyframes section-skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.section-hydrated {
+  animation: section-fade-in 0.3s ease;
+}
+
+@keyframes section-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-hydration-error {
+  border: 2px dashed #ef4444;
+  padding: 2rem;
+  text-align: center;
+}
+
+.section-hydration-error::after {
+  content: 'Failed to load section';
+  display: block;
+  margin-top: 1rem;
+  color: #ef4444;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.shopify-section-editor .section-hydration-error::after {
+  display: none;
+}

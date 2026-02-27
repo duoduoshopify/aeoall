@@ -5,13 +5,13 @@
       {%- if variant.inventory_quantity <= block.settings.low_threshold -%}
         <div class="inventory--low">
           <span class="pulse-dot"></span>
-          Only {{ variant.inventory_quantity }} left in stock!
+          {{ 'products.product.inventory_low_stock_html' | t: count: variant.inventory_quantity }}
         </div>
       {%- else -%}
-        <div class="inventory--in-stock">Ready to Ship</div>
+        <div class="inventory--in-stock">{{ 'products.product.inventory_in_stock' | t }}</div>
       {%- endif -%}
     {%- else -%}
-      <div class="inventory--out">Out of Stock</div>
+      <div class="inventory--out">{{ 'products.product.inventory_out_of_stock' | t }}</div>
     {%- endif -%}
   {%- endif -%}
 </div>

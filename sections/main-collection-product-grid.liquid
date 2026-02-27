@@ -92,7 +92,7 @@
   }
 {%- endstyle -%}
 
-<div class="section-{{ section.id }}-padding page-width">
+<div class="section-{{ section.id }}-padding page-width" data-section-hydrate data-section-id="{{ section.id }}" data-section-type="main-collection-product-grid">
   {%- comment -%} 1. 分类头部排版优化 {%- endcomment -%}
   <div class="collection-header text-center">
     {%- if section.settings.show_title -%}
@@ -162,30 +162,32 @@
   </div>
   {%- endif -%}
 
-  <script>
-    document.getElementById('SortBy')?.addEventListener('change', function(e) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('sort_by', e.target.value);
-      window.location.href = url.toString();
-    });
-  </script>
-
   {%- comment -%} 2. 产品网格区域 {%- endcomment -%}
   <div id="ProductGridContainer">
     {%- paginate collection.products by section.settings.products_per_page -%}
       {%- if collection.products.size == 0 -%}
         <div class="collection-empty">
-          <h2 class="collection-empty__title">No products found</h2>
-          <p class="collection-empty__text">Try a different sorting option or browse all products.</p>
-          <a href="{{ routes.all_products_collection_url }}" class="atc-btn" style="display:inline-flex; width:auto; padding:0 3rem; min-height:4.8rem; text-decoration:none;">View all products</a>
+          <h2 class="collection-empty__title">{{ 'sections.collection_template.empty' | t }}</h2>
+          <p class="collection-empty__text">{{ 'sections.collection_template.use_fewer_filters_html' | t: class: 'link', link: routes.all_products_collection_url }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="atc-btn" style="display:inline-flex; width:auto; padding:0 3rem; min-height:4.8rem; text-decoration:none;">{{ 'sections.featured_collection.view_all' | t }}</a>
         </div>
       {%- else -%}
         <ul id="product-grid" class="grid grid--2-col grid--3-col-tablet grid--4-col-desktop">
           {%- for product in collection.products -%}
+            {%- liquid
+              assign card_image_loading = 'lazy'
+              assign card_image_fetchpriority = 'auto'
+              if forloop.index <= 4
+                assign card_image_loading = 'eager'
+                assign card_image_fetchpriority = 'high'
+              endif
+            -%}
             <li class="grid__item">
               {% render 'card-product',
                 card_product: product,
-                show_vendor: section.settings.show_vendor
+                show_vendor: section.settings.show_vendor,
+                image_loading: card_image_loading,
+                image_fetchpriority: card_image_fetchpriority
               %}
             </li>
           {%- endfor -%}

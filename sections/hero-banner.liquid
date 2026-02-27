@@ -8,6 +8,19 @@
     text-align: center;
   }
 
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
   @media screen and (min-width: 750px) {
     .hero-{{ section.id }} {
       min-height: {{ section.settings.height }}px;
@@ -111,7 +124,28 @@
   }
 {%- endstyle -%}
 
-<div class="hero hero-{{ section.id }} color-{{ section.settings.color_scheme }} gradient"{% if section.settings.image != blank %} style="background-image: url('{{ section.settings.image | image_url: width: 2000 }}'); background-size: cover; background-position: center;"{% endif %}>
+{%- liquid
+  assign hero_loading = 'lazy'
+  assign hero_fetch_priority = 'auto'
+  if request.page_type == 'index' and section.index == 1
+    assign hero_loading = 'eager'
+    assign hero_fetch_priority = 'high'
+  endif
+-%}
+
+<div class="hero hero-{{ section.id }} color-{{ section.settings.color_scheme }} gradient" data-section-hydrate data-section-id="{{ section.id }}" data-section-type="hero-banner">
+  {%- if section.settings.image != blank -%}
+    <div class="hero__media" aria-hidden="true">
+      {{ section.settings.image | image_url: width: 2400 | image_tag:
+        widths: '750, 1100, 1500, 2000, 2400',
+        sizes: '100vw',
+        loading: hero_loading,
+        fetchpriority: hero_fetch_priority,
+        class: 'hero__image'
+      }}
+    </div>
+  {%- endif -%}
+
   <div class="hero-overlay-{{ section.id }} hero-overlay"></div>
   
   <div class="hero__content page-width page-width--{{ section.settings.content_width }}">

@@ -1,0 +1,40 @@
+<div class="customer auth-page page-width">
+  <h1>{{ 'customer.login_page.title' | t | default: 'Login' }}</h1>
+
+  {%- form 'customer_login', novalidate: 'novalidate' -%}
+    {%- if form.errors -%}
+      <div class="form-errors" role="alert">{{ form.errors | default_errors }}</div>
+    {%- endif -%}
+
+    <div class="field">
+      <label for="CustomerEmail">{{ 'customer.login_page.email' | t | default: 'Email' }}</label>
+      <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" required>
+    </div>
+
+    <div class="field">
+      <label for="CustomerPassword">{{ 'customer.login_page.password' | t | default: 'Password' }}</label>
+      <input type="password" name="customer[password]" id="CustomerPassword" autocomplete="current-password" required>
+    </div>
+
+    <button type="submit" class="button">{{ 'customer.login_page.sign_in' | t | default: 'Sign in' }}</button>
+  {%- endform -%}
+
+  <p>
+    <a href="{{ routes.account_register_url }}">{{ 'customer.login_page.create_account' | t | default: 'Create account' }}</a>
+  </p>
+
+  <div>
+    {%- form 'recover_customer_password' -%}
+      <label for="RecoverEmail">{{ 'customer.recover_password_page.email' | t | default: 'Email' }}</label>
+      <input type="email" name="email" id="RecoverEmail" autocomplete="email">
+      <button type="submit" class="button button--secondary">{{ 'customer.login_page.forgot_password' | t | default: 'Forgot password?' }}</button>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Main login",
+  "settings": []
+}
+{% endschema %}
