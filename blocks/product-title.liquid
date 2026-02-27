@@ -1,8 +1,194 @@
-<h1 class="pdp-title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+{% comment %}
+  Product Title Block - 产品标题组件
+  支持链接、徽章和样式选项
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign heading_tag = block.settings.heading_tag
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign enable_link = block.settings.enable_link
+  assign show_rating = block.settings.show_rating
+  assign show_vendor = block.settings.show_vendor
+  if product == blank
+    assign product_title = 'AEOall Product Title'
+  else
+    assign product_title = product.title | escape
+  endif
+-%}
+
+<div 
+  class="product-title-block product-title-block--{{ alignment }} product-title-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if show_vendor and product != blank and product.vendor != blank -%}
+    <div class="product-title-block__vendor">
+      {{ product.vendor | link_to_vendor }}
+    </div>
+  {%- endif -%}
+
+  {%- if enable_link and product != blank -%}
+    <a href="{{ product.url }}" class="product-title-block__link">
+      <{{ heading_tag }} class="product-title-block__title">{{ product_title }}</{{ heading_tag }}>
+    </a>
+  {%- else -%}
+    <{{ heading_tag }} class="product-title-block__title">{{ product_title }}</{{ heading_tag }}>
+  {%- endif -%}
+
+  {%- if show_rating and product != blank -%}
+    <div class="product-title-block__rating">
+      {% render 'rating', product: product %}
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .product-title-block {
+    width: 100%;
+  }
+
+  .product-title-block--left { text-align: left; }
+  .product-title-block--center { text-align: center; }
+  .product-title-block--right { text-align: right; }
+
+  .product-title-block__vendor {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(var(--color-accent));
+    margin-bottom: 0.5rem;
+  }
+
+  .product-title-block__vendor a {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--duration-default) ease;
+  }
+
+  .product-title-block__vendor a:hover {
+    opacity: 0.7;
+  }
+
+  .product-title-block__title {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    line-height: 1.2;
+    color: rgb(var(--color-text));
+    transition: color var(--duration-default) ease;
+  }
+
+  /* Style - Default */
+  .product-title-block--default .product-title-block__title {
+    font-size: calc(var(--font-heading-scale) * 2.8rem);
+  }
+
+  /* Style - Compact */
+  .product-title-block--compact .product-title-block__title {
+    font-size: calc(var(--font-heading-scale) * 2rem);
+  }
+
+  /* Style - Large */
+  .product-title-block--large .product-title-block__title {
+    font-size: calc(var(--font-heading-scale) * 3.6rem);
+  }
+
+  /* Link hover */
+  .product-title-block__link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-title-block__link:hover .product-title-block__title {
+    color: rgb(var(--color-accent));
+  }
+
+  /* Rating */
+  .product-title-block__rating {
+    margin-top: 0.8rem;
+  }
+
+  /* Animation */
+  .product-title-block__title {
+    opacity: 0;
+    animation: title-fade-in 0.5s ease forwards;
+  }
+
+  @keyframes title-fade-in {
+    to { opacity: 1; }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .product-title-block--default .product-title-block__title { font-size: calc(var(--font-heading-scale) * 2.2rem); }
+    .product-title-block--large .product-title-block__title { font-size: calc(var(--font-heading-scale) * 2.8rem); }
+  }
+</style>
 
 {% schema %}
 {
   "name": "Product Title",
-  "settings": []
+  "class": "product-title-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading Tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "div", "label": "Div" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "compact", "label": "Compact" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_link",
+      "label": "Link to product page",
+      "default": false,
+      "info": "Make the title clickable"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "default": false
+    }
+  ]
 }
 {% endschema %}

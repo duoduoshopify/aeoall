@@ -65,20 +65,23 @@
     "share": {
       "success_message": "Link in die Zwischenablage kopiert",
       "share_on": "Teilen",
-      "copy_to_clipboard": "Link kopieren"
+      "copy_to_clipboard": "Link kopieren",
+      "link_copied": "Link kopiert!"
     },
     "countdown": {
       "days": "Tage",
       "hours": "Stunden",
       "minutes": "Minuten",
-      "seconds": "Sekunden"
+      "seconds": "Sekunden",
+      "expired": "Dieses Angebot ist beendet"
     }
   },
   "newsletter": {
     "label": "E-Mail",
     "success": "Danke für Ihr Abonnement!",
     "button_label": "Abonnieren",
-    "email_placeholder": "Ihre E-Mail eingeben"
+    "email_placeholder": "Ihre E-Mail eingeben",
+    "privacy_notice": "Wir respektieren Ihre Privatsphäre. Jederzeit abmeldbar."
   },
   "blogs": {
     "general": {
@@ -171,9 +174,16 @@
       "include_taxes": "Inklusive Steuern.",
       "shipping_policy_html": "<a href=\"{{ link }}\">Versand</a> wird beim Checkout berechnet.",
       "sku": "SKU",
+"inventory_low_stock": "Niedriger Lagerbestand",
       "inventory_low_stock_html": "Nur noch {{ count }} auf Lager",
+      "inventory_low_stock_with_count": "Nur noch {{ count }} - bald bestellen!",
       "inventory_in_stock": "Auf Lager",
-      "inventory_out_of_stock": "Nicht vorrätig"
+      "inventory_in_stock_with_count": "{{ count }} auf Lager",
+      "inventory_out_of_stock": "Ausverkauft",
+      "inventory_always_in_stock": "Auf Lager",
+      "no_reviews": "Noch keine Bewertungen",
+      "add_to_wishlist": "Zur Wunschliste hinzufügen",
+      "estimate_shipping": "Versandkosten an der Kasse berechnen"
     },
     "modal": {
       "label": "Mediengalerie"
@@ -459,6 +469,25 @@
       "expired": "Abgelaufen",
       "copy_code_success": "Code erfolgreich kopiert",
       "print_gift_card": "Drucken"
+    }
+  },
+  "blocks": {
+    "article_card": {
+      "select_article": "Wählen Sie einen Artikel zum Anzeigen"
+    },
+    "video": {
+      "browser_not_supported": "Ihr Browser unterstützt das Video-Tag nicht.",
+      "add_video_source": "Fügen Sie eine Video-URL hinzu oder laden Sie eine Videodatei hoch"
+    },
+    "custom_liquid": {
+      "placeholder": "Fügen Sie hier benutzerdefinierten Liquid-Code hinzu"
+    },
+    "accordion": {
+      "expand": "Erweitern",
+      "collapse": "Zusammenklappen"
+    },
+    "tabs": {
+      "tab": "Tab"
     }
   }
 }

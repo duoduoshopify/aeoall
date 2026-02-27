@@ -1,0 +1,235 @@
+{% comment %}
+  Search Block - 搜索框组件
+  支持实时搜索、样式定制
+{% endcomment %}
+
+{%- liquid
+  assign heading = block.settings.heading
+  assign placeholder = block.settings.placeholder
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_icon = block.settings.show_icon
+  assign popular_searches = block.settings.popular_searches
+-%}
+
+<div 
+  class="search-block search-block--{{ alignment }} search-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if heading != blank -%}
+    <h3 class="search-block__heading">{{ heading }}</h3>
+  {%- endif -%}
+
+  <search-component class="search-block__form">
+    <predictive-search class="predictive-search" data-loading-text="{{ 'accessibility.loading' | t }}">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-block__form-inner">
+        <input type="search" 
+          name="q" 
+          id="search-{{ section.id }}"
+          class="search-block__input"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ placeholder | default: 'Search for products...' }}"
+          {% if settings.predictive_search_enabled %}
+            role="combobox"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-autocomplete="list"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          {% endif %}
+        >
+        
+        <input name="options[prefix]" type="hidden" value="last">
+        
+        <button 
+          type="submit" 
+          class="search-block__button"
+          aria-label="{{ 'general.search.search' | t }}"
+        >
+          {%- if show_icon -%}
+            {% render 'icon', name: 'search' %}
+          {%- endif -%}
+          <span class="search-block__button-text">{{ 'general.search.search' | t }}</span>
+        </button>
+      </form>
+
+      {%- if settings.predictive_search_enabled -%}
+        <div class="predictive-search__results" style="display: none;">
+          <div id="predictive-search-results" role="listbox"></div>
+        </div>
+      {%- endif -%}
+    </predictive-search>
+  </search-component>
+
+  {%- if popular_searches != blank -%}
+    <div class="search-block__popular">
+      <span class="search-block__popular-label">{{ 'general.search.popular' | t | default: 'Popular:' }}</span>
+      {%- assign searches = popular_searches | split: ',' -%}
+      {%- for search in searches -%}
+        <a href="{{ routes.search_url }}?q={{ search | strip | url_encode }}" class="search-block__tag">
+          {{ search | strip }}
+        </a>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .search-block { width: 100%; max-width: 600px; }
+  .search-block--left { margin-right: auto; }
+  .search-block--center { margin: 0 auto; }
+  .search-block--right { margin-left: auto; }
+
+  .search-block__heading {
+    margin: 0 0 1.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(var(--color-text));
+  }
+
+  .search-block__form { position: relative; }
+
+  .search-block__form-inner {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: var(--buttons-radius, 50px);
+    background: rgb(var(--color-background));
+    overflow: hidden;
+    transition: border-color var(--duration-default) ease;
+  }
+
+  .search-block__form-inner:focus-within {
+    border-color: rgb(var(--color-accent));
+  }
+
+  .search-block__input {
+    flex: 1;
+    padding: 1.4rem 1.6rem;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    color: rgb(var(--color-text));
+  }
+
+  .search-block__input::placeholder {
+    color: rgba(var(--color-text), 0.4);
+  }
+
+  .search-block__input:focus {
+    outline: none;
+  }
+
+  .search-block__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.4rem 2rem;
+    border: none;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--duration-default) ease;
+  }
+
+  .search-block__button:hover {
+    background: rgb(var(--color-button-hover));
+  }
+
+  .search-block__button svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Style - Minimal */
+  .search-block--minimal .search-block__form-inner {
+    border-radius: 8px;
+    border-width: 2px;
+  }
+
+  .search-block--minimal .search-block__input {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .search-block--minimal .search-block__button {
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* Style - Full */
+  .search-block--full .search-block__form-inner {
+    border-radius: 12px;
+  }
+
+  .search-block--full .search-block__input {
+    padding: 1.8rem 2rem;
+    font-size: 1.6rem;
+  }
+
+  .search-block--full .search-block__button {
+    padding: 1.8rem 2.8rem;
+  }
+
+  /* Popular */
+  .search-block__popular {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+    align-items: center;
+  }
+
+  .search-block__popular-label {
+    font-size: 1.3rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  .search-block__tag {
+    padding: 0.4rem 1rem;
+    background: rgba(var(--color-text), 0.05);
+    border-radius: 50px;
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.7);
+    text-decoration: none;
+    transition: all var(--duration-default) ease;
+  }
+
+  .search-block__tag:hover {
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-background));
+  }
+
+  @media (max-width: 749px) {
+    .search-block__input { padding: 1.2rem 1.4rem; font-size: 1.4rem; }
+    .search-block__button { padding: 1.2rem 1.6rem; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Search",
+  "class": "search-block",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "text", "id": "placeholder", "label": "Placeholder", "default": "Search for products..." },
+    { "type": "text", "id": "popular_searches", "label": "Popular Searches", "info": "Comma separated, e.g.: shoes, bags, accessories" },
+    { "type": "header", "content": "Style" },
+    { "type": "select", "id": "style", "label": "Style", "options": [
+      { "value": "default", "label": "Default" },
+      { "value": "minimal", "label": "Minimal" },
+      { "value": "full", "label": "Full Width" }
+    ], "default": "default" },
+    { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "center" },
+    { "type": "checkbox", "id": "show_icon", "label": "Show search icon", "default": true }
+  ]
+}
+{% endschema %}

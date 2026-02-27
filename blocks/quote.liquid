@@ -1,0 +1,330 @@
+{% comment %}
+  Quote Block - 引用组件
+  用于显示客户评价、引言、格言等
+{% endcomment %}
+
+{%- liquid
+  assign quote_text = block.settings.quote_text
+  assign author = block.settings.author
+  assign author_title = block.settings.author_title
+  assign avatar = block.settings.avatar
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign enable_stars = block.settings.enable_stars
+  assign star_rating = block.settings.star_rating
+-%}
+
+{%- if quote_text != blank -%}
+  <div 
+    class="quote-block quote-block--{{ alignment }} quote-block--{{ style }}" 
+    {{ block.shopify_attributes }}
+  >
+    <div class="quote-block__content">
+      {%- if enable_stars and star_rating > 0 -%}
+        <div class="quote-block__stars" aria-label="{{ star_rating }} out of 5 stars">
+          {%- for i in (1..5) -%}
+            <span class="quote-block__star{% if i <= star_rating %} quote-block__star--filled{% endif %}">
+              {% render 'icon', name: 'star' %}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <blockquote class="quote-block__text">
+        <span class="quote-block__quote-mark">"</span>
+        {{ quote_text }}
+      </blockquote>
+
+      {%- if author != blank -%}
+        <div class="quote-block__author">
+          {%- if avatar != blank -%}
+            <div class="quote-block__avatar">
+              <img 
+                src="{{ avatar | image_url: width: 100 }}"
+                alt="{{ author }}"
+                loading="lazy"
+                width="50"
+                height="50"
+              >
+            </div>
+          {%- endif -%}
+          
+          <div class="quote-block__author-info">
+            <cite class="quote-block__author-name">{{ author }}</cite>
+            {%- if author_title != blank -%}
+              <span class="quote-block__author-title">{{ author_title }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+<style>
+  .quote-block {
+    width: 100%;
+  }
+
+  .quote-block--left { text-align: left; }
+  .quote-block--center { text-align: center; }
+  .quote-block--right { text-align: right; }
+
+  .quote-block__content {
+    position: relative;
+  }
+
+  /* Style: Default */
+  .quote-block--default .quote-block__text {
+    font-size: 1.8rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgba(var(--color-text), 0.85);
+    margin: 0 0 2rem;
+    padding: 0;
+    border: none;
+  }
+
+  .quote-block--default .quote-block__quote-mark {
+    font-size: 6rem;
+    line-height: 0;
+    color: rgb(var(--color-accent));
+    opacity: 0.3;
+    vertical-align: -2rem;
+    margin-right: 0.5rem;
+  }
+
+  /* Style: Card */
+  .quote-block--card .quote-block__content {
+    background: rgb(var(--color-background-secondary));
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .quote-block--card .quote-block__text {
+    font-size: 1.7rem;
+    line-height: 1.7;
+    color: rgba(var(--color-text), 0.85);
+    margin: 0 0 2rem;
+  }
+
+  .quote-block--card .quote-block__quote-mark {
+    font-size: 4rem;
+    color: rgb(var(--color-accent));
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  /* Style: Minimal */
+  .quote-block--minimal .quote-block__text {
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: rgba(var(--color-text), 0.75);
+    margin: 0 0 1.5rem;
+    padding-left: 2rem;
+    border-left: 3px solid rgb(var(--color-accent));
+  }
+
+  /* Style: Large */
+  .quote-block--large .quote-block__text {
+    font-size: 2.4rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: rgb(var(--color-text));
+    margin: 0 0 2.5rem;
+  }
+
+  /* Stars */
+  .quote-block__stars {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quote-block--left .quote-block__stars { justify-content: flex-start; }
+  .quote-block--right .quote-block__stars { justify-content: flex-end; }
+
+  .quote-block__star svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .quote-block__star--filled svg {
+    fill: rgb(234, 179, 8);
+    color: rgb(234, 179, 8);
+  }
+
+  .quote-block__star:not(.quote-block__star--filled) svg {
+    fill: transparent;
+    color: rgb(234, 179, 8);
+    opacity: 0.3;
+  }
+
+  /* Author */
+  .quote-block__author {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .quote-block--center .quote-block__author {
+    justify-content: center;
+  }
+
+  .quote-block--right .quote-block__author {
+    justify-content: flex-end;
+  }
+
+  .quote-block__avatar {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .quote-block__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quote-block__author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .quote-block__author-name {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: rgb(var(--color-text));
+  }
+
+  .quote-block__author-title {
+    font-style: normal;
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  /* Animation */
+  .quote-block__text {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: quote-fade-in 0.6s ease forwards;
+    animation-delay: 0.1s;
+  }
+
+  .quote-block__author {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: quote-fade-in 0.5s ease forwards;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes quote-fade-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .quote-block--default .quote-block__text,
+    .quote-block--minimal .quote-block__text { font-size: 1.5rem; }
+    .quote-block--large .quote-block__text { font-size: 1.9rem; }
+    .quote-block--card .quote-block__content { padding: 2rem; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Quote",
+  "class": "quote-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Quote Content"
+    },
+    {
+      "type": "richtext",
+      "id": "quote_text",
+      "label": "Quote Text",
+      "default": "<p>This is an amazing product! It exceeded all my expectations. Highly recommended.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Author"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Author Name",
+      "default": "John Doe"
+    },
+    {
+      "type": "text",
+      "id": "author_title",
+      "label": "Author Title",
+      "default": "Verified Buyer"
+    },
+    {
+      "type": "image_picker",
+      "id": "avatar",
+      "label": "Avatar Image",
+      "info": "Optional - Square image works best"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default (Classic)" },
+        { "value": "card", "label": "Card (Boxed)" },
+        { "value": "minimal", "label": "Minimal (Border Left)" },
+        { "value": "large", "label": "Large (Featured)" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_stars",
+      "label": "Show star rating",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "star_rating",
+      "label": "Star Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5,
+      "info": "Number of filled stars to display"
+    }
+  ]
+}
+{% endschema %}

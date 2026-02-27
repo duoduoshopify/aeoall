@@ -1,12 +1,65 @@
-<div class="custom-liquid-block" {{ block.shopify_attributes }}>
-  {{ block.settings.code }}
+{% comment %}
+  Custom Liquid Block - 自定义代码组件
+  允许添加自定义 Liquid 代码或应用代码
+{% endcomment %}
+
+{%- liquid
+  assign code = block.settings.code
+  assign padding = block.settings.padding
+  assign background = block.settings.background
+-%}
+
+<div 
+  class="custom-liquid-block{% if padding %} custom-liquid-block--padded{% endif %}{% if background %} custom-liquid-block--bg{% endif %}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if code != blank -%}
+    {{ code }}
+  {%- else -%}
+    <div class="custom-liquid-block__placeholder">
+      <p>{{ 'blocks.custom_liquid.placeholder' | t }}</p>
+    </div>
+  {%- endif -%}
 </div>
+
+<style>
+  .custom-liquid-block {
+    width: 100%;
+  }
+
+  .custom-liquid-block--padded {
+    padding: 2rem;
+  }
+
+  .custom-liquid-block--bg {
+    background: rgb(var(--color-background-secondary));
+    border-radius: 8px;
+  }
+
+  .custom-liquid-block__placeholder {
+    padding: 3rem;
+    text-align: center;
+    background: rgb(var(--color-background-secondary));
+    border: 2px dashed rgb(var(--color-border));
+    border-radius: 8px;
+    color: rgba(var(--color-text), 0.5);
+  }
+
+  .custom-liquid-block__placeholder p {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+</style>
 
 {% schema %}
 {
   "name": "Custom Liquid",
+  "class": "custom-liquid-block",
   "settings": [
-    { "type": "liquid", "id": "code", "label": "Liquid Code", "info": "Add custom snippets or app code." }
+    { "type": "liquid", "id": "code", "label": "Liquid Code", "info": "Add custom Liquid code or app snippets." },
+    { "type": "header", "content": "Style" },
+    { "type": "checkbox", "id": "padding", "label": "Add padding", "default": false },
+    { "type": "checkbox", "id": "background", "label": "Add background color", "default": false }
   ]
 }
 {% endschema %}

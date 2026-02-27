@@ -65,20 +65,23 @@
     "share": {
       "success_message": "リンクがクリップボードにコピーされました",
       "share_on": "シェア",
-      "copy_to_clipboard": "リンクをコピー"
+      "copy_to_clipboard": "リンクをコピー",
+      "link_copied": "リンクをコピーしました！"
     },
     "countdown": {
       "days": "日",
       "hours": "時間",
       "minutes": "分",
-      "seconds": "秒"
+      "seconds": "秒",
+      "expired": "このオファーは終了しました"
     }
   },
   "newsletter": {
     "label": "メールアドレス",
     "success": "ご登録ありがとうございます！",
     "button_label": "購読する",
-    "email_placeholder": "メールアドレスを入力"
+    "email_placeholder": "メールアドレスを入力",
+    "privacy_notice": "プライバシーを尊重します。いつでも購読を解除できます。"
   },
   "blogs": {
     "general": {
@@ -171,9 +174,16 @@
       "include_taxes": "税込み。",
       "shipping_policy_html": "<a href=\"{{ link }}\">配送</a>はcheckout時に計算されます。",
       "sku": "SKU",
+      "inventory_low_stock": "在庫残りわずか",
       "inventory_low_stock_html": "在庫残り{{ count }}個",
+      "inventory_low_stock_with_count": "残り{{ count }}個 - お早めに！",
       "inventory_in_stock": "在庫あり",
-      "inventory_out_of_stock": "在庫切れ"
+      "inventory_in_stock_with_count": "{{ count }}個在庫",
+      "inventory_out_of_stock": "在庫切れ",
+      "inventory_always_in_stock": "在庫あり",
+      "no_reviews": "レビューはまだありません",
+      "add_to_wishlist": "お気に入りに追加",
+      "estimate_shipping": "チェックアウト時に配送料を見積もり"
     },
     "modal": {
       "label": "メディアギャラリー"
@@ -453,12 +463,31 @@
       "gift_card_code": "礼品卡代码",
       "shop_link": "继续购物",
       "remaining_html": "剩余 {{ balance }}",
-      "add_to_apple_wallet": "添加到 Apple Wallet",
-      "qr_image_alt": "二维码 — 扫描以兑换礼品卡",
-      "copy_code": "复制代码",
-      "expired": "已过期",
-      "copy_code_success": "代码复制成功",
-      "print_gift_card": "打印"
+      "add_to_apple_wallet": "Apple Walletに追加",
+      "qr_image_alt": "QRコード — スキャンしてギフトカードを交換",
+      "copy_code": "コードをコピー",
+      "expired": "期限切れ",
+      "copy_code_success": "コードをコピーしました",
+      "print_gift_card": "印刷"
+    }
+  },
+  "blocks": {
+    "article_card": {
+      "select_article": "表示する記事を選択"
+    },
+    "video": {
+      "browser_not_supported": "ブラウザはvideoタグをサポートしていません。",
+      "add_video_source": "ビデオURLを追加するか、ビデオファイルをアップロード"
+    },
+    "custom_liquid": {
+      "placeholder": "ここにカスタムLiquidコードを追加"
+    },
+    "accordion": {
+      "expand": "展開",
+      "collapse": "折りたたむ"
+    },
+    "tabs": {
+      "tab": "タブ"
     }
   }
 }

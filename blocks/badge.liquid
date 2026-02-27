@@ -1,0 +1,286 @@
+{% comment %}
+  Badge Block - 徽章/标签组件
+  用于显示标签、徽章、角标等
+{% endcomment %}
+
+{%- liquid
+  assign text = block.settings.text
+  assign style = block.settings.style
+  assign color = block.settings.color
+  assign size = block.settings.size
+  assign alignment = block.settings.alignment
+  assign icon = block.settings.icon
+  assign enable_pulse = block.settings.enable_pulse
+-%}
+
+{%- if text != blank -%}
+  <div 
+    class="badge-block badge-block--{{ alignment }} badge-block--{{ style }} badge-block--{{ color }} badge-block--{{ size }}{% if enable_pulse %} badge-block--pulse{% endif %}" 
+    {{ block.shopify_attributes }}
+  >
+    <span class="badge-block__content">
+      {%- if icon != 'none' -%}
+        <span class="badge-block__icon">
+          {% render 'icon', name: icon %}
+        </span>
+      {%- endif -%}
+      
+      <span class="badge-block__text">{{ text }}</span>
+    </span>
+  </div>
+{%- endif -%}
+
+<style>
+  .badge-block {
+    display: inline-flex;
+    width: auto;
+  }
+
+  .badge-block--left { justify-content: flex-start; }
+  .badge-block--center { justify-content: center; }
+  .badge-block--right { justify-content: flex-end; }
+
+  .badge-block__content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--badge-radius, 4px);
+  }
+
+  /* Size */
+  .badge-block--small .badge-block__content {
+    padding: 0.3rem 0.8rem;
+    font-size: 1rem;
+  }
+
+  .badge-block--medium .badge-block__content {
+    padding: 0.5rem 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .badge-block--large .badge-block__content {
+    padding: 0.7rem 1.6rem;
+    font-size: 1.3rem;
+  }
+
+  /* Styles - Solid */
+  .badge-block--solid .badge-block__content {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Styles - Outline */
+  .badge-block--outline .badge-block__content {
+    background: transparent;
+    border: 1px solid rgb(var(--color-border));
+    color: rgb(var(--color-text));
+  }
+
+  /* Styles - Soft */
+  .badge-block--soft .badge-block__content {
+    border-radius: 50px;
+  }
+
+  .badge-block--soft.badge-block--primary .badge-block__content {
+    background: rgba(var(--color-button), 0.12);
+    color: rgb(var(--color-button));
+  }
+
+  .badge-block--soft.badge-block--accent .badge-block__content {
+    background: rgba(var(--color-accent), 0.12);
+    color: rgb(var(--color-accent));
+  }
+
+  .badge-block--soft.badge-block--success .badge-block__content {
+    background: rgba(34, 197, 94, 0.12);
+    color: rgb(34, 197, 94);
+  }
+
+  .badge-block--soft.badge-block--warning .badge-block__content {
+    background: rgba(234, 179, 8, 0.12);
+    color: rgb(234, 179, 8);
+  }
+
+  .badge-block--soft.badge-block--error .badge-block__content {
+    background: rgba(239, 68, 68, 0.12);
+    color: rgb(239, 68, 68);
+  }
+
+  /* Color */
+  .badge-block--primary .badge-block__content {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  .badge-block--accent .badge-block__content {
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-background));
+  }
+
+  .badge-block--success .badge-block__content {
+    background: rgb(34, 197, 94);
+    color: white;
+  }
+
+  .badge-block--warning .badge-block__content {
+    background: rgb(234, 179, 8);
+    color: white;
+  }
+
+  .badge-block--error .badge-block__content {
+    background: rgb(239, 68, 68);
+    color: white;
+  }
+
+  /* Icon */
+  .badge-block__icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .badge-block__icon svg {
+    width: 1.2em;
+    height: 1.2em;
+  }
+
+  /* Pulse Animation */
+  .badge-block--pulse .badge-block__content {
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Sale Badge Style */
+  .badge-block--sale .badge-block__content {
+    background: rgb(239, 68, 68);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 0;
+  }
+
+  /* New Badge Style */
+  .badge-block--new .badge-block__content {
+    background: rgb(var(--color-accent));
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* Sold Out */
+  .badge-block--soldout .badge-block__content {
+    background: rgba(var(--color-text), 0.8);
+    color: white;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Badge",
+  "class": "badge-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Badge Content"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Badge Text",
+      "default": "Sale"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fire", "label": "Fire" },
+        { "value": "star", "label": "Star" },
+        { "value": "check", "label": "Check" },
+        { "value": "new", "label": "New" },
+        { "value": "sale", "label": "Sale" },
+        { "value": "hot", "label": "Hot" },
+        { "value": "trending", "label": "Trending" },
+        { "value": "gift", "label": "Gift" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "soft", "label": "Soft/Rounded" },
+        { "value": "sale", "label": "Sale (Classic)" },
+        { "value": "new", "label": "New Arrival" },
+        { "value": "soldout", "label": "Sold Out" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "Color",
+      "options": [
+        { "value": "primary", "label": "Primary (Button)" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "success", "label": "Success (Green)" },
+        { "value": "warning", "label": "Warning (Yellow)" },
+        { "value": "error", "label": "Error (Red)" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_pulse",
+      "label": "Enable pulse animation",
+      "default": false,
+      "info": "Adds a subtle pulse effect"
+    }
+  ]
+}
+{% endschema %}

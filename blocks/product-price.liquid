@@ -1,10 +1,212 @@
-<div class="price-row" id="price-{{ section.id }}" {{ block.shopify_attributes }}>
-  {% render 'price', product: product, use_variant: true %}
+{% comment %}
+  Product Price Block - 产品价格组件
+  支持价格/促销价格/分期付款显示
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_compare_at = block.settings.show_compare_at
+  assign show_sale_badge = block.settings.show_sale_badge
+  assign show_installments = block.settings.show_installments
+  assign show_unit_price = block.settings.show_unit_price
+-%}
+
+<div 
+  class="product-price-block product-price-block--{{ alignment }} product-price-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if product != blank -%}
+    <div class="product-price-block__prices">
+      {%- render 'price', 
+        product: product, 
+        use_variant: true,
+        show_badges: show_sale_badge,
+        price_class: 'product-price-block__price'
+      -%}
+    </div>
+
+    {%- if show_compare_at and product.compare_at_price > product.price -%}
+      <div class="product-price-block__compare">
+        <span class="product-price-block__compare-label">{{ 'products.product.compare_at_price' | t }}</span>
+        <span class="product-price-block__compare-price">{{ product.compare_at_price | money }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if show_unit_price and product.selected_or_first_available_variant.unit_price_measurement -%}
+      <div class="product-price-block__unit">
+        {%- render 'unit-price', product: product -%}
+      </div>
+    {%- endif -%}
+
+    {%- if show_installments and product.selected_or_first_available_variant -%}
+      {%- assign variant = product.selected_or_first_available_variant -%}
+      {%- if variant.available and shoppayments['enabled'] -%}
+        <div class="product-price-block__installments">
+          {{ shop | payment_terms: variant: variant }}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  {%- else -%}
+    <div class="product-price-block__prices">
+      <span class="product-price-block__price">$99.99</span>
+    </div>
+  {%- endif -%}
 </div>
+
+<style>
+  .product-price-block {
+    width: 100%;
+  }
+
+  .product-price-block--left { text-align: left; }
+  .product-price-block--center { text-align: center; }
+  .product-price-block--right { text-align: right; }
+
+  .product-price-block__prices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .product-price-block__price {
+    font-family: var(--font-heading-family);
+    font-weight: 700;
+    font-size: 2.4rem;
+    color: rgb(var(--color-text));
+  }
+
+  /* Style - Large */
+  .product-price-block--large .product-price-block__price {
+    font-size: 3.2rem;
+  }
+
+  /* Style - Small */
+  .product-price-block--small .product-price-block__price {
+    font-size: 1.8rem;
+  }
+
+  .product-price-block__compare {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .product-price-block__compare-label {
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  .product-price-block__compare-price {
+    font-size: 1.4rem;
+    color: rgba(var(--color-text), 0.6);
+    text-decoration: line-through;
+  }
+
+  .product-price-block__unit {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  .product-price-block__installments {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  /* Sale Badge */
+  .price__sale-badge {
+    display: none;
+  }
+
+  .product-price-block--show-badge .price__sale-badge {
+    display: inline-flex;
+  }
+
+  /* Animation */
+  .product-price-block__price {
+    opacity: 0;
+    animation: price-fade-in 0.4s ease forwards;
+  }
+
+  @keyframes price-fade-in {
+    to { opacity: 1; }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .product-price-block__price {
+      font-size: 2rem;
+    }
+
+    .product-price-block--large .product-price-block__price {
+      font-size: 2.6rem;
+    }
+  }
+</style>
 
 {% schema %}
 {
   "name": "Product Price",
-  "settings": []
+  "class": "product-price-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Size",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "small", "label": "Small" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_at",
+      "label": "Show compare at price",
+      "default": true,
+      "info": "Shows original price when on sale"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "Show installment options",
+      "default": true,
+      "info": "Shows payment plan options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_unit_price",
+      "label": "Show unit price",
+      "default": true,
+      "info": "Shows price per unit (for weight, volume, etc.)"
+    }
+  ]
 }
 {% endschema %}

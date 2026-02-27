@@ -1,34 +1,245 @@
-<div class="inventory-status" id="inventory-{{ section.id }}" {{ block.shopify_attributes }}>
-  {%- assign variant = product.selected_or_first_available_variant -%}
+{% comment %}
+  Inventory Status Block - 库存状态组件
+  显示产品库存数量和状态
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign low_threshold = block.settings.low_threshold
+  assign show_quantity = block.settings.show_quantity
+  assign show_bar = block.settings.show_bar
+  assign variant = product.selected_or_first_available_variant
+-%}
+
+<div 
+  class="inventory-status-block inventory-status-block--{{ alignment }} inventory-status-block--{{ style }}" 
+  id="inventory-{{ section.id }}"
+  {{ block.shopify_attributes }}
+>
   {%- if variant.inventory_management == 'shopify' -%}
     {%- if variant.inventory_quantity > 0 -%}
-      {%- if variant.inventory_quantity <= block.settings.low_threshold -%}
-        <div class="inventory--low">
-          <span class="pulse-dot"></span>
-          {{ 'products.product.inventory_low_stock_html' | t: count: variant.inventory_quantity }}
+      {%- if variant.inventory_quantity <= low_threshold -%}
+        <div class="inventory-status-block__status inventory-status-block__status--low">
+          <span class="inventory-status-block__dot"></span>
+          <span class="inventory-status-block__text">
+            {%- if show_quantity -%}
+              {{ 'products.product.inventory_low_stock_with_count' | t: count: variant.inventory_quantity }}
+            {%- else -%}
+              {{ 'products.product.inventory_low_stock' | t }}
+            {%- endif -%}
+          </span>
         </div>
       {%- else -%}
-        <div class="inventory--in-stock">{{ 'products.product.inventory_in_stock' | t }}</div>
+        <div class="inventory-status-block__status inventory-status-block__status--in">
+          <span class="inventory-status-block__dot"></span>
+          <span class="inventory-status-block__text">
+            {%- if show_quantity -%}
+              {{ 'products.product.inventory_in_stock_with_count' | t: count: variant.inventory_quantity }}
+            {%- else -%}
+              {{ 'products.product.inventory_in_stock' | t }}
+            {%- endif -%}
+          </span>
+        </div>
+      {%- endif -%}
+
+      {%- if show_bar and variant.inventory_quantity > 0 and variant.inventory_quantity > low_threshold -%}
+        <div class="inventory-status-block__bar">
+          <div 
+            class="inventory-status-block__bar-fill" 
+            style="width: {{ variant.inventory_quantity | times: 100 | divided_by: low_threshold | times: 10 | at_most: 100 }}%"
+          ></div>
+        </div>
       {%- endif -%}
     {%- else -%}
-      <div class="inventory--out">{{ 'products.product.inventory_out_of_stock' | t }}</div>
+      <div class="inventory-status-block__status inventory-status-block__status--out">
+        <span class="inventory-status-block__dot"></span>
+        <span class="inventory-status-block__text">
+          {{ 'products.product.inventory_out_of_stock' | t }}
+        </span>
+      </div>
     {%- endif -%}
+  {%- else -%}
+    <div class="inventory-status-block__status inventory-status-block__status--always">
+      <span class="inventory-status-block__text">
+        {{ 'products.product.inventory_always_in_stock' | t | default: 'In Stock' }}
+      </span>
+    </div>
   {%- endif -%}
 </div>
 
 <style>
-  .inventory-status { font-size: 1.3rem; font-weight: 700; margin: 1.5rem 0; }
-  .inventory--low { color: var(--color-urgency); display: flex; align-items: center; gap: 0.8rem; }
-  .inventory--in-stock { color: var(--color-success); }
-  .pulse-dot { width: 8px; height: 8px; background: var(--color-urgency); border-radius: 50%; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(var(--color-urgency), 0.4); } 100% { box-shadow: 0 0 0 10px rgba(var(--color-urgency), 0); } }
+  .inventory-status-block {
+    width: 100%;
+  }
+
+  .inventory-status-block--left { text-align: left; }
+  .inventory-status-block--center { text-align: center; }
+  .inventory-status-block--right { text-align: right; }
+
+  /* Status */
+  .inventory-status-block__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .inventory-status-block__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* In Stock */
+  .inventory-status-block__status--in .inventory-status-block__text {
+    color: rgb(34, 197, 94);
+  }
+
+  .inventory-status-block__status--in .inventory-status-block__dot {
+    background: rgb(34, 197, 94);
+  }
+
+  /* Low Stock */
+  .inventory-status-block__status--low .inventory-status-block__text {
+    color: rgb(234, 179, 8);
+  }
+
+  .inventory-status-block__status--low .inventory-status-block__dot {
+    background: rgb(234, 179, 8);
+    animation: inventory-pulse 1.5s infinite;
+  }
+
+  @keyframes inventory-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(234, 179, 8, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+    }
+  }
+
+  /* Out of Stock */
+  .inventory-status-block__status--out .inventory-status-block__text {
+    color: rgb(239, 68, 68);
+  }
+
+  .inventory-status-block__status--out .inventory-status-block__dot {
+    background: rgb(239, 68, 68);
+  }
+
+  /* Style - Badge */
+  .inventory-status-block--badge .inventory-status-block__status {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+  }
+
+  .inventory-status-block--badge.inventory-status-block--left .inventory-status-block__status { justify-content: flex-start; }
+  .inventory-status-block--badge.inventory-status-block--right .inventory-status-block__status { justify-content: flex-end; }
+
+  .inventory-status-block--badge .inventory-status-block__status--in {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .inventory-status-block--badge .inventory-status-block__status--low {
+    background: rgba(234, 179, 8, 0.1);
+  }
+
+  .inventory-status-block--badge .inventory-status-block__status--out {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  /* Progress Bar */
+  .inventory-status-block__bar {
+    margin-top: 0.8rem;
+    height: 4px;
+    background: rgba(var(--color-text), 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .inventory-status-block__bar-fill {
+    height: 100%;
+    background: rgb(34, 197, 94);
+    border-radius: 2px;
+    transition: width var(--duration-default) ease;
+  }
+
+  .inventory-status-block__bar-fill[data-level="low"] {
+    background: rgb(234, 179, 8);
+  }
+
+  /* Animation */
+  .inventory-status-block__status {
+    opacity: 0;
+    animation: inventory-fade-in 0.4s ease forwards;
+  }
+
+  @keyframes inventory-fade-in {
+    to { opacity: 1; }
+  }
 </style>
 
 {% schema %}
 {
   "name": "Inventory Status",
+  "class": "inventory-status-block",
   "settings": [
-    { "type": "range", "id": "low_threshold", "label": "Low Stock Threshold", "min": 1, "max": 20, "default": 5 }
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "badge", "label": "Badge" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "low_threshold",
+      "label": "Low Stock Threshold",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 5,
+      "info": "Show low stock warning below this quantity"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show quantity number",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bar",
+      "label": "Show inventory bar",
+      "default": false,
+      "info": "Shows a visual bar representing inventory level"
+    }
   ]
 }
 {% endschema %}

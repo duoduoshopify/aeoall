@@ -1,16 +1,269 @@
-<div class="button-block" {{ block.shopify_attributes }}>
-  <a href="{{ block.settings.link }}" class="custom-btn {% if block.settings.outline %}custom-btn--outline{% endif %}">
-    {{ block.settings.label }}
-  </a>
-</div>
+{% comment %}
+  Button Block - 按钮组件
+  支持多种样式、大小、对齐方式
+{% endcomment %}
+
+{%- liquid
+  assign label = block.settings.label
+  assign link = block.settings.link
+  assign style = block.settings.style
+  assign size = block.settings.size
+  assign alignment = block.settings.alignment
+  assign full_width = block.settings.full_width
+  assign icon = block.settings.icon
+  assign icon_position = block.settings.icon_position
+  assign open_new_tab = block.settings.open_new_tab
+-%}
+
+{%- if label != blank -%}
+  <div 
+    class="button-block button-block--{{ alignment }}" 
+    {{ block.shopify_attributes }}
+  >
+    <a 
+      href="{{ link }}"
+      class="button-block__btn button-block__btn--{{ style }} button-block__btn--{{ size }}{% if full_width %} button-block__btn--full{% endif %}"
+      {% if open_new_tab %}target="_blank" rel="noopener"{% endif %}
+    >
+      {%- if icon != 'none' and icon_position == 'left' -%}
+        <span class="button-block__icon">
+          {% render 'icon', name: icon %}
+        </span>
+      {%- endif -%}
+      
+      <span class="button-block__label">{{ label }}</span>
+      
+      {%- if icon != 'none' and icon_position == 'right' -%}
+        <span class="button-block__icon">
+          {% render 'icon', name: icon %}
+        </span>
+      {%- endif -%}
+    </a>
+  </div>
+{%- endif -%}
+
+<style>
+  .button-block {
+    display: flex;
+  }
+
+  .button-block--left { justify-content: flex-start; }
+  .button-block--center { justify-content: center; }
+  .button-block--right { justify-content: flex-end; }
+
+  .button-block__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    border-radius: var(--buttons-radius, var(--border-radius-full));
+    font-weight: var(--buttons-font-weight, 700);
+    transition: box-shadow var(--duration-default) ease, transform var(--transition-base), background-color var(--duration-default) ease;
+    cursor: pointer;
+  }
+
+  .button-block__btn--small {
+    min-height: 3.6rem;
+    padding: 0 1.6rem;
+    font-size: 1.3rem;
+  }
+
+  .button-block__btn--medium {
+    min-height: 4.4rem;
+    padding: 0 2.4rem;
+    font-size: 1.4rem;
+  }
+
+  .button-block__btn--large {
+    min-height: 5.2rem;
+    padding: 0 3.2rem;
+    font-size: 1.6rem;
+  }
+
+  /* Primary Style */
+  .button-block__btn--primary {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    border: var(--buttons-border-width, 0) solid transparent;
+  }
+
+  .button-block__btn--primary:hover {
+    background: rgb(var(--color-button-hover));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-button), 0.3);
+  }
+
+  /* Secondary/Outline Style */
+  .button-block__btn--secondary {
+    background: transparent;
+    color: rgb(var(--color-button));
+    border: var(--buttons-border-width, 0.2rem) solid rgb(var(--color-button));
+  }
+
+  .button-block__btn--secondary:hover {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Tertiary/Text Style */
+  .button-block__btn--tertiary {
+    background: transparent;
+    color: rgb(var(--color-button));
+    border: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .button-block__btn--tertiary:hover {
+    text-decoration: underline;
+  }
+
+  /* Ghost Style */
+  .button-block__btn--ghost {
+    background: rgba(var(--color-text), 0.05);
+    color: rgb(var(--color-text));
+    border: none;
+  }
+
+  .button-block__btn--ghost:hover {
+    background: rgba(var(--color-text), 0.1);
+  }
+
+  /* Full Width */
+  .button-block__btn--full {
+    width: 100%;
+  }
+
+  /* Icon */
+  .button-block__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .button-block__icon svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  /* Focus states */
+  .button-block__btn:focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+    outline-offset: 2px;
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .button-block__btn--small { min-height: 3.2rem; font-size: 1.2rem; }
+    .button-block__btn--medium { min-height: 4rem; font-size: 1.3rem; }
+    .button-block__btn--large { min-height: 4.6rem; font-size: 1.4rem; }
+  }
+</style>
 
 {% schema %}
 {
   "name": "Button",
+  "class": "button-block",
   "settings": [
-    { "type": "text", "id": "label", "label": "Label", "default": "Learn More" },
-    { "type": "url", "id": "link", "label": "Link" },
-    { "type": "checkbox", "id": "outline", "label": "Outline Style", "default": false }
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "primary", "label": "Primary (Solid)" },
+        { "value": "secondary", "label": "Secondary (Outline)" },
+        { "value": "tertiary", "label": "Tertiary (Text)" },
+        { "value": "ghost", "label": "Ghost" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "arrow-right", "label": "Arrow Right" },
+        { "value": "arrow-left", "label": "Arrow Left" },
+        { "value": "cart", "label": "Cart" },
+        { "value": "check", "label": "Check" },
+        { "value": "chevron-right", "label": "Chevron Right" },
+        { "value": "chevron-down", "label": "Chevron Down" },
+        { "value": "star", "label": "Star" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "search", "label": "Search" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right",
+      "info": "Only works when icon is selected"
+    }
   ]
 }
 {% endschema %}

@@ -65,20 +65,23 @@
     "share": {
       "success_message": "链接已复制到剪贴板",
       "share_on": "分享",
-      "copy_to_clipboard": "复制链接"
+      "copy_to_clipboard": "复制链接",
+      "link_copied": "链接已复制！"
     },
     "countdown": {
       "days": "天",
-      "hours": "小时",
-      "minutes": "分钟",
-      "seconds": "秒"
+      "hours": "时",
+      "minutes": "分",
+      "seconds": "秒",
+      "expired": "此优惠已结束"
     }
   },
   "newsletter": {
     "label": "电子邮件",
     "success": "感谢您的订阅！",
     "button_label": "订阅",
-    "email_placeholder": "输入您的电子邮件"
+    "email_placeholder": "输入您的电子邮件",
+    "privacy_notice": "我们尊重您的隐私。随时可以取消订阅。"
   },
   "blogs": {
     "general": {
@@ -171,6 +174,7 @@
       "include_taxes": "含税。",
       "shipping_policy_html": "<a href=\"{{ link }}\">配送</a>费用在结账时计算。",
       "sku": "SKU",
+      "inventory_low_stock": "低库存",
       "inventory_low_stock_html": "仅剩 {{ count }} 件库存",
       "inventory_in_stock": "有库存",
       "inventory_out_of_stock": "缺货"
@@ -406,14 +410,7 @@
       "product": "产品",
       "sku": "SKU",
       "price": "价格",
-      "quantity": "数量",
-      "total": "总计",
-      "fulfilled_at_html": "已于 {{ date }} 履约",
-      "track_shipment": "追踪配送",
-      "tracking_url": "追踪链接",
-      "tracking_company": "承运商",
-      "tracking_number": "追踪号码",
-      "subtotal": "小计"
+      "quantity": "数量"
     },
     "orders": {
       "title": "订单历史",
@@ -459,6 +456,25 @@
       "expired": "已过期",
       "copy_code_success": "代码复制成功",
       "print_gift_card": "打印"
+    }
+  },
+  "blocks": {
+    "article_card": {
+      "select_article": "选择要显示的文章"
+    },
+    "video": {
+      "browser_not_supported": "您的浏览器不支持视频标签。",
+      "add_video_source": "添加视频 URL 或上传视频文件"
+    },
+    "custom_liquid": {
+      "placeholder": "在此添加自定义 Liquid 代码"
+    },
+    "accordion": {
+      "expand": "展开",
+      "collapse": "收起"
+    },
+    "tabs": {
+      "tab": "标签"
     }
   }
 }

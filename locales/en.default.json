@@ -65,20 +65,23 @@
     "share": {
       "success_message": "Link copied to clipboard",
       "share_on": "Share",
-      "copy_to_clipboard": "Copy link"
+      "copy_to_clipboard": "Copy link",
+      "link_copied": "Link copied!"
     },
     "countdown": {
       "days": "Days",
       "hours": "Hours",
       "minutes": "Minutes",
-      "seconds": "Seconds"
+      "seconds": "Seconds",
+      "expired": "This offer has ended"
     }
   },
   "newsletter": {
     "label": "Email",
     "success": "Thanks for subscribing!",
     "button_label": "Subscribe",
-    "email_placeholder": "Enter your email"
+    "email_placeholder": "Enter your email",
+    "privacy_notice": "We respect your privacy. Unsubscribe at any time."
   },
   "accessibility": {
     "skip_to_text": "Skip to content",
@@ -187,9 +190,16 @@
       "sku": "SKU",
       "brand": "Brand",
       "not_available": "N/A",
+      "inventory_low_stock": "Low stock",
       "inventory_low_stock_html": "Only {{ count }} left in stock",
+      "inventory_low_stock_with_count": "Only {{ count }} left - order soon!",
       "inventory_in_stock": "In stock",
-      "inventory_out_of_stock": "Out of stock"
+      "inventory_in_stock_with_count": "{{ count }} in stock",
+      "inventory_out_of_stock": "Out of stock",
+      "inventory_always_in_stock": "In Stock",
+      "no_reviews": "No reviews yet",
+      "add_to_wishlist": "Add to wishlist",
+      "estimate_shipping": "Estimate shipping at checkout"
     },
     "modal": {
       "label": "Media gallery"
@@ -469,6 +479,16 @@
     "video": {
       "browser_not_supported": "Your browser does not support the video tag.",
       "add_video_source": "Add a video URL or upload a video file"
+    },
+    "custom_liquid": {
+      "placeholder": "Add custom Liquid code here"
+    },
+    "accordion": {
+      "expand": "Expand",
+      "collapse": "Collapse"
+    },
+    "tabs": {
+      "tab": "Tab"
     }
   },
   "gift_cards": {

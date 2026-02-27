@@ -1,9 +1,125 @@
-<div class="product-sku" id="sku-{{ section.id }}" {{ block.shopify_attributes }}>
-  <span class="sku-label">{{ 'products.product.sku' | t }}:</span>
-  {%- assign current_sku = product.selected_or_first_available_variant.sku -%}
-  <span class="sku-value">{{ current_sku | default: 'products.product.not_available' | t }}</span>
-</div>
+{% comment %}
+  Product SKU Block - 产品SKU组件
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_label = block.settings.show_label
+  if product == blank
+    assign current_sku = 'AEO-SKU-001'
+  elsif product.selected_or_first_available_variant
+    assign current_sku = product.selected_or_first_available_variant.sku
+  else
+    assign current_sku = ''
+  endif
+-%}
+
+{%- if current_sku != blank -%}
+  <div 
+    class="product-sku-block product-sku-block--{{ alignment }} product-sku-block--{{ style }}" 
+    id="sku-{{ section.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if show_label -%}
+      <span class="product-sku-block__label">{{ 'products.product.sku' | t }}:</span>
+    {%- endif -%}
+    <span class="product-sku-block__value">{{ current_sku }}</span>
+  </div>
+{%- endif -%}
+
+<style>
+  .product-sku-block {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .product-sku-block--left { justify-content: flex-start; }
+  .product-sku-block--center { justify-content: center; }
+  .product-sku-block--right { justify-content: flex-end; }
+
+  .product-sku-block__label {
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .product-sku-block__value {
+    font-family: monospace;
+    font-size: 1.3rem;
+    color: rgb(var(--color-text));
+  }
+
+  /* Style - Minimal */
+  .product-sku-block--minimal .product-sku-block__label {
+    display: none;
+  }
+
+  .product-sku-block--minimal .product-sku-block__value {
+    padding: 0.3rem 0.8rem;
+    background: rgba(var(--color-text), 0.05);
+    border-radius: 4px;
+    font-size: 1.1rem;
+  }
+
+  /* Style - Badge */
+  .product-sku-block--badge .product-sku-block__value {
+    padding: 0.4rem 1rem;
+    background: rgba(var(--color-accent), 0.1);
+    color: rgb(var(--color-accent));
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  /* Animation */
+  .product-sku-block__value {
+    opacity: 0;
+    animation: sku-fade-in 0.3s ease forwards;
+  }
+
+  @keyframes sku-fade-in {
+    to { opacity: 1; }
+  }
+</style>
 
 {% schema %}
-{ "name": "SKU" }
+{
+  "name": "SKU",
+  "class": "product-sku-block",
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "badge", "label": "Badge" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show label (SKU:)",
+      "default": true
+    }
+  ]
+}
 {% endschema %}

@@ -1,16 +1,268 @@
-<div class="text-block rte" {{ block.shopify_attributes }}>
-  {{ block.settings.content }}
-</div>
+{% comment %}
+  Text Block - 文本组件
+  支持富文本、多种样式、对齐方式和颜色
+{% endcomment %}
+
+{%- liquid
+  assign content = block.settings.content
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign color = block.settings.color
+  assign size = block.settings.size
+  assign link = block.settings.link
+  assign link_label = block.settings.link_label
+  assign link_style = block.settings.link_style
+-%}
+
+{%- if content != blank -%}
+  <div 
+    class="text-block text-block--{{ alignment }} text-block--{{ style }} text-block--{{ color }} text-block--{{ size }}" 
+    {{ block.shopify_attributes }}
+  >
+    <div class="text-block__content rte">
+      {{ content }}
+    </div>
+
+    {%- if link != blank and link_label != blank -%}
+      <a 
+        href="{{ link }}" 
+        class="text-block__link text-block__link--{{ link_style }}"
+      >
+        {{ link_label }}
+        {%- if link_style == 'arrow' -%}
+          <span class="text-block__link-arrow">{% render 'icon', name: 'arrow-right' %}</span>
+        {%- endif -%}
+      </a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
 
 <style>
-  .text-block { font-size: 1.6rem; line-height: 1.6; color: rgba(var(--color-text), 0.8); }
+  .text-block {
+    width: 100%;
+  }
+
+  .text-block--left { text-align: left; }
+  .text-block--center { text-align: center; }
+  .text-block--right { text-align: right; justify-content: flex-start; }
+  .text-block--justify { text-align: justify; }
+
+  .text-block__content {
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  /* Size */
+  .text-block--small .text-block__content {
+    font-size: 1.3rem;
+  }
+
+  .text-block--medium .text-block__content {
+    font-size: 1.6rem;
+  }
+
+  .text-block--large .text-block__content {
+    font-size: 1.9rem;
+  }
+
+  /* Color */
+  .text-block--default .text-block__content {
+    color: rgba(var(--color-text), 0.8);
+  }
+
+  .text-block--accent .text-block__content {
+    color: rgb(var(--color-accent));
+  }
+
+  .text-block--secondary .text-block__content {
+    color: rgba(var(--color-text), 0.55);
+  }
+
+  .text-block--inverse .text-block__content {
+    color: rgb(var(--color-background));
+  }
+
+  /* Style */
+  .text-block--legacy .text-block__content {
+    font-size: 1.6rem;
+    line-height: 1.6;
+  }
+
+  .text-block--subtitle .text-block__content {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .text-block--caption .text-block__content {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    opacity: 0.75;
+  }
+
+  /* Link */
+  .text-block__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--duration-default) ease;
+  }
+
+  .text-block__link--default {
+    color: rgb(var(--color-button));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .text-block__link--default:hover {
+    color: rgb(var(--color-accent));
+  }
+
+  .text-block__link--button {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    padding: 1rem 2rem;
+    border-radius: var(--buttons-radius, var(--border-radius-full));
+  }
+
+  .text-block__link--button:hover {
+    background: rgb(var(--color-button-hover));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--color-button), 0.3);
+    text-decoration: none;
+  }
+
+  .text-block__link--arrow {
+    display: flex;
+    transition: transform var(--duration-default) ease;
+  }
+
+  .text-block__link:hover .text-block__link-arrow {
+    transform: translateX(4px);
+  }
+
+  .text-block__link-arrow svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  /* Animation */
+  .text-block__content {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: text-fade-in 0.5s ease forwards;
+  }
+
+  @keyframes text-fade-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .text-block--small .text-block__content { font-size: 1.2rem; }
+    .text-block--medium .text-block__content { font-size: 1.5rem; }
+    .text-block--large .text-block__content { font-size: 1.7rem; }
+  }
 </style>
 
 {% schema %}
 {
   "name": "Text",
+  "class": "text-block",
   "settings": [
-    { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Share details about your product or brand.</p>" }
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Share details about your product or brand. Add text focusing on a specific collection or product.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "legacy", "label": "Legacy (Compatibility)" },
+        { "value": "subtitle", "label": "Subtitle" },
+        { "value": "caption", "label": "Caption" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "justify", "label": "Justify" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "Color",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "inverse", "label": "Inverse" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "Link (Optional)"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link URL"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link Label"
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Link Style",
+      "options": [
+        { "value": "default", "label": "Default (Underline)" },
+        { "value": "arrow", "label": "With Arrow" },
+        { "value": "button", "label": "Button Style" }
+      ],
+      "default": "default"
+    }
   ]
 }
 {% endschema %}

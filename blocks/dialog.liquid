@@ -1,31 +1,39 @@
 {% comment %}
-  Dialog Block - 对话框组件
-  使用原生 <dialog> 元素
-  
-  参数:
-  - dialog_id: 对话框唯一 ID
-  - dialog_title: 对话框标题
-  - dialog_content: 对话框内容
+  Dialog Block - 弹窗/对话框组件
+  使用原生 <dialog> 元素，支持多种样式
 {% endcomment %}
 
 {%- liquid
   assign dialog_id = block.settings.dialog_id | default: block.id
   assign dialog_title = block.settings.dialog_title | default: 'Dialog'
   assign dialog_content = block.settings.dialog_content
+  assign style = block.settings.style
+  assign size = block.settings.size
+  assign show_close_button = block.settings.show_close_button
+  assign close_on_overlay = block.settings.close_on_overlay
+  assign close_on_escape = block.settings.close_on_escape
 -%}
 
-<dialog-component id="{{ dialog_id }}" class="dialog-wrapper" {{ block.shopify_attributes }}>
-  <dialog class="dialog">
+<dialog-component 
+  id="{{ dialog_id }}" 
+  class="dialog-block dialog-block--{{ size }}"
+  data-close-overlay="{{ close_on_overlay }}"
+  data-close-escape="{{ close_on_escape }}"
+  {{ block.shopify_attributes }}
+>
+  <dialog class="dialog dialog--{{ style }}">
     <div class="dialog__header">
       <h2 class="dialog__title">{{ dialog_title }}</h2>
-      <button 
-        type="button"
-        data-dialog-close 
-        class="dialog__close"
-        aria-label="{{ 'accessibility.close' | t }}"
-      >
-        {% render 'icon-close' %}
-      </button>
+      {%- if show_close_button -%}
+        <button 
+          type="button"
+          data-dialog-close 
+          class="dialog__close"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {% render 'icon', name: 'close' %}
+        </button>
+      {%- endif -%}
     </div>
     
     <div class="dialog__content">
@@ -34,39 +42,60 @@
   </dialog>
 </dialog-component>
 
+<script>
+  if (!customElements.get('dialog-component')) {
+    class DialogComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.dialog = this.querySelector('dialog');
+        this.closeOverlay = this.dataset.closeOverlay === 'true';
+        this.closeEscape = this.dataset.closeEscape === 'true';
+        this.init();
+      }
+
+      init() {
+        this.querySelectorAll('[data-dialog-close]').forEach(btn => {
+          btn.addEventListener('click', () => this.close());
+        });
+
+        if (this.closeOverlay) {
+          this.dialog.addEventListener('click', (e) => {
+            if (e.target === this.dialog) this.close();
+          });
+        }
+      }
+
+      open() {
+        this.dialog.showModal();
+      }
+
+      close() {
+        this.dialog.close();
+      }
+    }
+    customElements.define('dialog-component', DialogComponent);
+  }
+</script>
+
 <style>
   .dialog {
     border: none;
-    border-radius: 8px;
+    border-radius: 16px;
     padding: 0;
     max-width: 600px;
     width: 90%;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: rgb(var(--color-background));
   }
 
   .dialog::backdrop {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    animation: backdrop-fade-in 0.2s ease;
+    animation: backdrop-fade-in 0.3s ease;
   }
 
-  /* 旧浏览器降级：dialog.js 会添加 .dialog--fallback + 自定义 backdrop */
-  .dialog--fallback {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    z-index: 1001;
-  }
-
-  .dialog-fallback-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
+  .dialog[open] {
+    animation: dialog-slide-up 0.3s ease;
   }
 
   @keyframes backdrop-fade-in {
@@ -74,21 +103,37 @@
     to { opacity: 1; }
   }
 
-  .dialog[open] {
-    animation: dialog-slide-up 0.3s ease;
-  }
-
   @keyframes dialog-slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
+  /* Style - Default */
+  .dialog--default { border-radius: 16px; }
+
+  /* Style - Minimal */
+  .dialog--minimal { border-radius: 8px; }
+  .dialog--minimal .dialog__header { padding: 1.5rem; }
+  .dialog--minimal .dialog__content { padding: 1.5rem; }
+
+  /* Style - Full */
+  .dialog--full {
+    max-width: 90vw;
+    width: 100%;
+    height: 90vh;
+    max-height: 90vh;
+  }
+
+  .dialog--full .dialog__content {
+    max-height: calc(90vh - 80px);
+  }
+
+  /* Size */
+  .dialog-block--small { max-width: 400px; }
+  .dialog-block--medium { max-width: 600px; }
+  .dialog-block--large { max-width: 800px; }
+
+  /* Header */
   .dialog__header {
     display: flex;
     justify-content: space-between;
@@ -101,6 +146,7 @@
     margin: 0;
     font-size: 1.8rem;
     font-weight: 700;
+    color: rgb(var(--color-text));
   }
 
   .dialog__close {
@@ -111,36 +157,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 50%;
     transition: background-color 0.2s;
+    color: rgb(var(--color-text));
   }
 
   .dialog__close:hover {
-    background-color: rgb(var(--color-border));
+    background: rgba(var(--color-text), 0.1);
   }
 
   .dialog__close svg {
-    width: 20px;
-    height: 20px;
+    width: 2rem;
+    height: 2rem;
   }
 
+  /* Content */
   .dialog__content {
     padding: 2rem;
     max-height: 60vh;
     overflow-y: auto;
+    line-height: 1.6;
   }
 
-  /* 移动端优化 */
+  /* Mobile */
   @media (max-width: 749px) {
-    .dialog {
-      width: 95%;
-      max-width: none;
-    }
-
-    .dialog__header,
-    .dialog__content {
-      padding: 1.5rem;
-    }
+    .dialog { width: 95%; }
+    .dialog-block--large { max-width: 95vw; }
+    .dialog__header, .dialog__content { padding: 1.5rem; }
   }
 </style>
 
@@ -149,24 +192,25 @@
   "name": "Dialog",
   "class": "dialog-block",
   "settings": [
-    {
-      "type": "text",
-      "id": "dialog_id",
-      "label": "Dialog ID",
-      "info": "Unique identifier for this dialog"
-    },
-    {
-      "type": "text",
-      "id": "dialog_title",
-      "label": "Dialog Title",
-      "default": "Dialog"
-    },
-    {
-      "type": "richtext",
-      "id": "dialog_content",
-      "label": "Dialog Content",
-      "default": "<p>Add your content here</p>"
-    }
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "dialog_id", "label": "Dialog ID", "info": "Unique identifier (use with Dialog Trigger)" },
+    { "type": "text", "id": "dialog_title", "label": "Title", "default": "Dialog" },
+    { "type": "richtext", "id": "dialog_content", "label": "Content", "default": "<p>Add your content here</p>" },
+    { "type": "header", "content": "Style" },
+    { "type": "select", "id": "style", "label": "Style", "options": [
+      { "value": "default", "label": "Default" },
+      { "value": "minimal", "label": "Minimal" },
+      { "value": "full", "label": "Full Screen" }
+    ], "default": "default" },
+    { "type": "select", "id": "size", "label": "Size", "options": [
+      { "value": "small", "label": "Small (400px)" },
+      { "value": "medium", "label": "Medium (600px)" },
+      { "value": "large", "label": "Large (800px)" }
+    ], "default": "medium" },
+    { "type": "header", "content": "Behavior" },
+    { "type": "checkbox", "id": "show_close_button", "label": "Show close button", "default": true },
+    { "type": "checkbox", "id": "close_on_overlay", "label": "Close on overlay click", "default": true },
+    { "type": "checkbox", "id": "close_on_escape", "label": "Close on Escape key", "default": true }
   ]
 }
 {% endschema %}

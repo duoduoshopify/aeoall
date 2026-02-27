@@ -1,53 +1,287 @@
 {% comment %}
-  Article Card Block - 可在任何地方使用的文章卡片
+  Article Card Block - 文章卡片组件
+  可在任何地方使用的文章卡片，支持多种样式
 {% endcomment %}
 
 {%- liquid
-  assign article_handle = block.settings.article
+  assign article = block.settings.article
   assign show_image = block.settings.show_image
   assign show_date = block.settings.show_date
   assign show_author = block.settings.show_author
   assign show_excerpt = block.settings.show_excerpt
   assign show_reading_time = block.settings.show_reading_time
   assign show_tags = block.settings.show_tags
-  
-  # 获取文章
-  if article_handle != blank
-    assign selected_article = blogs[blog.handle].articles[article_handle]
-  endif
+  assign style = block.settings.style
+  assign image_ratio = block.settings.image_ratio
+  assign alignment = block.settings.alignment
 -%}
 
-{%- if selected_article -%}
-  <div class="article-card-block" {{ block.shopify_attributes }}>
-    {% render 'article-card',
-      article: selected_article,
-      show_image: show_image,
-      show_date: show_date,
-      show_author: show_author,
-      show_excerpt: show_excerpt,
-      show_reading_time: show_reading_time,
-      show_tags: show_tags,
-      layout: 'grid'
-    %}
-  </div>
-{%- else -%}
-  <div class="article-card-block article-card-block--placeholder" {{ block.shopify_attributes }}>
-    <p>{{ 'blocks.article_card.select_article' | t }}</p>
-  </div>
-{%- endif -%}
+<div 
+  class="article-card-block article-card-block--{{ style }} article-card-block--{{ alignment }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if article != blank -%}
+    <article class="article-card">
+      {%- if show_image and article.image != blank -%}
+        <a href="{{ article.url }}" class="article-card__media-wrapper">
+          <div class="article-card__media" style="--aspect-ratio: {{ article.image.aspect_ratio }}">
+            <img 
+              srcset="
+                {%- if article.image.width >= 165 -%}{{ article.image | image_url: width: 165 }} 165w,{%- endif -%}
+                {%- if article.image.width >= 360 -%}{{ article.image | image_url: width: 360 }} 360w,{%- endif -%}
+                {%- if article.image.width >= 533 -%}{{ article.image | image_url: width: 533 }} 533w,{%- endif -%}
+                {{ article.image | image_url }} {{ article.image.width }}w
+              "
+              src="{{ article.image | image_url: width: 533 }}"
+              sizes="(min-width: 1200px) 267px, (min-width: 750px) 267px, calc(100vw - 3rem)"
+              alt="{{ article.image.alt | escape }}"
+              loading="lazy"
+              width="{{ article.image.width }}"
+              height="{{ article.image.height }}"
+              class="article-card__image"
+            >
+          </div>
+        </a>
+      {%- endif -%}
+
+      <div class="article-card__content">
+        {%- if show_tags and article.tags.size > 0 -%}
+          <div class="article-card__tags">
+            {%- for tag in article.tags limit: 1 -%}
+              <span class="article-card__tag">{{ tag }}</span>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <h3 class="article-card__title">
+          <a href="{{ article.url }}">{{ article.title }}</a>
+        </h3>
+
+        {%- if show_excerpt -%}
+          <div class="article-card__excerpt">
+            {%- if article.excerpt.size > 0 -%}
+              {{ article.excerpt | truncate: 120 }}
+            {%- else -%}
+              {{ article.content | strip_html | truncate: 120 }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <div class="article-card__meta">
+          {%- if show_date -%}
+            <span class="article-card__date">
+              {{ article.published_at | time_tag: format: 'date' }}
+            </span>
+          {%- endif -%}
+
+          {%- if show_author -%}
+            <span class="article-card__author">
+              {%- if show_date -%}<span class="article-card__meta-divider">·</span>{%- endif -%}
+              {{ article.author }}
+            </span>
+          {%- endif -%}
+
+          {%- if show_reading_time -%}
+            <span class="article-card__reading-time">
+              {%- if show_date or show_author -%}<span class="article-card__meta-divider">·</span>{%- endif -%}
+              {% render 'reading-time', content: article.content %}
+            </span>
+          {%- endif -%}
+        </div>
+      </div>
+    </article>
+  {%- else -%}
+    <div class="article-card-block__placeholder">
+      <div class="article-card-block__placeholder-image">
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+      <div class="article-card-block__placeholder-content">
+        <span class="article-card-block__placeholder-tag">Blog</span>
+        <h3 class="article-card-block__placeholder-title">{{ 'blocks.article_card.select_article' | t }}</h3>
+        <p>Select an article from the sidebar to display it here.</p>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
 
 <style>
   .article-card-block {
-    margin: 2rem 0;
+    width: 100%;
   }
 
-  .article-card-block--placeholder {
-    padding: 4rem 2rem;
-    text-align: center;
+  .article-card-block--left { text-align: left; }
+  .article-card-block--center { text-align: center; }
+  .article-card-block--right { text-align: right; }
+
+  /* Card */
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    transition: transform var(--duration-default) ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Style - Default */
+  .article-card-block--default .article-card {
+    background: rgb(var(--color-background));
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .article-card-block--default .article-card__content {
+    padding: 2rem;
+  }
+
+  /* Style - Minimal */
+  .article-card-block--minimal .article-card {
+    background: transparent;
+  }
+
+  .article-card-block--minimal .article-card__media {
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Style - Card */
+  .article-card-block--card .article-card {
+    background: rgb(var(--color-background-secondary));
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Image */
+  .article-card__media-wrapper {
+    display: block;
+    overflow: hidden;
+  }
+
+  .article-card__media {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .article-card__image {
+    width: 100%;
+    height: auto;
+    transition: transform var(--duration-default) ease;
+  }
+
+  .article-card:hover .article-card__image {
+    transform: scale(1.05);
+  }
+
+  /* Tags */
+  .article-card__tags {
+    margin-bottom: 1rem;
+  }
+
+  .article-card__tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: rgba(var(--color-accent), 0.1);
+    color: rgb(var(--color-accent));
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+  }
+
+  /* Title */
+  .article-card__title {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: rgb(var(--color-text));
+  }
+
+  .article-card__title a {
+    text-decoration: none;
+    color: inherit;
+    transition: color var(--duration-default) ease;
+  }
+
+  .article-card__title a:hover {
+    color: rgb(var(--color-accent));
+  }
+
+  /* Excerpt */
+  .article-card__excerpt {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  /* Meta */
+  .article-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  .article-card__meta-divider {
+    margin: 0 0.5rem;
+  }
+
+  /* Placeholder */
+  .article-card-block__placeholder {
+    display: flex;
+    flex-direction: column;
+    padding: 3rem;
     background: rgb(var(--color-background-secondary));
     border: 2px dashed rgb(var(--color-border));
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .article-card-block__placeholder-image {
+    margin-bottom: 2rem;
     border-radius: 8px;
-    color: rgb(var(--color-text) / 0.6);
+    overflow: hidden;
+  }
+
+  .article-card-block__placeholder-tag {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.4rem 1rem;
+    background: rgba(var(--color-accent), 0.1);
+    color: rgb(var(--color-accent));
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  .article-card-block__placeholder-title {
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+  }
+
+  .article-card-block__placeholder p {
+    margin: 0;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .article-card__title {
+      font-size: 1.6rem;
+    }
+
+    .article-card__excerpt {
+      font-size: 1.3rem;
+    }
   }
 </style>
 
@@ -60,6 +294,44 @@
       "type": "article",
       "id": "article",
       "label": "Article"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Card Style",
+      "options": [
+        { "value": "default", "label": "Default (Bordered)" },
+        { "value": "card", "label": "Card (Shadow)" },
+        { "value": "minimal", "label": "Minimal" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/2", "label": "Landscape (3:2)" },
+        { "value": "4/3", "label": "Portrait (4:3)" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
     },
     {
       "type": "header",
@@ -99,7 +371,7 @@
       "type": "checkbox",
       "id": "show_tags",
       "label": "Show tags",
-      "default": true
+      "default": false
     }
   ]
 }

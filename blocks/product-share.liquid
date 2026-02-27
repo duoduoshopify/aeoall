@@ -1,60 +1,277 @@
-<div class="product__share" {{ block.shopify_attributes }}>
-  <span class="share-label">{{ 'general.share.share_on' | t }}</span>
-  
-  <ul class="list-unstyled list-social">
-    {%- if block.settings.share_facebook -%}
-    <li>
-      <a href="//www.facebook.com/sharer.php?u={{ shop.url | append: product.url }}" class="link list-social__link" target="_blank">
-        {%- render 'icon-facebook' -%} 
-        <span class="visually-hidden">Facebook</span>
+{% comment %}
+  Product Share Block - 产品分享组件
+  支持多种社交媒体和分享方式
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign heading = block.settings.heading
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_label = block.settings.show_label
+  assign share_facebook = block.settings.share_facebook
+  assign share_twitter = block.settings.share_twitter
+  assign share_pinterest = block.settings.share_pinterest
+  assign share_linkedin = block.settings.share_linkedin
+  assign share_whatsapp = block.settings.share_whatsapp
+  assign share_email = block.settings.share_email
+  assign share_copy_link = block.settings.share_copy_link
+
+  if product == blank
+    assign share_url = shop.url
+    assign share_title = 'Check out this product'
+  else
+    assign share_url = shop.url | append: product.url
+    assign share_title = product.title | url_param_escape
+    if product.featured_media
+      assign share_image = product.featured_media | image_url: width: 1200
+    endif
+  endif
+-%}
+
+<div 
+  class="share-block share-block--{{ alignment }} share-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if heading != blank or show_label -%}
+    <div class="share-block__heading">
+      {{ heading | default: 'Share' }}
+    </div>
+  {%- endif -%}
+
+  <div class="share-block__buttons">
+    {%- if share_facebook -%}
+      <a 
+        href="https://www.facebook.com/sharer/sharer.php?u={{ share_url | url_encode }}" 
+        target="_blank" 
+        rel="noopener"
+        class="share-block__btn share-block__btn--facebook"
+        aria-label="Share on Facebook"
+      >
+        {% render 'icon', name: 'facebook' %}
       </a>
-    </li>
     {%- endif -%}
-    {%- if block.settings.share_twitter -%}
-    <li>
-      <a href="//twitter.com/share?text={{ product.title | url_param_escape }}&amp;url={{ shop.url | append: product.url }}" class="link list-social__link" target="_blank">
-        {%- render 'icon-twitter' -%} 
-        <span class="visually-hidden">Twitter/X</span>
+
+    {%- if share_twitter -%}
+      <a 
+        href="https://twitter.com/intent/tweet?text={{ share_title }}&url={{ share_url | url_encode }}" 
+        target="_blank" 
+        rel="noopener"
+        class="share-block__btn share-block__btn--twitter"
+        aria-label="Share on X/Twitter"
+      >
+        {% render 'icon', name: 'twitter' %}
       </a>
-    </li>
     {%- endif -%}
-    {%- if block.settings.share_pinterest -%}
-    <li>
-      <a href="//pinterest.com/pin/create/button/?url={{ shop.url | append: product.url }}&amp;media={{ product.featured_media | image_url: width: 1024, height: 1024 }}&amp;description={{ product.title | url_param_escape }}" class="link list-social__link" target="_blank">
-        {%- render 'icon-pinterest' -%} 
-        <span class="visually-hidden">Pinterest</span>
+
+    {%- if share_pinterest -%}
+      <a 
+        href="https://pinterest.com/pin/create/button/?url={{ share_url | url_encode }}&media={{ share_image | url_encode }}&description={{ share_title }}" 
+        target="_blank" 
+        rel="noopener"
+        class="share-block__btn share-block__btn--pinterest"
+        aria-label="Share on Pinterest"
+      >
+        {% render 'icon', name: 'pinterest' %}
       </a>
-    </li>
     {%- endif -%}
-  </ul>
+
+    {%- if share_linkedin -%}
+      <a 
+        href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url | url_encode }}" 
+        target="_blank" 
+        rel="noopener"
+        class="share-block__btn share-block__btn--linkedin"
+        aria-label="Share on LinkedIn"
+      >
+        {% render 'icon', name: 'linkedin' %}
+      </a>
+    {%- endif -%}
+
+    {%- if share_whatsapp -%}
+      <a 
+        href="https://wa.me/?text={{ share_title }} {{ share_url | url_encode }}" 
+        target="_blank" 
+        rel="noopener"
+        class="share-block__btn share-block__btn--whatsapp"
+        aria-label="Share on WhatsApp"
+      >
+        {% render 'icon', name: 'whatsapp' %}
+      </a>
+    {%- endif -%}
+
+    {%- if share_email -%}
+      <a 
+        href="mailto:?subject={{ share_title }}&body=Check out this: {{ share_url | url_encode }}" 
+        class="share-block__btn share-block__btn--email"
+        aria-label="Share via Email"
+      >
+        {% render 'icon', name: 'email' %}
+      </a>
+    {%- endif -%}
+
+    {%- if share_copy_link -%}
+      <button 
+        type="button" 
+        class="share-block__btn share-block__btn--copy"
+        aria-label="Copy link"
+        data-copy-url="{{ share_url }}"
+      >
+        {% render 'icon', name: 'link' %}
+      </button>
+    {%- endif -%}
+  </div>
+
+  {%- if share_copy_link -%}
+    <div class="share-block__copied" style="display: none;">
+      {% render 'icon', name: 'check' %}
+      <span>{{ 'general.share.link_copied' | t }}</span>
+    </div>
+  {%- endif -%}
 </div>
+
+<script>
+  document.querySelectorAll('[data-copy-url]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const url = btn.dataset.copyUrl;
+      try {
+        await navigator.clipboard.writeText(url);
+        const copiedEl = btn.closest('.share-block').querySelector('.share-block__copied');
+        if (copiedEl) {
+          copiedEl.style.display = 'flex';
+          setTimeout(() => { copiedEl.style.display = 'none'; }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    });
+  });
+</script>
+
+<style>
+  .share-block { width: 100%; }
+  .share-block--left { text-align: left; }
+  .share-block--center { text-align: center; }
+  .share-block--right { text-align: right; }
+
+  .share-block__heading {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  .share-block__buttons {
+    display: flex;
+    gap: 0.8rem;
+  }
+
+  .share-block--left .share-block__buttons { justify-content: flex-start; }
+  .share-block--center .share-block__buttons { justify-content: center; }
+  .share-block--right .share-block__buttons { justify-content: flex-end; }
+
+  .share-block__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all var(--duration-default) ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .share-block__btn svg { width: 2rem; height: 2rem; }
+
+  /* Style - Default */
+  .share-block--default .share-block__btn {
+    background: rgba(var(--color-text), 0.08);
+    color: rgb(var(--color-text));
+  }
+
+  .share-block--default .share-block__btn:hover {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    transform: translateY(-3px);
+  }
+
+  /* Style - Outline */
+  .share-block--outline .share-block__btn {
+    background: transparent;
+    border: 1px solid rgb(var(--color-border));
+  }
+
+  .share-block--outline .share-block__btn:hover {
+    border-color: rgb(var(--color-accent));
+    color: rgb(var(--color-accent));
+  }
+
+  /* Style - Solid */
+  .share-block--solid .share-block__btn--facebook { background: #1877F2; color: white; }
+  .share-block--solid .share-block__btn--twitter { background: #000000; color: white; }
+  .share-block--solid .share-block__btn--pinterest { background: #BD081C; color: white; }
+  .share-block--solid .share-block__btn--linkedin { background: #0A66C2; color: white; }
+  .share-block--solid .share-block__btn--whatsapp { background: #25D366; color: white; }
+  .share-block--solid .share-block__btn--email { background: rgb(var(--color-button)); color: rgb(var(--color-button-text)); }
+  .share-block--solid .share-block__btn--copy { background: rgba(var(--color-text), 0.8); color: white; }
+
+  /* Copied */
+  .share-block__copied {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(34, 197, 94, 0.1);
+    color: rgb(34, 197, 94);
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    animation: fade-in 0.3s ease;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 749px) {
+    .share-block__btn { width: 4rem; height: 4rem; }
+    .share-block__btn svg { width: 1.8rem; height: 1.8rem; }
+  }
+</style>
 
 {% schema %}
 {
-  "name": "Product Share",
+  "name": "Share",
+  "class": "share-block",
   "settings": [
-    {
-      "type": "paragraph",
-      "content": "确保你的主题包含对应的社交图标 snippet (如 icon-facebook.liquid)。"
-    },
-    {
-      "type": "checkbox",
-      "id": "share_facebook",
-      "label": "分享到 Facebook",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "share_twitter",
-      "label": "分享到 Twitter/X",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "share_pinterest",
-      "label": "分享到 Pinterest",
-      "default": true
-    }
+    { "type": "header", "content": "Settings" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Share" },
+    { "type": "select", "id": "style", "label": "Style", "options": [
+      { "value": "default", "label": "Default (Light)" },
+      { "value": "outline", "label": "Outline" },
+      { "value": "solid", "label": "Solid (Brand Colors)" }
+    ], "default": "default" },
+    { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "left" },
+    { "type": "checkbox", "id": "show_label", "label": "Show heading label", "default": true },
+    { "type": "header", "content": "Share Options" },
+    { "type": "checkbox", "id": "share_facebook", "label": "Facebook", "default": true },
+    { "type": "checkbox", "id": "share_twitter", "label": "Twitter/X", "default": true },
+    { "type": "checkbox", "id": "share_pinterest", "label": "Pinterest", "default": true },
+    { "type": "checkbox", "id": "share_linkedin", "label": "LinkedIn", "default": false },
+    { "type": "checkbox", "id": "share_whatsapp", "label": "WhatsApp", "default": false },
+    { "type": "checkbox", "id": "share_email", "label": "Email", "default": true },
+    { "type": "checkbox", "id": "share_copy_link", "label": "Copy Link", "default": true }
   ]
 }
 {% endschema %}

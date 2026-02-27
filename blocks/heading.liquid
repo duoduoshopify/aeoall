@@ -1,16 +1,250 @@
-<div class="heading-block" {{ block.shopify_attributes }}>
-  <{{ block.settings.tag }} class="h{{ block.settings.size }}">
-    {{ block.settings.text }}
-  </{{ block.settings.tag }}>
-</div>
+{% comment %}
+  Heading Block - 标题组件
+  支持多种级别、样式、对齐方式和动画效果
+{% endcomment %}
+
+{%- liquid
+  assign text = block.settings.text
+  assign tag = block.settings.tag
+  assign size = block.settings.size
+  assign alignment = block.settings.alignment
+  assign color = block.settings.color
+  assign highlight = block.settings.highlight
+  assign prefix_text = block.settings.prefix_text
+  assign suffix_text = block.settings.suffix_text
+  assign enable_animation = block.settings.enable_animation
+-%}
+
+{%- if text != blank or prefix_text != blank or suffix_text != blank -%}
+  <div 
+    class="heading-block heading-block--{{ alignment }} heading-block--{{ size }}" 
+    {{ block.shopify_attributes }}
+  >
+    <{{ tag }} class="heading-block__text{% if enable_animation %} heading-block__text--animated{% endif %}{% if highlight != 'none' %} heading-block__text--highlight heading-block__text--highlight-{{ highlight }}{% endif %}">
+      {%- if prefix_text != blank -%}
+        <span class="heading-block__prefix">{{ prefix_text }}</span>
+      {%- endif -%}
+      
+      {%- if text != blank -%}
+        <span class="heading-block__main">{{ text }}</span>
+      {%- endif -%}
+      
+      {%- if suffix_text != blank -%}
+        <span class="heading-block__suffix">{{ suffix_text }}</span>
+      {%- endif -%}
+    </{{ tag }}>
+  </div>
+{%- endif -%}
+
+<style>
+  .heading-block {
+    width: 100%;
+  }
+
+  .heading-block--left { text-align: left; }
+  .heading-block--center { text-align: center; }
+  .heading-block--right { text-align: right; }
+
+  .heading-block__text {
+    margin: 0;
+    line-height: 1.15;
+    color: rgb(var(--color-text));
+    word-break: break-word;
+  }
+
+  /* Size variants */
+  .heading-block--small .heading-block__text {
+    font-size: calc(var(--font-heading-scale) * 2rem);
+  }
+
+  .heading-block--medium .heading-block__text {
+    font-size: calc(var(--font-heading-scale) * 3rem);
+  }
+
+  .heading-block--large .heading-block__text {
+    font-size: calc(var(--font-heading-scale) * 4rem);
+  }
+
+  .heading-block--xlarge .heading-block__text {
+    font-size: calc(var(--font-heading-scale) * 5rem);
+  }
+
+  /* Color */
+  {%- case color -%}
+    {%- when 'default' -%}
+      .heading-block__text { color: rgb(var(--color-text)); }
+    {%- when 'accent' -%}
+      .heading-block__text { color: rgb(var(--color-accent)); }
+    {%- when 'secondary' -%}
+      .heading-block__text { color: rgb(var(--color-text) / 0.6); }
+    {%- when 'inverse' -%}
+      .heading-block__text { color: rgb(var(--color-background)); }
+  {%- endcase -%}
+
+  /* Highlight */
+  .heading-block__text--highlight {
+    display: inline;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .heading-block__text--highlight-primary {
+    background-image: linear-gradient(transparent 60%, rgba(var(--color-accent), 0.3) 60%);
+  }
+
+  .heading-block__text--highlight-accent {
+    background-image: linear-gradient(transparent 60%, rgba(var(--color-accent), 0.4) 60%);
+  }
+
+  .heading-block__text--highlight-underline {
+    background-image: linear-gradient(transparent 70%, rgba(var(--color-accent), 0.5) 70%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.3em;
+    background-position: 0 88%;
+  }
+
+  /* Prefix/Suffix */
+  .heading-block__prefix,
+  .heading-block__suffix {
+    font-weight: var(--font-heading-weight);
+    display: inline;
+  }
+
+  .heading-block__prefix {
+    margin-right: 0.3em;
+    opacity: 0.7;
+  }
+
+  .heading-block__suffix {
+    margin-left: 0.3em;
+    opacity: 0.7;
+  }
+
+  /* Animation */
+  .heading-block__text--animated {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heading-fade-in 0.6s ease forwards;
+  }
+
+  @keyframes heading-fade-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .heading-block--small .heading-block__text { font-size: calc(var(--font-heading-scale) * 1.6rem); }
+    .heading-block--medium .heading-block__text { font-size: calc(var(--font-heading-scale) * 2.2rem); }
+    .heading-block--large .heading-block__text { font-size: calc(var(--font-heading-scale) * 2.8rem); }
+    .heading-block--xlarge .heading-block__text { font-size: calc(var(--font-heading-scale) * 3.4rem); }
+  }
+</style>
 
 {% schema %}
 {
   "name": "Heading",
+  "class": "heading-block",
   "settings": [
-    { "type": "text", "id": "text", "label": "Text", "default": "Headline Content" },
-    { "type": "select", "id": "tag", "label": "HTML Tag", "options": [{"value":"h1","label":"H1"},{"value":"h2","label":"H2"},{"value":"h3","label":"H3"}], "default": "h2" },
-    { "type": "select", "id": "size", "label": "Visual Size", "options": [{"value":"1","label":"XL"},{"value":"2","label":"L"},{"value":"3","label":"M"}], "default": "2" }
+    {
+      "type": "header",
+      "content": "Heading Content"
+    },
+    {
+      "type": "text",
+      "id": "prefix_text",
+      "label": "Prefix Text",
+      "info": "Text before the main heading"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Heading Text",
+      "default": "Your Headline"
+    },
+    {
+      "type": "text",
+      "id": "suffix_text",
+      "label": "Suffix Text",
+      "info": "Text after the main heading"
+    },
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "HTML Tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" },
+        { "value": "div", "label": "Div" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xlarge", "label": "Extra Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "Color",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "secondary", "label": "Secondary" },
+        { "value": "inverse", "label": "Inverse (on dark background)" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "highlight",
+      "label": "Highlight Style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "primary", "label": "Primary Background" },
+        { "value": "accent", "label": "Accent Background" },
+        { "value": "underline", "label": "Underline" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "Enable animation",
+      "default": false,
+      "info": "Adds a subtle fade-in animation on load"
+    }
   ]
 }
 {% endschema %}

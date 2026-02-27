@@ -1,51 +1,333 @@
-<div class="product-form__buttons" {{ block.shopify_attributes }}>
-  {%- style -%}
-    /* 允许通过后台覆盖默认颜色 */
-    .btn-atc-custom {
-      --atc-bg: {{ block.settings.atc_bg_color }};
-      --atc-text: {{ block.settings.atc_text_color }};
-    }
-    .btn-buy-now-custom .shopify-payment-button__button--unbranded {
-      /* 这里可以通过 Liquid 动态控制初始颜色 */
-    }
-  {%- endstyle -%}
+{% comment %}
+  Buy Buttons Block - 购买按钮组件
+  支持 Add to Cart、Buy Now、动态结账按钮
+{% endcomment %}
 
-  <product-form>
-  {%- form 'product', product, id: 'product-form-main', class: 'form', novalidate: 'novalidate' -%}
-    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-    
-    <div class="buy-buttons-group">
-      {%- comment -%} 1. Add to Cart (白底 + 黑色滑块) {%- endcomment -%}
-      <button
-        type="submit"
-        name="add"
-        id="ProductSubmitButton-{{ section.id }}"
-        class="atc-btn atc-slider-effect"
-        {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
-      >
-        <span class="atc-text">{{ 'products.product.add_to_cart' | t }}</span>
-        <div class="atc-slider"></div>
-      </button>
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign show_dynamic_checkout = block.settings.show_dynamic_checkout
+  assign atc_style = block.settings.atc_style
+  assign show_quantity = block.settings.show_quantity
+  assign show_wishlist = block.settings.show_wishlist
+  assign show_estimate = block.settings.show_estimate
+-%}
 
-      {%- comment -%} 2. Buy it Now (黑色 + 悬停紫) {%- endcomment -%}
-      {%- if block.settings.show_dynamic_checkout -%}
-        <div class="dynamic-checkout-wrapper btn-buy-now-custom">
-          {{ form | payment_button }}
+<div 
+  class="buy-buttons-block buy-buttons-block--{{ atc_style }}" 
+  {{ block.shopify_attributes }}
+>
+  <product-form class="product-form" data-hide-errors="true">
+    {%- form 'product', product, id: 'product-form-' | append: section.id, class: 'form', novalidate: 'novalidate' -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      <div class="buy-buttons-block__wrapper">
+        {%- if show_quantity -%}
+          <div class="buy-buttons-block__quantity">
+            <quantity-input class="quantity-input">
+              <button class="quantity-input__btn quantity-input__btn--minus" name="minus" type="button">
+                {% render 'icon', name: 'minus' %}
+              </button>
+              <input
+                class="quantity-input__field"
+                type="number"
+                name="quantity"
+                id="quantity-{{ section.id }}"
+                min="1"
+                value="1"
+                aria-label="{{ 'products.product.quantity.label' | t }}"
+              >
+              <button class="quantity-input__btn quantity-input__btn--plus" name="plus" type="button">
+                {% render 'icon', name: 'plus' %}
+              </button>
+            </quantity-input>
+          </div>
+        {%- endif -%}
+
+        <div class="buy-buttons-block__buttons">
+          <button
+            type="submit"
+            name="add"
+            id="ProductSubmitButton-{{ section.id }}"
+            class="buy-buttons-block__atc-btn"
+            {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
+          >
+            <span class="buy-buttons-block__atc-text">
+              {%- if product.selected_or_first_available_variant.available -%}
+                {{ 'products.product.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </span>
+            <span class="buy-buttons-block__atc-icon">
+              {% render 'icon', name: 'cart' %}
+            </span>
+          </button>
+
+          {%- if show_dynamic_checkout -%}
+            <div class="buy-buttons-block__dynamic">
+              {{ form | payment_button }}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if show_wishlist -%}
+          <button type="button" class="buy-buttons-block__wishlist" aria-label="{{ 'products.product.add_to_wishlist' | t }}">
+            {% render 'icon', name: 'heart' %}
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- if show_estimate -%}
+        <div class="buy-buttons-block__estimate">
+          {% render 'icon', name: 'truck' %}
+          <span>{{ 'products.product.estimate_shipping' | t | default: 'Estimate shipping at checkout' }}</span>
         </div>
       {%- endif -%}
-    </div>
-  {%- endform -%}
+    {%- endform -%}
   </product-form>
 </div>
+
+<style>
+  .buy-buttons-block__wrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  /* Quantity */
+  .buy-buttons-block__quantity {
+    flex-shrink: 0;
+  }
+
+  .quantity-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 8px;
+    overflow: hidden;
+    height: 5.2rem;
+  }
+
+  .quantity-input__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 100%;
+    border: none;
+    background: rgb(var(--color-background-secondary));
+    cursor: pointer;
+    transition: background var(--duration-default) ease;
+  }
+
+  .quantity-input__btn:hover {
+    background: rgba(var(--color-text), 0.1);
+  }
+
+  .quantity-input__btn svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .quantity-input__field {
+    width: 5rem;
+    height: 100%;
+    border: none;
+    border-left: 1px solid rgb(var(--color-border));
+    border-right: 1px solid rgb(var(--color-border));
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-text));
+  }
+
+  .quantity-input__field:focus {
+    outline: none;
+  }
+
+  /* Buttons */
+  .buy-buttons-block__buttons {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .buy-buttons-block__atc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    min-height: 5.2rem;
+    padding: 0 2rem;
+    border: none;
+    border-radius: var(--buttons-radius, var(--border-radius-full));
+    font-size: 1.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--duration-default) ease;
+  }
+
+  .buy-buttons-block__atc-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Style - Primary */
+  .buy-buttons-block--primary .buy-buttons-block__atc-btn {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  .buy-buttons-block--primary .buy-buttons-block__atc-btn:not(:disabled):hover {
+    background: rgb(var(--color-button-hover));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--color-button), 0.3);
+  }
+
+  /* Style - Secondary */
+  .buy-buttons-block--secondary .buy-buttons-block__atc-btn {
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-text));
+    border: 2px solid rgb(var(--color-border));
+  }
+
+  .buy-buttons-block--secondary .buy-buttons-block__atc-btn:not(:disabled):hover {
+    border-color: rgb(var(--color-accent));
+    color: rgb(var(--color-accent));
+  }
+
+  /* Style - Accent */
+  .buy-buttons-block--accent .buy-buttons-block__atc-btn {
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-background));
+  }
+
+  /* Style - Dark */
+  .buy-buttons-block--dark .buy-buttons-block__atc-btn {
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  /* Wishlist */
+  .buy-buttons-block__wishlist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 50%;
+    background: rgb(var(--color-background));
+    cursor: pointer;
+    transition: all var(--duration-default) ease;
+    flex-shrink: 0;
+  }
+
+  .buy-buttons-block__wishlist:hover {
+    border-color: rgb(239, 68, 68);
+    color: rgb(239, 68, 68);
+  }
+
+  .buy-buttons-block__wishlist svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Dynamic Checkout */
+  .buy-buttons-block__dynamic {
+    width: 100%;
+  }
+
+  .buy-buttons-block__dynamic .shopify-payment-button__button {
+    border-radius: var(--buttons-radius, var(--border-radius-full));
+    min-height: 5.2rem;
+  }
+
+  /* Estimate */
+  .buy-buttons-block__estimate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(var(--color-accent), 0.08);
+    border-radius: 8px;
+    font-size: 1.3rem;
+    color: rgb(var(--color-accent));
+  }
+
+  .buy-buttons-block__estimate svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .buy-buttons-block__atc-btn {
+      min-height: 4.8rem;
+      font-size: 1.4rem;
+    }
+
+    .quantity-input {
+      height: 4.8rem;
+    }
+  }
+</style>
 
 {% schema %}
 {
   "name": "Buy Buttons",
+  "class": "buy-buttons-block",
   "settings": [
-    { "type": "checkbox", "id": "show_dynamic_checkout", "default": true, "label": "Show Buy it Now" },
-    { "type": "header", "content": "Customization (Optional)" },
-    { "type": "color", "id": "atc_bg_color", "label": "ATC Default Background", "default": "#ffffff" },
-    { "type": "color", "id": "atc_text_color", "label": "ATC Default Text", "default": "#000000" }
+    {
+      "type": "header",
+      "content": "Button Style"
+    },
+    {
+      "type": "select",
+      "id": "atc_style",
+      "label": "Add to Cart Style",
+      "options": [
+        { "value": "primary", "label": "Primary (Solid)" },
+        { "value": "secondary", "label": "Secondary (Outline)" },
+        { "value": "accent", "label": "Accent Color" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show Buy Now button",
+      "default": true,
+      "info": "Shows dynamic checkout options (Shop Pay, PayPal, etc.)"
+    },
+    {
+      "type": "header",
+      "content": "Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show quantity selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_estimate",
+      "label": "Show shipping estimate",
+      "default": false
+    }
   ]
 }
 {% endschema %}

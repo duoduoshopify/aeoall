@@ -1,0 +1,259 @@
+{% comment %}
+  Progress Bar Block - 进度条组件
+  用于显示销售进度、目标完成度等
+{% endcomment %}
+
+{%- liquid
+  assign heading = block.settings.heading
+  assign percentage = block.settings.percentage
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_label = block.settings.show_label
+  assign show_percentage = block.settings.show_percentage
+  assign animated = block.settings.animated
+  assign color = block.settings.color
+-%}
+
+<div 
+  class="progress-bar-block progress-bar-block--{{ alignment }} progress-bar-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if heading != blank -%}
+    <div class="progress-bar-block__heading">{{ heading }}</div>
+  {%- endif -%}
+
+  <div class="progress-bar-block__wrapper">
+    <div 
+      class="progress-bar-block__bar{% if animated %} progress-bar-block__bar--animated{% endif %}"
+      style="--progress: {{ percentage }}%; --progress-color: {{ color }}"
+      role="progressbar"
+      aria-valuenow="{{ percentage }}"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      {%- if show_percentage -%}
+        <span class="progress-bar-block__percentage">{{ percentage }}%</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if show_label -%}
+    <div class="progress-bar-block__label">
+      <span>{{ block.settings.label_start | default: '0' }}</span>
+      <span>{{ block.settings.label_end | default: '100' }}</span>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .progress-bar-block {
+    width: 100%;
+  }
+
+  .progress-bar-block--left { text-align: left; }
+  .progress-bar-block--center { text-align: center; }
+  .progress-bar-block--right { text-align: right; }
+
+  /* Heading */
+  .progress-bar-block__heading {
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgb(var(--color-text));
+  }
+
+  /* Wrapper */
+  .progress-bar-block__wrapper {
+    background: rgba(var(--color-text), 0.1);
+    border-radius: 50px;
+    overflow: hidden;
+    height: var(--bar-height, 20px);
+  }
+
+  /* Style - Default (Rounded) */
+  .progress-bar-block--default .progress-bar-block__wrapper {
+    border-radius: 50px;
+  }
+
+  /* Style - Square */
+  .progress-bar-block--square .progress-bar-block__wrapper {
+    border-radius: 4px;
+  }
+
+  /* Style - Pill */
+  .progress-bar-block--pill .progress-bar-block__wrapper {
+    height: 12px;
+  }
+
+  /* Bar */
+  .progress-bar-block__bar {
+    height: 100%;
+    width: 0;
+    background: rgb(var(--color-accent));
+    border-radius: inherit;
+    position: relative;
+    transition: width 1s ease-out;
+  }
+
+  .progress-bar-block__bar--animated {
+    width: var(--progress);
+  }
+
+  /* Striped */
+  .progress-bar-block--striped .progress-bar-block__bar {
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.15) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1rem 1rem;
+  }
+
+  /* Gradient */
+  .progress-bar-block--gradient .progress-bar-block__bar {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--color-accent)) 0%,
+      rgb(var(--color-button)) 100%
+    );
+  }
+
+  /* Percentage */
+  .progress-bar-block__percentage {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgb(var(--color-background));
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Label */
+  .progress-bar-block__label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  /* Animation */
+  .progress-bar-block__bar--animated {
+    animation: progress-fill 1.5s ease-out forwards;
+  }
+
+  @keyframes progress-fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(--progress);
+    }
+  }
+
+  /* Glow effect */
+  .progress-bar-block--glow .progress-bar-block__bar {
+    box-shadow: 0 0 10px rgba(var(--color-accent), 0.5);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Progress Bar",
+  "class": "progress-bar-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Progress"
+    },
+    {
+      "type": "range",
+      "id": "percentage",
+      "label": "Progress",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 75
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Rounded" },
+        { "value": "square", "label": "Square" },
+        { "value": "pill", "label": "Thin Pill" },
+        { "value": "striped", "label": "Striped" },
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "glow", "label": "Glow" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Progress Color",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_percentage",
+      "label": "Show percentage on bar",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show start/end labels",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "label_start",
+      "label": "Start Label",
+      "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "label_end",
+      "label": "End Label",
+      "default": "100"
+    },
+    {
+      "type": "checkbox",
+      "id": "animated",
+      "label": "Animate on load",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,16 @@
+{% comment %}
+  Reading Time Snippet - 计算文章阅读时间
+{% endcomment %}
+
+{%- liquid
+  assign content = content | default: ''
+  assign words = content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200
+  assign seconds = words | modulo: 200 | times: 60 | divided_by: 200
+  assign reading_time = minutes | plus: 1
+  if reading_time < 1
+    assign reading_time = 1
+  endif
+-%}
+
+{{ reading_time }} {{ 'blogs.article.min_read' | t }}

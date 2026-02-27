@@ -220,8 +220,22 @@ class SectionHydration {
     const promise = new Promise((resolve, reject) => {
       const existingScript = document.querySelector(`script[src="${src}"]`);
       if (existingScript) {
-        this.loadedScripts.add(src);
-        resolve();
+        if (existingScript.dataset.sectionHydrationLoaded === 'true') {
+          this.loadedScripts.add(src);
+          resolve();
+          return;
+        }
+
+        existingScript.addEventListener('load', () => {
+          existingScript.dataset.sectionHydrationLoaded = 'true';
+          this.loadedScripts.add(src);
+          resolve();
+        }, { once: true });
+
+        existingScript.addEventListener('error', () => {
+          reject(new Error(`Failed to load script: ${src}`));
+        }, { once: true });
+
         return;
       }
 
@@ -229,6 +243,7 @@ class SectionHydration {
       script.src = src;
       script.async = true;
       script.onload = () => {
+        script.dataset.sectionHydrationLoaded = 'true';
         this.loadedScripts.add(src);
         resolve();
       };
@@ -257,8 +272,22 @@ class SectionHydration {
     const promise = new Promise((resolve, reject) => {
       const existingLink = document.querySelector(`link[href="${href}"]`);
       if (existingLink) {
-        this.loadedStyles.add(href);
-        resolve();
+        if (existingLink.dataset.sectionHydrationLoaded === 'true') {
+          this.loadedStyles.add(href);
+          resolve();
+          return;
+        }
+
+        existingLink.addEventListener('load', () => {
+          existingLink.dataset.sectionHydrationLoaded = 'true';
+          this.loadedStyles.add(href);
+          resolve();
+        }, { once: true });
+
+        existingLink.addEventListener('error', () => {
+          reject(new Error(`Failed to load style: ${href}`));
+        }, { once: true });
+
         return;
       }
 
@@ -266,6 +295,7 @@ class SectionHydration {
       link.rel = 'stylesheet';
       link.href = href;
       link.onload = () => {
+        link.dataset.sectionHydrationLoaded = 'true';
         this.loadedStyles.add(href);
         resolve();
       };
@@ -287,10 +317,19 @@ class SectionHydration {
   setupEditorListeners() {
     document.addEventListener('shopify:section:load', (event) => {
       const sectionId = event?.detail?.sectionId;
-      if (!sectionId) return;
+      let newSection = null;
 
-      const selector = `[data-section-hydrate][data-section-id="${sectionId}"]`;
-      const newSection = document.querySelector(selector);
+      if (sectionId) {
+        const selector = `[data-section-hydrate][data-section-id="${sectionId}"]`;
+        newSection = document.querySelector(selector);
+      }
+
+      if (!newSection && event?.target instanceof Element) {
+        newSection = event.target.matches('[data-section-hydrate]')
+          ? event.target
+          : event.target.querySelector('[data-section-hydrate]');
+      }
+
       if (newSection) {
         this.queueHydration(newSection);
       }

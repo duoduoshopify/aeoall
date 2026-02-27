@@ -1,37 +1,223 @@
-<div class="product-rating" {{ block.shopify_attributes }}>
-  {%- if product.metafields.reviews.rating.value != blank -%}
-    {%- assign rating_value = product.metafields.reviews.rating.value | round: 1 -%}
-    {%- assign rating_count = product.metafields.reviews.rating_count | default: 0 -%}
-    <div
-      class="rating-stars"
+{% comment %}
+  Product Rating Block - 产品评分组件
+  显示产品评分和评论数量
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_count = block.settings.show_count
+  assign show_value = block.settings.show_value
+  assign size = block.settings.size
+
+  if product == blank
+    assign rating_value = 4.5
+    assign rating_count = 128
+  elsif product.metafields.reviews.rating.value != blank
+    assign rating_value = product.metafields.reviews.rating.value | round: 1
+    assign rating_count = product.metafields.reviews.rating_count | default: 0
+  else
+    assign rating_value = 0
+    assign rating_count = 0
+  endif
+-%}
+
+<div 
+  class="product-rating-block product-rating-block--{{ alignment }} product-rating-block--{{ style }} product-rating-block--{{ size }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if rating_value > 0 -%}
+    <div 
+      class="product-rating-block__stars"
       role="img"
       aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: rating_value, rating_max: 5 }}"
     >
-      <span class="stars-filled" aria-hidden="true">★★★★★</span>
-      <span class="visually-hidden">{{ 'general.accessibility.star_reviews_info' | t: rating_value: rating_value, rating_max: 5 }}</span>
-      <span class="rating-value" aria-hidden="true">{{ rating_value }}</span>
-      <span class="rating-count" aria-label="{{ 'general.accessibility.total_reviews' | t }}: {{ rating_count }}">({{ rating_count }})</span>
+      <div class="product-rating-block__stars-inner" style="width: {{ rating_value | times: 20 }}%">
+        {%- for i in (1..5) -%}
+          <span class="product-rating-block__star">{% render 'icon', name: 'star' %}</span>
+        {%- endfor -%}
+      </div>
+      <div class="product-rating-block__stars-empty">
+        {%- for i in (1..5) -%}
+          <span class="product-rating-block__star">{% render 'icon', name: 'star' %}</span>
+        {%- endfor -%}
+      </div>
     </div>
+
+    {%- if show_value or show_count -%}
+      <div class="product-rating-block__info">
+        {%- if show_value -%}
+          <span class="product-rating-block__value">{{ rating_value }}</span>
+        {%- endif -%}
+        {%- if show_count -%}
+          <span class="product-rating-block__count">({{ rating_count }})</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   {%- else -%}
-    <div
-      class="rating-stars--empty"
-      role="img"
-      aria-label="{{ 'general.accessibility.star_reviews_info' | t: rating_value: 0, rating_max: 5 }}"
-    >
-      <span aria-hidden="true">★★★★★</span>
-      <span class="visually-hidden">{{ 'general.accessibility.star_reviews_info' | t: rating_value: 0, rating_max: 5 }}</span>
-      <span class="rating-count" aria-label="{{ 'general.accessibility.total_reviews' | t }}: 0">(0)</span>
+    <div class="product-rating-block__empty">
+      <span class="product-rating-block__text">{{ 'products.product.no_reviews' | t | default: 'No reviews yet' }}</span>
     </div>
   {%- endif -%}
 </div>
 
 <style>
-  .product-rating { display: flex; align-items: center; gap: 1rem; font-size: 2.5rem; color: #ffb800; margin-bottom: 1rem; }
-  .rating-value { color: rgb(var(--color-text)); font-weight: 700; }
-  .rating-count { color: rgba(var(--color-text), 0.4); font-size: 1.2rem; }
-  .rating-stars--empty { color: #e5e7eb; }
+  .product-rating-block {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .product-rating-block--left { justify-content: flex-start; }
+  .product-rating-block--center { justify-content: center; }
+  .product-rating-block--right { justify-content: flex-end; }
+
+  /* Stars */
+  .product-rating-block__stars {
+    position: relative;
+    display: inline-flex;
+    font-size: 0;
+  }
+
+  .product-rating-block__stars-empty,
+  .product-rating-block__stars-inner {
+    display: inline-flex;
+  }
+
+  .product-rating-block__star {
+    display: flex;
+  }
+
+  .product-rating-block__stars-empty .product-rating-block__star {
+    color: rgba(var(--color-text), 0.15);
+  }
+
+  .product-rating-block__stars-inner .product-rating-block__star {
+    color: rgb(234, 179, 8);
+  }
+
+  /* Size - Small */
+  .product-rating-block--small .product-rating-block__star svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  /* Size - Medium */
+  .product-rating-block--medium .product-rating-block__star svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  /* Size - Large */
+  .product-rating-block--large .product-rating-block__star svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  /* Info */
+  .product-rating-block__info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .product-rating-block__value {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: rgb(var(--color-text));
+  }
+
+  .product-rating-block__count {
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.6);
+  }
+
+  /* Style - Badge */
+  .product-rating-block--badge {
+    padding: 0.8rem 1.2rem;
+    background: rgba(var(--color-accent), 0.08);
+    border-radius: 8px;
+  }
+
+  /* Style - Minimal */
+  .product-rating-block--minimal .product-rating-block__stars {
+    gap: 0.2rem;
+  }
+
+  /* Empty */
+  .product-rating-block__text {
+    font-size: 1.2rem;
+    color: rgba(var(--color-text), 0.5);
+    font-style: italic;
+  }
+
+  /* Animation */
+  .product-rating-block__stars {
+    opacity: 0;
+    animation: rating-fade-in 0.5s ease forwards;
+  }
+
+  @keyframes rating-fade-in {
+    to { opacity: 1; }
+  }
 </style>
 
 {% schema %}
-{ "name": "Product Rating" }
+{
+  "name": "Product Rating",
+  "class": "product-rating-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Star Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "badge", "label": "Badge" },
+        { "value": "minimal", "label": "Minimal" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_value",
+      "label": "Show rating value",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show review count",
+      "default": true
+    }
+  ]
+}
 {% endschema %}

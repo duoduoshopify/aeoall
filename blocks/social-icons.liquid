@@ -1,0 +1,433 @@
+{% comment %}
+  Social Icons Block - 社交媒体图标组件
+  支持显示多种社交媒体链接
+{% endcomment %}
+
+{%- liquid
+  assign heading = block.settings.heading
+  assign size = block.settings.size
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign hover_effect = block.settings.hover_effect
+  assign facebook = block.settings.facebook
+  assign instagram = block.settings.instagram
+  assign youtube = block.settings.youtube
+  assign tiktok = block.settings.tiktok
+  assign twitter = block.settings.twitter
+  assign pinterest = block.settings.pinterest
+  assign linkedin = block.settings.linkedin
+  assign snapchat = block.settings.snapchat
+  assign discord = block.settings.discord
+  assign reddit = block.settings.reddit
+  assign whatsapp = block.settings.whatsapp
+  assign wechat = block.settings.wechat
+  assign qq = block.settings.qq
+  assign email = block.settings.email
+-%}
+
+<div 
+  class="social-icons-block social-icons-block--{{ alignment }} social-icons-block--{{ size }} social-icons-block--{{ style }}" 
+  {{ block.shopify_attributes }}
+>
+  {%- if heading != blank -%}
+    <h4 class="social-icons-block__heading">{{ heading }}</h4>
+  {%- endif -%}
+
+  <div class="social-icons-block__list">
+    {%- if facebook != blank -%}
+      <a href="{{ facebook }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Facebook">
+        {% render 'icon', name: 'facebook' %}
+      </a>
+    {%- endif -%}
+
+    {%- if instagram != blank -%}
+      <a href="{{ instagram }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Instagram">
+        {% render 'icon', name: 'instagram' %}
+      </a>
+    {%- endif -%}
+
+    {%- if youtube != blank -%}
+      <a href="{{ youtube }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="YouTube">
+        {% render 'icon', name: 'youtube' %}
+      </a>
+    {%- endif -%}
+
+    {%- if tiktok != blank -%}
+      <a href="{{ tiktok }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="TikTok">
+        {% render 'icon', name: 'tiktok' %}
+      </a>
+    {%- endif -%}
+
+    {%- if twitter != blank -%}
+      <a href="{{ twitter }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="X/Twitter">
+        {% render 'icon', name: 'twitter' %}
+      </a>
+    {%- endif -%}
+
+    {%- if pinterest != blank -%}
+      <a href="{{ pinterest }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Pinterest">
+        {% render 'icon', name: 'pinterest' %}
+      </a>
+    {%- endif -%}
+
+    {%- if linkedin != blank -%}
+      <a href="{{ linkedin }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="LinkedIn">
+        {% render 'icon', name: 'linkedin' %}
+      </a>
+    {%- endif -%}
+
+    {%- if snapchat != blank -%}
+      <a href="{{ snapchat }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Snapchat">
+        {% render 'icon', name: 'snapchat' %}
+      </a>
+    {%- endif -%}
+
+    {%- if discord != blank -%}
+      <a href="{{ discord }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Discord">
+        {% render 'icon', name: 'discord' %}
+      </a>
+    {%- endif -%}
+
+    {%- if reddit != blank -%}
+      <a href="{{ reddit }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="Reddit">
+        {% render 'icon', name: 'reddit' %}
+      </a>
+    {%- endif -%}
+
+    {%- if whatsapp != blank -%}
+      <a href="https://wa.me/{{ whatsapp }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="WhatsApp">
+        {% render 'icon', name: 'whatsapp' %}
+      </a>
+    {%- endif -%}
+
+    {%- if wechat != blank -%}
+      <a href="{{ wechat }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="WeChat">
+        {% render 'icon', name: 'wechat' %}
+      </a>
+    {%- endif -%}
+
+    {%- if qq != blank -%}
+      <a href="{{ qq }}" class="social-icons-block__link" target="_blank" rel="noopener" aria-label="QQ">
+        {% render 'icon', name: 'qq' %}
+      </a>
+    {%- endif -%}
+
+    {%- if email != blank -%}
+      <a href="mailto:{{ email }}" class="social-icons-block__link" aria-label="Email">
+        {% render 'icon', name: 'email' %}
+      </a>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .social-icons-block {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .social-icons-block--left { align-items: flex-start; }
+  .social-icons-block--center { align-items: center; }
+  .social-icons-block--right { align-items: flex-end; }
+
+  .social-icons-block__heading {
+    margin: 0 0 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgb(var(--color-text));
+  }
+
+  .social-icons-block__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+  }
+
+  .social-icons-block__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: rgb(var(--color-text));
+    transition: all var(--duration-default) ease;
+    border-radius: var(--social-icons-radius, 50%);
+  }
+
+  /* Size - Small */
+  .social-icons-block--small .social-icons-block__link {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+
+  .social-icons-block--small .social-icons-block__link svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  /* Size - Medium */
+  .social-icons-block--medium .social-icons-block__link {
+    width: 4.4rem;
+    height: 4.4rem;
+  }
+
+  .social-icons-block--medium .social-icons-block__link svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Size - Large */
+  .social-icons-block--large .social-icons-block__link {
+    width: 5.2rem;
+    height: 5.2rem;
+  }
+
+  .social-icons-block--large .social-icons-block__link svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  /* Style - Default */
+  .social-icons-block--default .social-icons-block__link {
+    background: rgba(var(--color-text), 0.08);
+  }
+
+  .social-icons-block--default .social-icons-block__link:hover {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    transform: translateY(-3px);
+  }
+
+  /* Style - Outline */
+  .social-icons-block--outline .social-icons-block__link {
+    background: transparent;
+    border: 1px solid rgba(var(--color-text), 0.2);
+  }
+
+  .social-icons-block--outline .social-icons-block__link:hover {
+    border-color: rgb(var(--color-button));
+    color: rgb(var(--color-button));
+  }
+
+  /* Style - Solid */
+  .social-icons-block--solid .social-icons-block__link {
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  .social-icons-block--solid .social-icons-block__link:hover {
+    background: rgb(var(--color-button-hover));
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(var(--color-button), 0.3);
+  }
+
+  /* Style - Colored */
+  .social-icons-block--colored .social-icons-block__link[href*="facebook"] { color: #1877F2; }
+  .social-icons-block--colored .social-icons-block__link[href*="instagram"] { color: #E4405F; }
+  .social-icons-block--colored .social-icons-block__link[href*="youtube"] { color: #FF0000; }
+  .social-icons-block--colored .social-icons-block__link[href*="tiktok"] { color: #000000; }
+  .social-icons-block--colored .social-icons-block__link[href*="twitter"], 
+  .social-icons-block--colored .social-icons-block__link[href*="x.com"] { color: #000000; }
+  .social-icons-block--colored .social-icons-block__link[href*="pinterest"] { color: #BD081C; }
+  .social-icons-block--colored .social-icons-block__link[href*="linkedin"] { color: #0A66C2; }
+
+  .social-icons-block--colored .social-icons-block__link {
+    background: transparent;
+  }
+
+  .social-icons-block--colored .social-icons-block__link:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Hover Effect - Scale */
+  .social-icons-block--scale .social-icons-block__link:hover {
+    transform: scale(1.15);
+  }
+
+  /* Hover Effect - Rotate */
+  .social-icons-block--rotate .social-icons-block__link:hover svg {
+    transform: rotate(360deg);
+  }
+
+  /* Animation */
+  .social-icons-block__link {
+    opacity: 0;
+    animation: social-icon-fade-in 0.4s ease forwards;
+  }
+
+  .social-icons-block__list .social-icons-block__link:nth-child(1) { animation-delay: 0.05s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(2) { animation-delay: 0.1s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(3) { animation-delay: 0.15s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(4) { animation-delay: 0.2s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(5) { animation-delay: 0.25s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(6) { animation-delay: 0.3s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(7) { animation-delay: 0.35s; }
+  .social-icons-block__list .social-icons-block__link:nth-child(8) { animation-delay: 0.4s; }
+
+  @keyframes social-icon-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .social-icons-block--large .social-icons-block__link {
+      width: 4.4rem;
+      height: 4.4rem;
+    }
+
+    .social-icons-block--large .social-icons-block__link svg {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Social Icons",
+  "class": "social-icons-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading Text",
+      "info": "Optional heading above icons"
+    },
+    {
+      "type": "header",
+      "content": "Social Links"
+    },
+    {
+      "type": "text",
+      "id": "facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "text",
+      "id": "instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "text",
+      "id": "youtube",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "text",
+      "id": "tiktok",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "text",
+      "id": "twitter",
+      "label": "X/Twitter URL"
+    },
+    {
+      "type": "text",
+      "id": "pinterest",
+      "label": "Pinterest URL"
+    },
+    {
+      "type": "text",
+      "id": "linkedin",
+      "label": "LinkedIn URL"
+    },
+    {
+      "type": "text",
+      "id": "snapchat",
+      "label": "Snapchat URL"
+    },
+    {
+      "type": "text",
+      "id": "discord",
+      "label": "Discord URL"
+    },
+    {
+      "type": "text",
+      "id": "reddit",
+      "label": "Reddit URL"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp Number",
+      "info": "Phone number with country code (e.g., 1234567890)"
+    },
+    {
+      "type": "text",
+      "id": "wechat",
+      "label": "WeChat ID"
+    },
+    {
+      "type": "text",
+      "id": "qq",
+      "label": "QQ Number"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default (Light Background)" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "solid", "label": "Solid (Primary Color)" },
+        { "value": "colored", "label": "Colored (Brand Colors)" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover Effect",
+      "options": [
+        { "value": "lift", "label": "Lift Up" },
+        { "value": "scale", "label": "Scale" },
+        { "value": "rotate", "label": "Rotate" }
+      ],
+      "default": "lift"
+    }
+  ]
+}
+{% endschema %}

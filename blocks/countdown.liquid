@@ -1,58 +1,92 @@
 {% comment %}
-  Countdown Block - 倒计时器
+  Countdown Block - 倒计时组件
+  支持多种样式、日期选择和自定义消息
 {% endcomment %}
 
 {%- liquid
   assign heading = block.settings.heading
+  assign subheading = block.settings.subheading
   assign end_date = block.settings.end_date
   assign end_time = block.settings.end_time
   assign show_days = block.settings.show_days
   assign show_hours = block.settings.show_hours
   assign show_minutes = block.settings.show_minutes
   assign show_seconds = block.settings.show_seconds
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign size = block.settings.size
+  assign expired_message = block.settings.expired_message
+  assign show_expired_content = block.settings.show_expired_content
 -%}
 
-<div class="countdown" {{ block.shopify_attributes }}>
+<div 
+  class="countdown-block countdown-block--{{ alignment }} countdown-block--{{ style }} countdown-block--{{ size }}" 
+  {{ block.shopify_attributes }}
+>
   {%- if heading != blank -%}
-    <h3 class="countdown__heading">{{ heading }}</h3>
+    <div class="countdown-block__heading">{{ heading }}</div>
+  {%- endif -%}
+
+  {%- if subheading != blank -%}
+    <div class="countdown-block__subheading">{{ subheading }}</div>
   {%- endif -%}
 
   <countdown-timer 
-    class="countdown__timer"
+    class="countdown-block__timer"
     data-end-date="{{ end_date }}"
     data-end-time="{{ end_time }}"
     data-show-days="{{ show_days }}"
     data-show-hours="{{ show_hours }}"
     data-show-minutes="{{ show_minutes }}"
     data-show-seconds="{{ show_seconds }}"
+    data-expired-message="{{ expired_message }}"
   >
-    {%- if show_days -%}
-      <div class="countdown__unit">
-        <span class="countdown__value" data-days>00</span>
-        <span class="countdown__label">{{ 'general.countdown.days' | t }}</span>
-      </div>
-    {%- endif -%}
+    <div class="countdown-block__units">
+      {%- if show_days -%}
+        <div class="countdown-block__unit">
+          <div class="countdown-block__value" data-days>00</div>
+          <div class="countdown-block__label">{{ 'general.countdown.days' | t }}</div>
+        </div>
+        {%- unless style == 'minimal' -%}
+          <div class="countdown-block__separator">:</div>
+        {%- endunless -%}
+      {%- endif -%}
 
-    {%- if show_hours -%}
-      <div class="countdown__unit">
-        <span class="countdown__value" data-hours>00</span>
-        <span class="countdown__label">{{ 'general.countdown.hours' | t }}</span>
-      </div>
-    {%- endif -%}
+      {%- if show_hours -%}
+        <div class="countdown-block__unit">
+          <div class="countdown-block__value" data-hours>00</div>
+          <div class="countdown-block__label">{{ 'general.countdown.hours' | t }}</div>
+        </div>
+        {%- unless style == 'minimal' -%}
+          <div class="countdown-block__separator">:</div>
+        {%- endunless -%}
+      {%- endif -%}
 
-    {%- if show_minutes -%}
-      <div class="countdown__unit">
-        <span class="countdown__value" data-minutes>00</span>
-        <span class="countdown__label">{{ 'general.countdown.minutes' | t }}</span>
-      </div>
-    {%- endif -%}
+      {%- if show_minutes -%}
+        <div class="countdown-block__unit">
+          <div class="countdown-block__value" data-minutes>00</div>
+          <div class="countdown-block__label">{{ 'general.countdown.minutes' | t }}</div>
+        </div>
+        {%- unless style == 'minimal' -%}
+          <div class="countdown-block__separator">:</div>
+        {%- endunless -%}
+      {%- endif -%}
 
-    {%- if show_seconds -%}
-      <div class="countdown__unit">
-        <span class="countdown__value" data-seconds>00</span>
-        <span class="countdown__label">{{ 'general.countdown.seconds' | t }}</span>
-      </div>
-    {%- endif -%}
+      {%- if show_seconds -%}
+        <div class="countdown-block__unit">
+          <div class="countdown-block__value" data-seconds>00</div>
+          <div class="countdown-block__label">{{ 'general.countdown.seconds' | t }}</div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="countdown-block__expired" style="display: none;">
+      {%- if show_expired_content -%}
+        {{ block.settings.expired_content }}
+      {%- else -%}
+        {{ expired_message | default: 'This offer has ended' }}
+      {%- endif -%}
+    </div>
   </countdown-timer>
 </div>
 
@@ -72,16 +106,14 @@
         this.hoursEl = this.querySelector('[data-hours]');
         this.minutesEl = this.querySelector('[data-minutes]');
         this.secondsEl = this.querySelector('[data-seconds]');
+        this.expiredEl = this.querySelector('.countdown-block__expired');
+        this.timerEl = this.querySelector('.countdown-block__units');
         
         this.init();
       }
 
       init() {
-        if (!this.endDate) {
-          console.warn('Countdown: No end date specified');
-          return;
-        }
-
+        if (!this.endDate) return;
         this.targetDate = new Date(`${this.endDate}T${this.endTime}`).getTime();
         this.updateCountdown();
         this.interval = setInterval(() => this.updateCountdown(), 1000);
@@ -113,88 +145,129 @@
       }
 
       handleExpired() {
-        this.classList.add('countdown--expired');
+        if (this.timerEl) this.timerEl.style.display = 'none';
+        if (this.expiredEl) this.expiredEl.style.display = 'block';
+        this.classList.add('countdown-block--expired');
         this.dispatchEvent(new CustomEvent('countdown:expired'));
       }
 
       disconnectedCallback() {
-        if (this.interval) {
-          clearInterval(this.interval);
-        }
+        if (this.interval) clearInterval(this.interval);
       }
     }
-
     customElements.define('countdown-timer', CountdownTimer);
   }
 </script>
 
 <style>
-  .countdown {
-    text-align: center;
-    padding: 2rem;
-  }
+  .countdown-block { width: 100%; }
+  .countdown-block--left { text-align: left; }
+  .countdown-block--center { text-align: center; }
+  .countdown-block--right { text-align: right; }
 
-  .countdown__heading {
-    margin: 0 0 2rem;
-    font-size: 2.4rem;
+  .countdown-block__heading {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
     font-weight: 700;
+    color: rgb(var(--color-text));
   }
 
-  .countdown__timer {
+  .countdown-block__subheading {
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  .countdown-block__units {
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
-  .countdown__unit {
+  .countdown-block__unit {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 80px;
-    padding: 1.5rem;
-    background: rgb(var(--color-background-secondary));
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 70px;
   }
 
-  .countdown__value {
+  .countdown-block__value {
     font-size: 3.6rem;
     font-weight: 800;
     line-height: 1;
-    color: rgb(var(--color-accent));
     font-variant-numeric: tabular-nums;
+    color: rgb(var(--color-accent));
   }
 
-  .countdown__label {
+  .countdown-block__label {
     margin-top: 0.5rem;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: rgb(var(--color-text) / 0.7);
+    color: rgba(var(--color-text), 0.6);
   }
 
-  .countdown--expired .countdown__value {
-    color: rgb(var(--color-text) / 0.3);
+  .countdown-block__separator {
+    font-size: 3rem;
+    font-weight: 700;
+    color: rgb(var(--color-accent));
+    margin-top: -0.5rem;
+  }
+
+  /* Size - Small */
+  .countdown-block--small .countdown-block__value { font-size: 2.4rem; }
+  .countdown-block--small .countdown-block__label { font-size: 1rem; }
+  .countdown-block--small .countdown-block__separator { font-size: 2rem; }
+  .countdown-block--small .countdown-block__unit { min-width: 50px; }
+
+  /* Size - Large */
+  .countdown-block--large .countdown-block__value { font-size: 5rem; }
+  .countdown-block--large .countdown-block__label { font-size: 1.3rem; }
+  .countdown-block--large .countdown-block__separator { font-size: 4rem; }
+
+  /* Style - Card */
+  .countdown-block--card .countdown-block__units {
+    padding: 2rem;
+    background: rgb(var(--color-background-secondary));
+    border-radius: 16px;
+    gap: 1rem;
+  }
+
+  .countdown-block--card .countdown-block__separator {
+    margin-top: 0;
+  }
+
+  /* Style - Minimal */
+  .countdown-block--minimal .countdown-block__units { gap: 1rem; }
+  .countdown-block--minimal .countdown-block__value { font-size: 2rem; }
+  .countdown-block--minimal .countdown-block__unit { 
+    flex-direction: row; 
+    gap: 0.5rem; 
+    min-width: auto;
+  }
+  .countdown-block--minimal .countdown-block__label { margin-top: 0; }
+
+  /* Expired */
+  .countdown-block__expired {
+    padding: 2rem;
+    background: rgba(var(--color-accent), 0.1);
+    border-radius: 12px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgb(var(--color-accent));
+  }
+
+  .countdown-block--expired .countdown-block__value {
+    color: rgba(var(--color-text), 0.3);
   }
 
   @media (max-width: 749px) {
-    .countdown__timer {
-      gap: 1rem;
-    }
-
-    .countdown__unit {
-      min-width: 60px;
-      padding: 1rem;
-    }
-
-    .countdown__value {
-      font-size: 2.8rem;
-    }
-
-    .countdown__label {
-      font-size: 1rem;
-    }
+    .countdown-block__units { gap: 0.25rem; }
+    .countdown-block__value { font-size: 2.4rem; }
+    .countdown-block__unit { min-width: 50px; }
+    .countdown-block__separator { font-size: 2rem; }
   }
 </style>
 
@@ -203,54 +276,37 @@
   "name": "Countdown",
   "class": "countdown-block",
   "settings": [
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Limited Time Offer"
-    },
-    {
-      "type": "text",
-      "id": "end_date",
-      "label": "End Date",
-      "info": "Format: YYYY-MM-DD (e.g., 2026-12-31)",
-      "default": "2026-12-31"
-    },
-    {
-      "type": "text",
-      "id": "end_time",
-      "label": "End Time",
-      "info": "Format: HH:MM:SS (e.g., 23:59:59)",
-      "default": "23:59:59"
-    },
-    {
-      "type": "header",
-      "content": "Display Options"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_days",
-      "label": "Show days",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_hours",
-      "label": "Show hours",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_minutes",
-      "label": "Show minutes",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_seconds",
-      "label": "Show seconds",
-      "default": true
-    }
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Limited Time Offer" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Don't miss out!" },
+    { "type": "header", "content": "Date & Time" },
+    { "type": "text", "id": "end_date", "label": "End Date", "info": "Format: YYYY-MM-DD", "default": "2026-12-31" },
+    { "type": "text", "id": "end_time", "label": "End Time", "info": "Format: HH:MM:SS", "default": "23:59:59" },
+    { "type": "header", "content": "Display Options" },
+    { "type": "checkbox", "id": "show_days", "label": "Show days", "default": true },
+    { "type": "checkbox", "id": "show_hours", "label": "Show hours", "default": true },
+    { "type": "checkbox", "id": "show_minutes", "label": "Show minutes", "default": true },
+    { "type": "checkbox", "id": "show_seconds", "label": "Show seconds", "default": true },
+    { "type": "header", "content": "Style" },
+    { "type": "select", "id": "style", "label": "Style", "options": [
+      { "value": "default", "label": "Default" },
+      { "value": "card", "label": "Card (Boxed)" },
+      { "value": "minimal", "label": "Minimal" }
+    ], "default": "default" },
+    { "type": "select", "id": "size", "label": "Size", "options": [
+      { "value": "small", "label": "Small" },
+      { "value": "medium", "label": "Medium" },
+      { "value": "large", "label": "Large" }
+    ], "default": "medium" },
+    { "type": "select", "id": "alignment", "label": "Alignment", "options": [
+      { "value": "left", "label": "Left" },
+      { "value": "center", "label": "Center" },
+      { "value": "right", "label": "Right" }
+    ], "default": "center" },
+    { "type": "header", "content": "Expired State" },
+    { "type": "text", "id": "expired_message", "label": "Expired Message", "default": "This offer has ended!" },
+    { "type": "checkbox", "id": "show_expired_content", "label": "Show custom content when expired", "default": false },
+    { "type": "richtext", "id": "expired_content", "label": "Custom Expired Content" }
   ]
 }
 {% endschema %}

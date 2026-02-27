@@ -1,128 +1,286 @@
 {% comment %}
-  Tabs Block - 标签页
+  Tabs Block - 标签页组件
+  支持多种样式、图标和动画效果
 {% endcomment %}
 
 {%- liquid
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign animation = block.settings.animation
   assign tab_1_title = block.settings.tab_1_title
   assign tab_1_content = block.settings.tab_1_content
+  assign tab_1_icon = block.settings.tab_1_icon
   assign tab_2_title = block.settings.tab_2_title
   assign tab_2_content = block.settings.tab_2_content
+  assign tab_2_icon = block.settings.tab_2_icon
   assign tab_3_title = block.settings.tab_3_title
   assign tab_3_content = block.settings.tab_3_content
+  assign tab_3_icon = block.settings.tab_3_icon
+  assign tab_4_title = block.settings.tab_4_title
+  assign tab_4_content = block.settings.tab_4_content
+  assign tab_4_icon = block.settings.tab_4_icon
+  assign tab_5_title = block.settings.tab_5_title
+  assign tab_5_content = block.settings.tab_5_content
+  assign tab_5_icon = block.settings.tab_5_icon
 -%}
 
-<div class="tabs" {{ block.shopify_attributes }}>
-  <div class="tabs__nav">
-    {%- if tab_1_title != blank -%}
-      <button class="tabs__button active" data-tab="tab-1">{{ tab_1_title }}</button>
-    {%- endif -%}
-    {%- if tab_2_title != blank -%}
-      <button class="tabs__button" data-tab="tab-2">{{ tab_2_title }}</button>
-    {%- endif -%}
-    {%- if tab_3_title != blank -%}
-      <button class="tabs__button" data-tab="tab-3">{{ tab_3_title }}</button>
-    {%- endif -%}
-  </div>
+{%- assign tabs_count = 0 -%}
+{%- if tab_1_title != blank -%}{%- assign tabs_count = tabs_count | plus: 1 -%}{%- endif -%}
+{%- if tab_2_title != blank -%}{%- assign tabs_count = tabs_count | plus: 1 -%}{%- endif -%}
+{%- if tab_3_title != blank -%}{%- assign tabs_count = tabs_count | plus: 1 -%}{%- endif -%}
+{%- if tab_4_title != blank -%}{%- assign tabs_count = tabs_count | plus: 1 -%}{%- endif -%}
+{%- if tab_5_title != blank -%}{%- assign tabs_count = tabs_count | plus: 1 -%}{%- endif -%}
 
-  <div class="tabs__content">
-    {%- if tab_1_content != blank -%}
-      <div class="tabs__panel active" id="tab-1">
-        <div class="rte">{{ tab_1_content }}</div>
-      </div>
-    {%- endif -%}
-    {%- if tab_2_content != blank -%}
-      <div class="tabs__panel" id="tab-2">
-        <div class="rte">{{ tab_2_content }}</div>
-      </div>
-    {%- endif -%}
-    {%- if tab_3_content != blank -%}
-      <div class="tabs__panel" id="tab-3">
-        <div class="rte">{{ tab_3_content }}</div>
-      </div>
-    {%- endif -%}
-  </div>
-</div>
+{%- if tabs_count > 0 -%}
+  <tabs-component 
+    class="tabs-block tabs-block--{{ style }} tabs-block--{{ alignment }} tabs-block--{{ animation }}" 
+    data-tabs-count="{{ tabs_count }}"
+    {{ block.shopify_attributes }}
+  >
+    <div class="tabs-block__nav" role="tablist">
+      {%- if tab_1_title != blank -%}
+        <button 
+          class="tabs-block__btn is-active" 
+          role="tab" 
+          aria-selected="true" 
+          aria-controls="tab-panel-1"
+          id="tab-btn-1"
+          data-tab="tab-panel-1"
+        >
+          {%- if tab_1_icon != 'none' -%}
+            <span class="tabs-block__icon">{% render 'icon', name: tab_1_icon %}</span>
+          {%- endif -%}
+          <span class="tabs-block__label">{{ tab_1_title }}</span>
+        </button>
+      {%- endif -%}
 
-<script>
-  if (!customElements.get('tabs-component')) {
-    class TabsComponent extends HTMLElement {
-      constructor() {
-        super();
-        this.buttons = this.querySelectorAll('.tabs__button');
-        this.panels = this.querySelectorAll('.tabs__panel');
-        this.init();
-      }
+      {%- if tab_2_title != blank -%}
+        <button 
+          class="tabs-block__btn" 
+          role="tab" 
+          aria-selected="false" 
+          aria-controls="tab-panel-2"
+          id="tab-btn-2"
+          data-tab="tab-panel-2"
+        >
+          {%- if tab_2_icon != 'none' -%}
+            <span class="tabs-block__icon">{% render 'icon', name: tab_2_icon %}</span>
+          {%- endif -%}
+          <span class="tabs-block__label">{{ tab_2_title }}</span>
+        </button>
+      {%- endif -%}
 
-      init() {
-        this.buttons.forEach(button => {
-          button.addEventListener('click', () => this.switchTab(button));
-        });
-      }
+      {%- if tab_3_title != blank -%}
+        <button 
+          class="tabs-block__btn" 
+          role="tab" 
+          aria-selected="false" 
+          aria-controls="tab-panel-3"
+          id="tab-btn-3"
+          data-tab="tab-panel-3"
+        >
+          {%- if tab_3_icon != 'none' -%}
+            <span class="tabs-block__icon">{% render 'icon', name: tab_3_icon %}</span>
+          {%- endif -%}
+          <span class="tabs-block__label">{{ tab_3_title }}</span>
+        </button>
+      {%- endif -%}
 
-      switchTab(clickedButton) {
-        const targetTab = clickedButton.dataset.tab;
+      {%- if tab_4_title != blank -%}
+        <button 
+          class="tabs-block__btn" 
+          role="tab" 
+          aria-selected="false" 
+          aria-controls="tab-panel-4"
+          id="tab-btn-4"
+          data-tab="tab-panel-4"
+        >
+          {%- if tab_4_icon != 'none' -%}
+            <span class="tabs-block__icon">{% render 'icon', name: tab_4_icon %}</span>
+          {%- endif -%}
+          <span class="tabs-block__label">{{ tab_4_title }}</span>
+        </button>
+      {%- endif -%}
 
-        // 移除所有 active 状态
-        this.buttons.forEach(btn => btn.classList.remove('active'));
-        this.panels.forEach(panel => panel.classList.remove('active'));
+      {%- if tab_5_title != blank -%}
+        <button 
+          class="tabs-block__btn" 
+          role="tab" 
+          aria-selected="false" 
+          aria-controls="tab-panel-5"
+          id="tab-btn-5"
+          data-tab="tab-panel-5"
+        >
+          {%- if tab_5_icon != 'none' -%}
+            <span class="tabs-block__icon">{% render 'icon', name: tab_5_icon %}</span>
+          {%- endif -%}
+          <span class="tabs-block__label">{{ tab_5_title }}</span>
+        </button>
+      {%- endif -%}
+    </div>
 
-        // 添加 active 到点击的按钮和对应的面板
-        clickedButton.classList.add('active');
-        const targetPanel = this.querySelector(`#${targetTab}`);
-        if (targetPanel) {
-          targetPanel.classList.add('active');
-        }
-      }
-    }
+    <div class="tabs-block__content">
+      {%- if tab_1_title != blank -%}
+        <div class="tabs-block__panel is-active" id="tab-panel-1" role="tabpanel" aria-labelledby="tab-btn-1">
+          <div class="tabs-block__inner rte">{{ tab_1_content }}</div>
+        </div>
+      {%- endif -%}
 
-    customElements.define('tabs-component', TabsComponent);
-  }
+      {%- if tab_2_title != blank -%}
+        <div class="tabs-block__panel" id="tab-panel-2" role="tabpanel" aria-labelledby="tab-btn-2">
+          <div class="tabs-block__inner rte">{{ tab_2_content }}</div>
+        </div>
+      {%- endif -%}
 
-  // 将 .tabs 转换为 Web Component
-  document.querySelectorAll('.tabs').forEach(tabs => {
-    if (tabs.tagName !== 'TABS-COMPONENT') {
-      const wrapper = document.createElement('tabs-component');
-      tabs.parentNode.insertBefore(wrapper, tabs);
-      wrapper.appendChild(tabs);
-    }
-  });
-</script>
+      {%- if tab_3_title != blank -%}
+        <div class="tabs-block__panel" id="tab-panel-3" role="tabpanel" aria-labelledby="tab-btn-3">
+          <div class="tabs-block__inner rte">{{ tab_3_content }}</div>
+        </div>
+      {%- endif -%}
+
+      {%- if tab_4_title != blank -%}
+        <div class="tabs-block__panel" id="tab-panel-4" role="tabpanel" aria-labelledby="tab-btn-4">
+          <div class="tabs-block__inner rte">{{ tab_4_content }}</div>
+        </div>
+      {%- endif -%}
+
+      {%- if tab_5_title != blank -%}
+        <div class="tabs-block__panel" id="tab-panel-5" role="tabpanel" aria-labelledby="tab-btn-5">
+          <div class="tabs-block__inner rte">{{ tab_5_content }}</div>
+        </div>
+      {%- endif -%}
+    </div>
+  </tabs-component>
+{%- endif -%}
 
 <style>
-  .tabs {
-    border: 1px solid rgb(var(--color-border));
-    border-radius: 8px;
+  .tabs-block {
+    border-radius: var(--tabs-radius, 8px);
     overflow: hidden;
   }
 
-  .tabs__nav {
-    display: flex;
+  /* Style - Default */
+  .tabs-block--default {
+    border: 1px solid rgb(var(--color-border));
+    background: rgb(var(--color-background));
+  }
+
+  .tabs-block--default .tabs-block__nav {
     border-bottom: 1px solid rgb(var(--color-border));
     background: rgb(var(--color-background-secondary));
   }
 
-  .tabs__button {
+  /* Style - Filled */
+  .tabs-block--filled .tabs-block__nav {
+    background: rgb(var(--color-background-secondary));
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .tabs-block--filled .tabs-block__btn {
+    border-radius: var(--buttons-radius, 8px);
+    margin: 0;
+  }
+
+  .tabs-block--filled .tabs-block__btn.is-active {
+    background: rgb(var(--color-background));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Style - Minimal */
+  .tabs-block--minimal .tabs-block__nav {
+    border-bottom: 2px solid rgb(var(--color-border));
+    background: transparent;
+  }
+
+  .tabs-block--minimal .tabs-block__btn {
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 0;
+  }
+
+  .tabs-block--minimal .tabs-block__btn.is-active {
+    border-bottom-color: rgb(var(--color-accent));
+  }
+
+  /* Style - Pills */
+  .tabs-block--pills .tabs-block__nav {
+    justify-content: center;
+    gap: 1rem;
+    background: transparent;
+    border: none;
+  }
+
+  .tabs-block--pills .tabs-block__btn {
+    border-radius: 50px;
+    border: 1px solid rgb(var(--color-border));
+    background: transparent;
+  }
+
+  .tabs-block--pills .tabs-block__btn.is-active {
+    background: rgb(var(--color-button));
+    border-color: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+  }
+
+  /* Navigation */
+  .tabs-block__nav {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .tabs-block--left .tabs-block__nav { justify-content: flex-start; }
+  .tabs-block--center .tabs-block__nav { justify-content: center; }
+  .tabs-block--right .tabs-block__nav { justify-content: flex-end; }
+
+  /* Buttons */
+  .tabs-block__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
     flex: 1;
+    max-width: 200px;
     padding: 1.5rem 2rem;
     border: none;
     background: none;
     font-size: 1.4rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--duration-default) ease;
     position: relative;
+    color: rgba(var(--color-text), 0.7);
   }
 
-  .tabs__button:hover {
+  .tabs-block__btn:hover {
     background: rgb(var(--color-background));
+    color: rgb(var(--color-text));
   }
 
-  .tabs__button.active {
-    background: rgb(var(--color-background));
+  .tabs-block__btn.is-active {
     color: rgb(var(--color-accent));
+    background: rgb(var(--color-background));
   }
 
-  .tabs__button.active::after {
+  .tabs-block__btn:focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+    outline-offset: -2px;
+  }
+
+  /* Icon */
+  .tabs-block__icon {
+    display: flex;
+  }
+
+  .tabs-block__icon svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  /* Style - Default active indicator */
+  .tabs-block--default .tabs-block__btn.is-active::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -132,45 +290,71 @@
     background: rgb(var(--color-accent));
   }
 
-  .tabs__content {
+  /* Content */
+  .tabs-block__content {
     padding: 2rem;
   }
 
-  .tabs__panel {
+  .tabs-block__panel {
     display: none;
-    animation: tab-fade-in 0.3s ease;
   }
 
-  .tabs__panel.active {
+  .tabs-block__panel.is-active {
     display: block;
   }
 
-  @keyframes tab-fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .tabs-block__inner {
+    line-height: 1.7;
+    color: rgba(var(--color-text), 0.8);
   }
 
+  /* Animation - Fade */
+  .tabs-block--fade .tabs-block__panel.is-active {
+    animation: tab-fade-in 0.3s ease;
+  }
+
+  /* Animation - Slide */
+  .tabs-block--slide .tabs-block__panel.is-active {
+    animation: tab-slide-in 0.3s ease;
+  }
+
+  /* Animation - Scale */
+  .tabs-block--scale .tabs-block__panel.is-active {
+    animation: tab-scale-in 0.3s ease;
+  }
+
+  @keyframes tab-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes tab-slide-in {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes tab-scale-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Mobile */
   @media (max-width: 749px) {
-    .tabs__nav {
+    .tabs-block__nav {
       flex-direction: column;
     }
 
-    .tabs__button {
-      text-align: left;
+    .tabs-block__btn {
+      max-width: 100%;
       border-bottom: 1px solid rgb(var(--color-border));
     }
 
-    .tabs__button:last-child {
+    .tabs-block__btn:last-child {
       border-bottom: none;
     }
 
-    .tabs__button.active::after {
+    .tabs-block--minimal .tabs-block__btn.is-active::after {
+      bottom: auto;
       left: 0;
       right: auto;
       width: 3px;
@@ -192,13 +376,27 @@
       "type": "text",
       "id": "tab_1_title",
       "label": "Tab 1 Title",
-      "default": "Tab 1"
+      "default": "Description"
+    },
+    {
+      "type": "select",
+      "id": "tab_1_icon",
+      "label": "Tab 1 Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "info", "label": "Info" },
+        { "value": "check", "label": "Check" },
+        { "value": "star", "label": "Star" },
+        { "value": "heart", "label": "Heart" },
+        { "value": "gift", "label": "Gift" }
+      ],
+      "default": "none"
     },
     {
       "type": "richtext",
       "id": "tab_1_content",
       "label": "Tab 1 Content",
-      "default": "<p>Content for tab 1</p>"
+      "default": "<p>Content for the first tab goes here.</p>"
     },
     {
       "type": "header",
@@ -208,13 +406,25 @@
       "type": "text",
       "id": "tab_2_title",
       "label": "Tab 2 Title",
-      "default": "Tab 2"
+      "default": "Shipping"
+    },
+    {
+      "type": "select",
+      "id": "tab_2_icon",
+      "label": "Tab 2 Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "location", "label": "Location" },
+        { "value": "clock", "label": "Clock" }
+      ],
+      "default": "none"
     },
     {
       "type": "richtext",
       "id": "tab_2_content",
       "label": "Tab 2 Content",
-      "default": "<p>Content for tab 2</p>"
+      "default": "<p>Shipping information goes here.</p>"
     },
     {
       "type": "header",
@@ -224,13 +434,108 @@
       "type": "text",
       "id": "tab_3_title",
       "label": "Tab 3 Title",
-      "default": "Tab 3"
+      "default": "Reviews"
+    },
+    {
+      "type": "select",
+      "id": "tab_3_icon",
+      "label": "Tab 3 Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "star", "label": "Star" }
+      ],
+      "default": "none"
     },
     {
       "type": "richtext",
       "id": "tab_3_content",
       "label": "Tab 3 Content",
-      "default": "<p>Content for tab 3</p>"
+      "default": "<p>Customer reviews go here.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tab 4 (Optional)"
+    },
+    {
+      "type": "text",
+      "id": "tab_4_title",
+      "label": "Tab 4 Title"
+    },
+    {
+      "type": "select",
+      "id": "tab_4_icon",
+      "label": "Tab 4 Icon",
+      "options": [
+        { "value": "none", "label": "None" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_4_content",
+      "label": "Tab 4 Content"
+    },
+    {
+      "type": "header",
+      "content": "Tab 5 (Optional)"
+    },
+    {
+      "type": "text",
+      "id": "tab_5_title",
+      "label": "Tab 5 Title"
+    },
+    {
+      "type": "select",
+      "id": "tab_5_icon",
+      "label": "Tab 5 Icon",
+      "options": [
+        { "value": "none", "label": "None" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_5_content",
+      "label": "Tab 5 Content"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default (Tabs)" },
+        { "value": "filled", "label": "Filled Cards" },
+        { "value": "minimal", "label": "Minimal (Underline)" },
+        { "value": "pills", "label": "Pills (Rounded)" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Tab Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide Up" },
+        { "value": "scale", "label": "Scale" }
+      ],
+      "default": "fade"
     }
   ]
 }

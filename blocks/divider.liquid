@@ -1,0 +1,269 @@
+{% comment %}
+  Divider Block - 分割线组件
+  支持多种样式、颜色和动画效果
+{% endcomment %}
+
+{%- liquid
+  assign style = block.settings.style
+  assign color = block.settings.color
+  assign width = block.settings.width
+  assign alignment = block.settings.alignment
+  assign spacing_top = block.settings.spacing_top
+  assign spacing_bottom = block.settings.spacing_bottom
+  assign enable_animation = block.settings.enable_animation
+-%}
+
+<div 
+  class="divider-block divider-block--{{ alignment }} divider-block--{{ style }}" 
+  style="
+    --divider-width: {{ width }}%;
+    --divider-spacing-top: {{ spacing_top }}px;
+    --divider-spacing-bottom: {{ spacing_bottom }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="divider-block__line{% if enable_animation %} divider-block__line--animated{% endif %}">
+    {%- case style -%}
+      {%- when 'solid' -%}
+        <hr class="divider-block__hr">
+      {%- when 'dashed' -%}
+        <hr class="divider-block__hr divider-block__hr--dashed">
+      {%- when 'dotted' -%}
+        <hr class="divider-block__hr divider-block__hr--dotted">
+      {%- when 'double' -%}
+        <hr class="divider-block__hr divider-block__hr--double">
+      {%- when 'gradient' -%}
+        <div class="divider-block__gradient"></div>
+      {%- when 'icon' -%}
+        <div class="divider-block__icon">
+          {% render 'icon', name: 'line' %}
+        </div>
+      {%- when 'stars' -%}
+        <div class="divider-block__icon">
+          {% render 'icon', name: 'star' %}
+          <span class="divider-block__stars"></span>
+        </div>
+    {%- endcase -%}
+  </div>
+</div>
+
+<style>
+  .divider-block {
+    width: 100%;
+    padding-top: var(--divider-spacing-top);
+    padding-bottom: var(--divider-spacing-bottom);
+  }
+
+  .divider-block--left { text-align: left; }
+  .divider-block--center { text-align: center; }
+  .divider-block--right { text-align: right; }
+
+  .divider-block__line {
+    width: var(--divider-width);
+    margin: 0 auto;
+  }
+
+  .divider-block--left .divider-block__line,
+  .divider-block--right .divider-block__line {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .divider-block--right .divider-block__line {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  /* HR Styles */
+  .divider-block__hr {
+    border: none;
+    height: 1px;
+    background: rgb(var(--color-border));
+  }
+
+  .divider-block__hr--dashed {
+    background: transparent;
+    border-top: 1px dashed rgb(var(--color-border));
+  }
+
+  .divider-block__hr--dotted {
+    background: transparent;
+    border-top: 2px dotted rgb(var(--color-border));
+  }
+
+  .divider-block__hr--double {
+    height: 3px;
+    background: transparent;
+    border-top: 1px solid rgb(var(--color-border));
+    border-bottom: 1px solid rgb(var(--color-border));
+  }
+
+  /* Color variants */
+  .divider-block--light .divider-block__hr,
+  .divider-block--light .divider-block__gradient {
+    background: rgba(var(--color-background), 0.3);
+  }
+
+  .divider-block--dark .divider-block__hr,
+  .divider-block--dark .divider-block__gradient {
+    background: rgb(var(--color-text));
+  }
+
+  .divider-block--accent .divider-block__hr,
+  .divider-block--accent .divider-block__gradient {
+    background: rgb(var(--color-accent));
+  }
+
+  /* Gradient */
+  .divider-block__gradient {
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(var(--color-accent)) 50%,
+      transparent 100%
+    );
+  }
+
+  /* Icon */
+  .divider-block__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(var(--color-border));
+  }
+
+  .divider-block__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .divider-block__stars {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+  }
+
+  .divider-block__stars::before,
+  .divider-block__stars::after {
+    content: '★';
+    font-size: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Animation */
+  .divider-block__line--animated .divider-block__hr,
+  .divider-block__line--animated .divider-block__gradient {
+    width: 0;
+    animation: divider-expand 0.8s ease forwards;
+  }
+
+  @keyframes divider-expand {
+    to {
+      width: 100%;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .divider-block__line {
+      --divider-width: 80%;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Divider",
+  "class": "divider-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Divider Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Solid Line" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" },
+        { "value": "double", "label": "Double Line" },
+        { "value": "gradient", "label": "Gradient Fade" },
+        { "value": "icon", "label": "With Icon" },
+        { "value": "stars", "label": "With Stars" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "select",
+      "id": "color",
+      "label": "Color",
+      "options": [
+        { "value": "default", "label": "Default (Border)" },
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "accent", "label": "Accent" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Width",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "spacing_top",
+      "label": "Top Spacing",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom",
+      "label": "Bottom Spacing",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "Enable expand animation",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

@@ -65,20 +65,23 @@
     "share": {
       "success_message": "Enlace copiado al portapapeles",
       "share_on": "Compartir",
-      "copy_to_clipboard": "Copiar enlace"
+      "copy_to_clipboard": "Copiar enlace",
+      "link_copied": "¡Enlace copiado!"
     },
     "countdown": {
       "days": "Días",
       "hours": "Horas",
       "minutes": "Minutos",
-      "seconds": "Segundos"
+      "seconds": "Segundos",
+      "expired": "Esta oferta ha terminado"
     }
   },
   "newsletter": {
     "label": "Correo electrónico",
     "success": "¡Gracias por suscribirte!",
     "button_label": "Suscribirse",
-    "email_placeholder": "Ingresa tu correo electrónico"
+    "email_placeholder": "Ingresa tu correo electrónico",
+    "privacy_notice": "Respetamos tu privacidad. Cancela en cualquier momento."
   },
   "blogs": {
     "general": {
@@ -171,9 +174,16 @@
       "include_taxes": "Impuesto incluido.",
       "shipping_policy_html": "<a href=\"{{ link }}\">Envío</a> calculado al momento del pago.",
       "sku": "SKU",
+      "inventory_low_stock": "Stock bajo",
       "inventory_low_stock_html": "Solo quedan {{ count }} en stock",
+      "inventory_low_stock_with_count": "¡Solo quedan {{ count }} - ordena pronto!",
       "inventory_in_stock": "En stock",
-      "inventory_out_of_stock": "Agotado"
+      "inventory_in_stock_with_count": "{{ count }} en stock",
+      "inventory_out_of_stock": "Agotado",
+      "inventory_always_in_stock": "En Stock",
+      "no_reviews": "Sin reseñas aún",
+      "add_to_wishlist": "Agregar a favoritos",
+      "estimate_shipping": "Estimar envío al pagar"
     },
     "modal": {
       "label": "Galería de medios"
@@ -459,6 +469,25 @@
       "expired": "Expirada",
       "copy_code_success": "Código copiado exitosamente",
       "print_gift_card": "Imprimir"
+    }
+  },
+  "blocks": {
+    "article_card": {
+      "select_article": "Selecciona un artículo para mostrar"
+    },
+    "video": {
+      "browser_not_supported": "Tu navegador no admite la etiqueta de video.",
+      "add_video_source": "Agrega una URL de video o sube un archivo de video"
+    },
+    "custom_liquid": {
+      "placeholder": "Agrega código Liquid personalizado aquí"
+    },
+    "accordion": {
+      "expand": "Expandir",
+      "collapse": "Contraer"
+    },
+    "tabs": {
+      "tab": "Pestaña"
     }
   }
 }

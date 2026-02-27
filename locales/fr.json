@@ -65,20 +65,23 @@
     "share": {
       "success_message": "Lien copié dans le presse-papiers",
       "share_on": "Partager",
-      "copy_to_clipboard": "Copier le lien"
+      "copy_to_clipboard": "Copier le lien",
+      "link_copied": "Lien copié !"
     },
     "countdown": {
       "days": "Jours",
       "hours": "Heures",
       "minutes": "Minutes",
-      "seconds": "Secondes"
+      "seconds": "Secondes",
+      "expired": "Cette offre est terminée"
     }
   },
   "newsletter": {
     "label": "E-mail",
     "success": "Merci de votre inscription !",
     "button_label": "S'abonner",
-    "email_placeholder": "Entrez votre e-mail"
+    "email_placeholder": "Entrez votre e-mail",
+    "privacy_notice": "Nous respectons votre vie privée. Désabonnement à tout moment."
   },
   "blogs": {
     "general": {
@@ -171,9 +174,16 @@
       "include_taxes": "Taxe incluse.",
       "shipping_policy_html": "<a href=\"{{ link }}\">Livraison</a> calculée lors du paiement.",
       "sku": "SKU",
+      "inventory_low_stock": "Stock faible",
       "inventory_low_stock_html": "Plus que {{ count }} en stock",
+      "inventory_low_stock_with_count": "Plus que {{ count }} - commandez bientôt !",
       "inventory_in_stock": "En stock",
-      "inventory_out_of_stock": "Rupture de stock"
+      "inventory_in_stock_with_count": "{{ count }} en stock",
+      "inventory_out_of_stock": "Rupture de stock",
+      "inventory_always_in_stock": "En Stock",
+      "no_reviews": "Pas encore d'avis",
+      "add_to_wishlist": "Ajouter à la liste de souhaits",
+      "estimate_shipping": "Estimer les frais de port au paiement"
     },
     "modal": {
       "label": "Galerie multimédia"
@@ -459,6 +469,25 @@
       "expired": "Expirée",
       "copy_code_success": "Code copié avec succès",
       "print_gift_card": "Imprimer"
+    }
+  },
+  "blocks": {
+    "article_card": {
+      "select_article": "Sélectionnez un article à afficher"
+    },
+    "video": {
+      "browser_not_supported": "Votre navigateur ne prend pas en charge la balise vidéo.",
+      "add_video_source": "Ajoutez une URL vidéo ou téléversez un fichier vidéo"
+    },
+    "custom_liquid": {
+      "placeholder": "Ajoutez votre code Liquid personnalisé ici"
+    },
+    "accordion": {
+      "expand": "Développer",
+      "collapse": "Réduire"
+    },
+    "tabs": {
+      "tab": "Onglet"
     }
   }
 }

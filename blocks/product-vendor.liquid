@@ -1,9 +1,128 @@
-<div class="product-vendor" {{ block.shopify_attributes }}>
-  <a href="{{ product.vendor | url_for_vendor }}" class="product-vendor__link">
-    {{ 'products.product.brand' | t }}: {{ product.vendor }}
-  </a>
-</div>
+{% comment %}
+  Product Vendor Block - 产品供应商/品牌组件
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign style = block.settings.style
+  assign alignment = block.settings.alignment
+  assign show_icon = block.settings.show_icon
+  if product == blank
+    assign vendor_name = 'AEOall Vendor'
+  else
+    assign vendor_name = product.vendor
+  endif
+-%}
+
+{%- if vendor_name != blank -%}
+  <div 
+    class="product-vendor-block product-vendor-block--{{ alignment }} product-vendor-block--{{ style }}" 
+    {{ block.shopify_attributes }}
+  >
+    <a href="{{ vendor_name | url_for_vendor }}" class="product-vendor-block__link">
+      {%- if show_icon -%}
+        <span class="product-vendor-block__icon">
+          {% render 'icon', name: 'store' %}
+        </span>
+      {%- endif -%}
+      <span class="product-vendor-block__text">{{ vendor_name }}</span>
+    </a>
+  </div>
+{%- endif -%}
+
+<style>
+  .product-vendor-block {
+    width: 100%;
+  }
+
+  .product-vendor-block--left { text-align: left; }
+  .product-vendor-block--center { text-align: center; }
+  .product-vendor-block--right { text-align: right; }
+
+  .product-vendor-block__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 1.2rem;
+    transition: opacity var(--duration-default) ease;
+  }
+
+  .product-vendor-block__link:hover {
+    opacity: 0.7;
+  }
+
+  /* Style - Default */
+  .product-vendor-block--default .product-vendor-block__text {
+    color: rgb(var(--color-text));
+  }
+
+  /* Style - Accent */
+  .product-vendor-block--accent .product-vendor-block__text {
+    color: rgb(var(--color-accent));
+  }
+
+  /* Style - Badge */
+  .product-vendor-block--badge .product-vendor-block__link {
+    padding: 0.4rem 1rem;
+    background: rgba(var(--color-text), 0.05);
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .product-vendor-block--badge-accent .product-vendor-block__link {
+    padding: 0.4rem 1rem;
+    background: rgba(var(--color-accent), 0.1);
+    border-radius: 4px;
+    color: rgb(var(--color-accent));
+  }
+
+  .product-vendor-block__icon {
+    display: flex;
+  }
+
+  .product-vendor-block__icon svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+</style>
 
 {% schema %}
-{ "name": "Vendor" }
+{
+  "name": "Vendor",
+  "class": "product-vendor-block",
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default Text" },
+        { "value": "accent", "label": "Accent Color" },
+        { "value": "badge", "label": "Badge" },
+        { "value": "badge-accent", "label": "Badge with Accent" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": false
+    }
+  ]
+}
 {% endschema %}

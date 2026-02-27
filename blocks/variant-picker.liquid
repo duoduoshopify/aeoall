@@ -1,23 +1,100 @@
+{% comment %}
+  Variant Picker Block - 产品变体选择器组件
+  支持多种样式：按钮、下拉框、颜色/图片色板
+{% endcomment %}
+
+{%- liquid
+  assign product = block.settings.product | default: product
+  assign picker_type = block.settings.picker_type
+  assign show_swatches = block.settings.show_swatches
+  assign swatch_size = block.settings.swatch_size
+  assign alignment = block.settings.alignment
+-%}
+
 {%- unless product.has_only_default_variant -%}
-  <div class="variant-picker-block" {{ block.shopify_attributes }}>
-    <variant-selects class="no-js-hidden variant-picker" data-section="{{ section.id }}" data-url="{{ product.url }}">
+  <div 
+    class="variant-picker-block variant-picker-block--{{ alignment }}" 
+    {{ block.shopify_attributes }}
+  >
+    <variant-selects 
+      class="no-js-hidden variant-picker" 
+      data-section="{{ section.id }}" 
+      data-url="{{ product.url }}"
+      data-type="{{ picker_type }}"
+    >
       {%- for option in product.options_with_values -%}
         <fieldset class="variant-picker__fieldset">
           <legend class="variant-picker__label">
-            {{ option.name }}: <span class="variant-picker__selected-value">{{ option.selected_value }}</span>
+            <span class="variant-picker__option-name">{{ option.name }}</span>
+            <span class="variant-picker__selected-value">{{ option.selected_value }}</span>
           </legend>
-          <div class="variant-picker__options">
-            {%- for value in option.values -%}
-              <input type="radio" id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
-                    name="{{ option.name }}" value="{{ value | escape }}"
-                    form="product-form-main" {% if option.selected_value == value %}checked{% endif %}
-                    class="variant-picker__input">
-              <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" 
-                      class="variant-picker__option-button">
-                {{ value }}
-              </label>
-            {%- endfor -%}
-          </div>
+
+          {%- if picker_type == 'dropdown' -%}
+            <div class="variant-picker__dropdown-wrapper">
+              <select 
+                class="variant-picker__dropdown"
+                name="options[{{ option.name }}]"
+                form="product-form-{{ section.id }}"
+              >
+                {%- for value in option.values -%}
+                  <option 
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value %}selected{% endif %}
+                  >
+                    {{ value }}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <span class="variant-picker__dropdown-icon">
+                {% render 'icon', name: 'chevron-down' %}
+              </span>
+            </div>
+          {%- else -%}
+            <div class="variant-picker__options variant-picker__options--{{ picker_type }}{% if show_swatches %} variant-picker__options--swatches{% endif %}">
+              {%- for value in option.values -%}
+                {%- assign option_disabled = true -%}
+                {%- for variant in product.variants -%}
+                  {%- if variant.options[forloop.parentloop.index] == value -%}
+                    {%- unless variant.available -%}
+                      {%- assign option_disabled = true -%}
+                    {%- else -%}
+                      {%- assign option_disabled = false -%}
+                    {%- break -%}
+                    {%- endunless -%}
+                  {%- endif -%}
+                {%- endfor -%}
+
+                <input 
+                  type="radio" 
+                  id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                  name="{{ option.name }}" 
+                  value="{{ value | escape }}"
+                  form="product-form-{{ section.id }}" 
+                  {% if option.selected_value == value %}checked{% endif %}
+                  {% if option_disabled %}disabled{% endif %}
+                  class="variant-picker__input"
+                >
+
+                {%- if show_swatches and option.name == 'Color' or option.name == 'Colour' or option.name == '颜色' -%}
+                  <label 
+                    for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" 
+                    class="variant-picker__option-swatch"
+                    title="{{ value }}"
+                  >
+                    <span class="variant-picker__swatch-inner" style="background-color: {{ value | downcase }};"></span>
+                    <span class="variant-picker__swatch-tooltip">{{ value }}</span>
+                  </label>
+                {%- else -%}
+                  <label 
+                    for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" 
+                    class="variant-picker__option-button{% if option_disabled %} variant-picker__option-button--disabled{% endif %}"
+                  >
+                    {{ value }}
+                  </label>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
         </fieldset>
       {%- endfor -%}
     </variant-selects>
@@ -32,7 +109,7 @@
             <select 
               id="variant-option-{{ option.position }}"
               name="options[{{ option.name }}]"
-              form="product-form-main"
+              form="product-form-{{ section.id }}"
               class="variant-picker-fallback__select"
             >
               {%- for value in option.values -%}
@@ -52,20 +129,263 @@
 {%- endunless -%}
 
 <style>
-  .no-js-hidden { display: block; }
-  .no-js .no-js-hidden { display: none; }
+  .variant-picker-block {
+    width: 100%;
+  }
+
+  .variant-picker-block--left .variant-picker__fieldset { text-align: left; }
+  .variant-picker-block--center .variant-picker__fieldset { text-align: center; }
+  .variant-picker-block--right .variant-picker__fieldset { text-align: right; }
+
+  /* Label */
+  .variant-picker__label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .variant-picker__option-name {
+    color: rgb(var(--color-text));
+  }
+
+  .variant-picker__selected-value {
+    color: rgba(var(--color-text), 0.6);
+    font-weight: 400;
+  }
+
+  /* Dropdown */
+  .variant-picker__dropdown-wrapper {
+    position: relative;
+    max-width: 300px;
+  }
+
+  .variant-picker__dropdown {
+    width: 100%;
+    padding: 1.2rem 4rem 1.2rem 1.6rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 8px;
+    background: rgb(var(--color-background));
+    font-size: 1.4rem;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--duration-default) ease;
+  }
+
+  .variant-picker__dropdown:hover,
+  .variant-picker__dropdown:focus {
+    border-color: rgb(var(--color-accent));
+  }
+
+  .variant-picker__dropdown-icon {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgb(var(--color-text));
+  }
+
+  .variant-picker__dropdown-icon svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Options */
+  .variant-picker__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  /* Radio Input (Hidden) */
+  .variant-picker__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Button Style */
+  .variant-picker__option-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.4rem;
+    padding: 0.8rem 1.6rem;
+    border: 1px solid rgb(var(--color-border));
+    border-radius: 8px;
+    background: rgb(var(--color-background));
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all var(--duration-default) ease;
+  }
+
+  .variant-picker__option-button:hover {
+    border-color: rgb(var(--color-accent));
+  }
+
+  .variant-picker__input:checked + .variant-picker__option-button {
+    border-color: rgb(var(--color-accent));
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-background));
+  }
+
+  .variant-picker__option-button--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* Swatch Style */
+  .variant-picker__options--swatches {
+    gap: 1rem;
+  }
+
+  .variant-picker__option-swatch {
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--duration-default) ease;
+  }
+
+  .variant-picker__option-swatch:hover {
+    transform: scale(1.1);
+  }
+
+  .variant-picker__input:checked + .variant-picker__option-swatch {
+    border-color: rgb(var(--color-accent));
+  }
+
+  .variant-picker__swatch-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--color-text), 0.1);
+  }
+
+  .variant-picker__swatch-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.4rem 0.8rem;
+    background: rgb(var(--color-text));
+    color: rgb(var(--color-background));
+    font-size: 1.1rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-default) ease;
+    z-index: 10;
+  }
+
+  .variant-picker__swatch-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgb(var(--color-text));
+  }
+
+  .variant-picker__option-swatch:hover .variant-picker__swatch-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Swatch Size */
+  .variant-picker__option-swatch {
+    width: var(--swatch-size, 4rem);
+    height: var(--swatch-size, 4rem);
+  }
+
+  /* Fallback */
+  .no-js .variant-picker { display: none; }
   .variant-picker-fallback { display: none; }
   .no-js .variant-picker-fallback { display: block; }
-  .variant-picker-fallback__option { margin-bottom: 1.5rem; }
+  
+  .variant-picker-fallback__option {
+    margin-bottom: 1.5rem;
+  }
+
   .variant-picker-fallback__select {
     width: 100%;
+    max-width: 300px;
     padding: 1rem;
     border: 1px solid rgb(var(--color-border));
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 1.4rem;
   }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    .variant-picker__option-button {
+      min-width: 3.6rem;
+      padding: 0.6rem 1rem;
+      font-size: 1.2rem;
+    }
+  }
 </style>
-    
+
 {% schema %}
-{ "name": "Variant Picker" }
+{
+  "name": "Variant Picker",
+  "class": "variant-picker-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Picker Style"
+    },
+    {
+      "type": "select",
+      "id": "picker_type",
+      "label": "Picker Type",
+      "options": [
+        { "value": "buttons", "label": "Button (Pills)" },
+        { "value": "dropdown", "label": "Dropdown" }
+      ],
+      "default": "buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show color swatches",
+      "default": false,
+      "info": "Automatically shows color swatches when option name contains 'Color'"
+    },
+    {
+      "type": "select",
+      "id": "swatch_size",
+      "label": "Swatch Size",
+      "options": [
+        { "value": "3rem", "label": "Small" },
+        { "value": "4rem", "label": "Medium" },
+        { "value": "5rem", "label": "Large" }
+      ],
+      "default": "4rem"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    }
+  ]
+}
 {% endschema %}

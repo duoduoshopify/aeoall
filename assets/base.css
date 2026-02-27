@@ -553,7 +553,7 @@ button.button:active {
   position: relative;
   min-height: 200px;
   pointer-events: none;
-  opacity: 0.65;
+  opacity: 0.6;
 }
 
 .section-hydrating::before {
@@ -608,7 +608,6 @@ button.button:active {
   margin-top: 1rem;
   color: #ef4444;
   font-size: 1.4rem;
-  font-weight: 600;
 }
 
 .shopify-section-editor .section-hydration-error::after {
